@@ -1,0 +1,334 @@
+$size: 4px; //size of pixels
+$tick: 0.2s;
+//sonic colors
+$a: transparent;
+$b: #000; //black
+$c: #fff; //white
+$d: #2228a2; //dark blue
+$e: #2446c3; //blue
+$f: #4349e3; //light blue
+$g: #6465e4; //lighter blue
+$h: #e6a287; //skin
+$i: #a46145; //dark skin
+$j: #424142; //dark grey
+$k: #848284; //grey
+$l: #a5a2a5; //light grey
+$m: #e40b18; //red
+$n: #820308; //dark red
+//floor & tube colors
+$f1: #a5a2a5; //grey
+$f2: #e6c22b; //yellow
+$f3: #212021; //dark-grey
+$f4: #424142; //grey-pipe-1
+$f5: #848284; //grey-pipe-2
+$f6: #a5a2a5; //grey-pipe-3
+$f7: #e7e3e7; //grey-pipe-4
+$f8: #0619c3; //blue
+//tube support colors
+$s1: #e7e3e7; //grey-1
+$s2: #a29fa2; //grey-2
+$s3: #848284; //grey-3
+$s4: #424142; //grey-4
+$s5: #414041; //grey-5
+$s6: #212021; //grey-6
+$s7: #000000; //black
+$s8: #2ec121; //green
+// Scoped to .sonic-stage so the animation lives inside a single container
+// instead of taking over html/body. This lets the portfolio shell (topbar,
+// sidebar, theme) coexist with the scene on the Sonic showcase page.
+.sonic-stage {
+  background: $b;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: $size * 120;
+  border-radius: 12px;
+}
+.level-container{
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+@mixin pixelmatic-lr($art, $size: 10px){
+  display: block;
+  height: $size;
+  width: $size;
+  $shadow: 0 0 transparent;
+  @for $y from 1 through length($art){
+    @for $x from 1 through length(nth($art, $y)){
+      $shadow: $shadow
+      + ", " + 
+      ($x * $size)
+      + " " + 
+      ($y * $size) 
+      + " " + 
+      nth(nth($art, $y), $x) ;
+    }
+  }
+  box-shadow: unquote($shadow);
+}
+@mixin pixelmatic-ud($art, $size: 10px){
+  display: block;
+  height: $size;
+  width: $size;
+  $shadow: 0 0 transparent;
+  @for $x from 1 through length($art){
+    @for $y from 1 through length(nth($art, $x)){
+      $shadow: $shadow
+      + ", " + 
+      ($x * $size)
+      + " " + 
+      ($y * $size) 
+      + " " + 
+      nth(nth($art, $x), $y) ;
+    }
+  }
+  box-shadow: unquote($shadow);
+}
+
+$sonic1: 
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $e $e $f $f $e $e $e $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $d $d $d $d $e $e $e $e $e $d $d $f $f $f $e $e $a $a $a $a $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $e $e $d $h $d $f $f $f $f $e $e $a $d $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $i $h $h $d $f $g $f $f $f $e $d $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $e $d $i $h $h $h $e $g $g $g $f $f $e $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $d $i $i $f $f $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $d $e $e $d $e $e $f $f $f $g $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $a $d $d $e $e $d $d $e $f $g $g $f $g $g $l $l $g $g $g $f $f $e,
+  $a $a $a $a $a $a $a $a $a $d $d $e $e $d $d $d $e $g $k $g $f $g $l $c $c $l $g $g $f $f $g,
+  $a $a $a $a $a $a $a $a $d $d $d $d $d $d $d $d $e $f $g $g $f $g $c $c $c $c $b $g $f $f $b,
+  $a $a $a $a $a $a $a $d $d $d $d $d $d $d $d $d $d $e $f $f $f $g $c $c $c $c $b $b $e $f $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $e $e $f $f $g $c $c $c $c $b $b $g $b $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $e $e $e $f $g $c $c $c $b $b $c $b $k,
+  $a $a $a $a $a $a $a $a $a $a $e $e $e $e $d $d $d $d $d $e $i $c $c $g $c $c $c $c $k $b $k,
+  $a $a $a $a $a $a $a $i $h $h $h $h $d $d $m $m $m $m $m $m $h $h $h $c $c $c $c $h $b $b $b,
+  $a $a $a $a $a $a $i $h $i $n $m $m $m $m $m $m $m $m $m $b $h $h $h $h $h $h $h $h $h $a $a,
+  $a $a $a $a $a $a $n $n $m $m $m $m $m $m $m $m $m $m $m $b $i $h $h $h $h $h $i $i $n $a $a,
+  $a $a $a $a $n $n $n $m $m $m $m $m $m $m $m $m $m $m $b $n $n $i $i $i $i $i $n $n $a $a $a,
+  $a $a $a $n $n $n $m $m $m $m $m $m $m $m $m $m $b $b $j $j $j $j $j $j $n $n $a $a $a $a $a,
+  $a $a $n $n $n $m $m $m $m $m $m $m $m $b $b $b $l $k $j $j $k $j $j $k $a $a $a $a $a $a $a,
+  $a $n $n $n $n $n $m $m $m $m $b $b $b $l $l $l $k $i $a $k $j $k $k $k $a $a $a $a $a $a $a,
+  $a $n $n $n $n $n $b $b $b $b $e $e $d $i $i $i $i $h $a $a $j $j $k $a $a $a $a $a $a $a $a,
+  $n $n $n $n $n $a $a $a $a $b $e $e $e $e $i $h $h $i $a $a $a $a $a $a $a $a $a $a $n $a $a,
+  $n $n $n $n $a $a $a $a $a $a $b $e $e $e $i $i $i $a $a $a $a $a $a $a $a $a $a $a $n $a $a,
+  $n $n $n $a $a $a $a $a $a $a $a $a $e $e $e $e $b $a $a $a $a $a $a $a $a $n $a $a $n $a $a,
+  $n $n $n $a $a $a $a $a $a $a $a $a $a $a $b $b $d $d $a $a $a $a $a $a $a $n $a $n $n $a $a,
+  $n $n $n $a $a $a $a $a $a $a $a $a $a $a $a $b $d $d $a $a $a $a $a $a $a $n $a $n $n $a $a,
+  $n $n $a $a $a $a $a $a $a $a $j $k $l $a $d $d $d $a $a $a $a $a $a $a $n $n $n $n $n $a $a,
+  $a $n $a $a $a $a $a $a $a $a $j $j $k $l $d $d $a $a $a $a $a $a $a $a $n $n $n $n $a $a $a,
+  $a $n $a $a $a $a $a $a $a $n $j $k $k $k $l $l $a $a $a $a $a $a $a $n $n $n $n $n $a $a $a,
+  $a $a $n $a $a $a $a $a $b $n $n $n $n $n $k $a $a $a $a $a $a $n $n $n $n $n $n $a $a $a $a,
+  $a $a $a $a $a $a $a $b $n $n $n $n $n $n $n $n $k $k $n $n $n $n $n $n $n $n $a $a $a $a $a,
+  $a $a $a $a $a $a $a $b $n $n $n $n $n $n $k $k $n $n $n $n $n $n $n $n $n $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $b $n $n $n $n $n $k $n $n $n $n $n $n $n $b $n $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $b $b $b $b $b $b $b $b $b $b $b $b $b $a $a $a $a $a $a $a $a $a $a,
+  ;
+$sonic2: 
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $e $e $e $e $e $e $e $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $d $d $d $d $d $e $e $e $e $e $e $f $f $f $e $e $e $a $a $a $d $a $a,
+  $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $d $d $d $d $e $f $f $f $f $f $e $e $a $d $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $i $h $h $e $e $f $g $f $f $f $e $d $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $i $h $h $h $e $g $g $g $f $f $e $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $d $i $i $f $f $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $a $a $d $d $e $e $d $e $e $f $f $f $g $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $d $d $e $e $e $d $d $e $f $g $g $f $g $g $l $l $g $g $g $f $f $e,
+  $a $a $a $a $a $a $a $d $d $d $d $e $e $e $d $d $e $g $k $g $f $g $l $c $c $l $g $g $f $f $g,
+  $a $a $a $a $a $a $a $a $a $d $d $d $d $e $d $d $e $f $g $g $f $g $c $c $c $c $b $g $f $f $b,
+  $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $d $e $f $f $f $g $c $c $c $c $b $b $e $f $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $e $e $f $f $g $c $c $c $c $b $b $g $b $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $d $d $d $e $e $e $f $g $c $c $c $b $b $c $b $k,
+  $a $a $a $a $a $a $a $a $a $e $e $e $e $e $d $d $d $d $d $e $i $c $c $g $c $c $c $c $k $b $k,
+  $a $a $a $a $a $a $a $i $h $h $h $h $d $d $d $d $d $d $d $i $h $h $h $c $c $c $c $h $b $b $b,
+  $a $a $a $a $a $e $i $h $i $i $i $k $h $h $c $c $c $m $m $m $h $h $h $h $h $h $h $h $h $a $a,
+  $a $a $a $a $a $a $i $h $n $n $c $l $j $c $c $j $k $c $i $m $m $m $m $h $h $h $i $i $n $a $a,
+  $a $a $a $a $a $a $a $i $h $h $c $k $l $c $c $c $c $l $n $n $i $m $m $m $m $i $n $n $a $a $a,
+  $a $a $a $a $a $a $a $e $i $n $l $k $l $c $c $c $c $l $j $j $j $j $n $n $n $n $a $a $a $a $a,
+  $a $a $a $a $e $e $e $d $d $d $l $j $k $l $l $l $l $k $j $j $k $j $j $n $n $n $n $a $a $a $a,
+  $a $a $a $a $a $d $d $d $d $d $d $d $k $l $l $l $k $i $a $k $j $k $k $n $n $n $n $n $a $a $a,
+  $a $a $a $a $a $a $a $d $d $d $e $e $d $i $i $i $i $h $a $a $j $j $k $a $n $n $n $m $b $a $a,
+  $a $a $a $n $n $n $a $a $a $b $e $e $e $e $i $h $h $i $a $a $a $a $a $a $n $n $n $m $b $a $a,
+  $a $a $n $b $n $n $k $k $d $d $b $e $e $e $f $f $f $a $a $a $a $a $a $a $n $n $m $m $b $a $a,
+  $a $a $n $b $n $n $d $d $b $b $d $b $e $e $e $e $e $f $a $a $a $a $a $a $c $m $m $m $b $a $a,
+  $a $n $n $b $n $n $b $b $k $d $b $a $a $a $a $a $a $e $f $a $c $a $a $c $m $m $m $b $a $a $a,
+  $a $n $b $n $n $n $k $k $k $a $a $a $a $a $a $a $a $a $e $f $c $c $m $c $m $m $m $b $a $a $a,
+  $a $n $b $n $n $n $b $b $b $a $a $a $a $a $a $a $a $a $d $c $c $c $m $l $m $m $b $a $a $a $a,
+  $a $b $b $n $n $n $b $a $a $a $a $a $a $a $a $a $a $a $k $l $l $l $m $l $m $m $b $a $a $a $a,
+  $a $b $b $n $n $n $b $n $a $a $a $a $a $a $a $a $a $a $a $k $l $m $m $m $l $b $a $a $a $a $a,
+  $a $a $b $n $n $n $n $n $a $a $a $a $a $a $a $a $a $a $a $b $m $m $m $m $l $b $a $a $a $a $a,
+  $a $a $a $b $n $n $n $n $n $n $a $a $a $a $a $a $a $a $a $b $m $m $m $m $b $a $a $a $a $a $a,
+  $a $a $a $a $b $b $n $n $n $n $n $n $a $a $a $a $a $a $a $a $b $m $m $b $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $b $b $b $n $n $n $n $n $n $n $a $a $a $a $a $b $b $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $n $n $n $n $n $n $n $n $n $n $n $a $a $a $a $a $a $a $a $a $a $a,
+  ;
+
+
+$sonic3: 
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $e $e $f $f $e $e $e $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $d $d $d $d $e $e $e $e $e $d $d $f $f $f $e $e $a $a $a $a $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $e $e $d $h $d $f $f $f $f $e $e $a $d $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $i $h $h $d $f $g $f $f $f $e $d $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $e $d $i $h $h $h $e $g $g $g $f $f $e $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $d $i $i $f $f $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $d $e $e $d $e $e $f $f $f $g $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $a $d $d $e $e $d $d $e $f $g $g $f $g $g $l $l $g $g $g $f $f $e,
+  $a $a $a $a $a $a $a $a $a $d $d $e $e $d $d $d $e $g $k $g $f $g $l $c $c $l $g $g $f $f $g,
+  $a $a $a $a $a $a $a $a $d $d $d $d $d $d $d $d $e $f $g $g $f $g $c $c $c $c $b $g $f $f $b,
+  $a $a $a $a $a $a $a $d $d $d $d $d $d $d $d $d $d $e $f $f $f $g $c $c $c $c $b $b $e $f $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $e $e $f $f $g $c $c $c $c $b $b $g $b $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $e $e $e $f $g $c $c $c $b $b $c $b $k,
+  $a $a $a $a $a $a $a $a $a $a $e $e $e $e $d $d $d $d $d $e $i $c $c $g $c $c $c $c $k $b $k,
+  $a $a $a $a $a $a $a $i $h $h $h $h $d $d $d $d $d $d $d $i $h $h $h $c $c $c $c $h $b $b $b,
+  $a $a $a $a $a $a $i $h $i $i $i $k $h $h $c $c $c $d $d $i $h $h $h $h $h $h $h $h $h $a $a,
+  $a $a $a $a $a $a $m $m $m $n $c $l $j $c $c $j $k $c $d $d $i $h $h $h $h $h $i $i $n $a $a,
+  $a $a $a $a $m $m $m $m $m $m $c $k $l $c $c $c $c $l $n $n $n $i $i $i $i $i $n $n $a $a $a,
+  $a $a $a $m $m $m $m $m $m $m $l $k $l $c $c $c $c $l $j $j $j $j $j $j $n $n $a $a $a $a $a,
+  $a $a $m $m $m $m $m $m $m $d $l $j $l $l $l $l $l $k $j $j $k $j $j $k $a $a $a $a $a $a $a,
+  $a $m $m $m $m $m $m $d $d $d $d $d $k $l $l $l $k $i $a $k $j $k $k $k $a $a $a $a $a $a $a,
+  $a $m $m $m $m $a $a $a $d $d $e $e $d $i $i $i $i $h $a $a $j $j $k $a $a $a $a $a $a $a $a,
+  $m $m $m $m $a $a $a $a $a $b $e $e $e $e $i $h $h $i $a $a $a $a $a $a $a $a $a $a $a $a $a,
+  $m $m $m $m $a $a $a $a $a $a $b $e $e $e $i $i $i $a $a $a $a $a $a $a $a $a $a $a $n $a $a,
+  $m $m $m $a $a $a $a $a $a $a $a $a $e $e $e $e $a $a $a $a $a $a $a $a $a $a $a $a $n $a $a,
+  $m $m $m $a $a $a $a $a $a $a $a $a $e $e $a $a $a $a $a $a $a $a $a $a $a $n $a $a $n $a $a,
+  $m $m $m $a $a $a $a $a $a $a $a $a $e $e $a $a $a $a $a $a $a $a $a $a $a $n $a $n $n $a $a,
+  $m $m $a $a $a $a $a $a $a $a $e $e $e $a $a $a $a $a $a $a $a $a $a $a $n $n $a $n $n $a $a,
+  $a $m $a $a $a $a $a $a $a $c $c $c $c $a $a $a $a $a $a $a $a $a $a $a $n $n $n $n $a $a $a,
+  $a $m $a $a $a $a $a $a $a $k $l $c $c $c $l $a $a $a $a $a $a $a $n $n $n $n $n $n $a $a $a,
+  $a $a $m $a $a $a $a $a $b $l $l $l $c $k $a $a $a $a $a $n $n $n $n $n $n $n $n $a $a $a $a,
+  $a $a $a $a $a $a $a $b $m $m $m $m $l $l $m $m $c $m $m $n $n $n $n $n $n $n $a $a $a $a $a,
+  $a $a $a $a $a $a $a $b $m $m $m $m $m $m $m $c $l $m $m $m $m $m $m $n $n $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $b $b $m $m $m $m $m $l $l $m $m $n $n $b $b $b $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $b $b $b $b $b $b $b $b $b $b $b $a $a $a $a $a $a $a $a $a $a $a,
+  ;
+$sonic4: 
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $e $e $e $e $e $e $e $e $e $e $e $e $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $d $d $d $d $d $e $e $e $e $e $e $f $f $f $e $e $e $a $a $a $d $a $a,
+  $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $d $d $d $d $e $f $f $f $f $f $e $e $a $d $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $i $h $h $e $e $f $g $f $f $f $e $d $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $i $h $h $h $e $g $g $g $f $f $e $d $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $e $e $d $i $i $f $f $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $a $a $d $d $e $e $d $e $e $f $f $f $g $g $g $g $g $g $f $f $e $a,
+  $a $a $a $a $a $a $a $a $a $d $d $e $e $e $d $d $e $f $g $g $f $g $g $l $l $g $g $g $f $f $e,
+  $a $a $a $a $a $a $a $d $d $d $d $e $e $e $d $d $e $g $k $g $f $g $l $c $c $l $g $g $f $f $g,
+  $a $a $a $a $a $a $a $a $a $d $d $d $d $e $d $d $e $f $g $g $f $g $c $c $c $c $b $g $f $f $b,
+  $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $d $d $e $f $f $f $g $c $c $c $c $b $b $e $f $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $d $d $d $d $e $e $f $f $g $c $c $c $c $b $b $g $b $b,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $e $d $d $d $e $e $e $f $g $c $c $c $b $b $c $b $k,
+  $a $a $a $a $a $a $a $a $a $e $e $e $e $e $d $d $d $d $d $e $i $c $c $g $c $c $c $c $k $b $k,
+  $a $a $a $a $a $a $a $i $h $h $h $h $d $d $d $d $d $d $d $i $h $h $h $c $c $c $c $h $b $b $b,
+  $a $a $a $a $a $e $i $h $i $i $i $k $h $h $c $c $c $d $d $i $h $h $h $h $h $h $h $h $h $a $a,
+  $a $a $a $a $a $a $i $h $n $n $c $l $j $c $c $j $k $c $d $d $i $h $h $h $h $h $i $i $n $a $a,
+  $a $a $a $a $a $a $a $i $h $h $c $k $l $c $c $c $c $l $n $n $n $i $i $i $i $i $n $n $a $a $a,
+  $a $a $a $b $b $a $a $e $i $n $l $k $l $c $c $c $c $l $j $j $j $j $j $m $m $m $m $a $a $a $a,
+  $a $a $b $m $m $m $e $d $d $d $l $j $k $l $l $l $l $k $j $j $k $j $j $l $m $m $m $m $a $a $a,
+  $a $b $m $m $c $c $d $d $d $d $d $d $k $l $l $l $k $i $k $k $j $k $k $k $a $m $m $n $b $a $a,
+  $a $b $l $c $j $f $k $d $d $d $e $e $d $i $i $i $i $h $l $l $j $j $k $a $a $m $n $b $n $a $a,
+  $b $m $l $c $b $e $f $f $b $b $e $e $e $e $i $h $h $i $d $d $a $a $a $a $a $n $n $b $n $a $a,
+  $b $m $k $l $l $b $e $e $f $e $e $e $e $e $i $i $i $d $d $d $d $a $a $a $a $n $b $n $n $a $a,
+  $b $m $k $l $l $l $m $b $e $e $a $a $a $e $e $e $b $b $b $d $d $l $l $n $k $n $b $n $n $a $a,
+  $b $m $m $k $k $m $b $a $a $a $a $a $a $a $a $a $a $a $a $b $l $l $l $n $k $b $n $n $a $a $a,
+  $b $m $m $m $m $m $a $a $a $a $a $a $a $a $a $a $a $a $b $k $k $l $n $n $k $b $n $n $a $a $a,
+  $b $k $m $m $k $k $a $a $a $a $a $a $a $a $a $a $a $a $b $k $k $l $n $n $n $b $n $n $a $a $a,
+  $a $b $k $k $k $c $n $a $a $a $a $a $a $a $a $a $a $a $a $b $k $k $n $n $b $n $n $a $a $a $a,
+  $a $b $m $c $c $c $n $n $a $a $a $a $a $a $a $a $a $a $a $a $b $b $n $n $b $n $n $a $a $a $a,
+  $a $a $b $m $m $m $m $n $n $a $a $a $a $a $a $a $a $a $a $a $a $b $n $n $b $n $n $a $a $a $a,
+  $a $a $a $b $m $m $m $b $n $n $a $a $a $a $a $a $a $a $a $a $a $a $b $n $b $n $a $a $a $a $a,
+  $a $a $a $a $b $m $m $b $n $n $n $n $n $a $a $a $a $a $a $a $a $a $a $b $b $n $a $a $a $a $a,
+  $a $a $a $a $a $b $b $b $n $n $n $n $n $n $n $n $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $n $n $n $n $n $n $n $n $n $a $a $a $a $a $a $a $a $a $a $a $a,
+  ;
+.row-container{
+  width: 100%;
+  float: left;
+}
+.row{
+  width: $size*32;
+  height: $size*38;
+  margin: 0 auto;
+  position: relative;
+  top: 25%;
+}
+.sonic {
+  @include pixelmatic-lr($sonic1, $size);
+  animation: sprint $tick infinite;
+}
+
+@keyframes sprint {
+  0% { @include pixelmatic-lr($sonic1, $size);}
+  25% { @include pixelmatic-lr($sonic2, $size);}
+  50% { @include pixelmatic-lr($sonic3, $size);}
+  75% { @include pixelmatic-lr($sonic4, $size);}
+}
+$tube: $f1 $f2 $f2 $f2 $f2 $f2 $f3 $a $f4 $f5 $f6 $f7 $f7 $f6 $f5 $f8 $f8 $f8 $f8 $f8 $f8 $f8 $f8 $f8 $f7 $f5 $f5 $f5 $f5 $f5 $f3 $f4;
+.tube-container{
+  height: $size*36;
+  float: left;
+  width: 100%;
+}
+.tube{
+  @include pixelmatic-lr($tube, $size);
+  float: left;
+  height: $size;
+  width: 100%;
+  margin: -1*$size;
+}
+
+$support: 
+ $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $s4 $a $s4 $a $a $a,
+ $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $s6 $a $s6 $a $a $a,
+ $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $s7 $a $s7 $a $a $a,
+ $s5 $s5 $s6 $s6 $s6 $s6 $s7 $s7 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s6 $s1 $s3 $s4 $s7 $s7 $s7 $s7 $s4,
+  $s2 $s3 $s3 $s3 $s3 $s6 $s7 $s7 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s5 $s1 $s5 $s7 $s4 $s2 $s3 $s4 $s7,
+  $s2 $s3 $s3 $s6 $s6 $s6 $s6 $s6 $s5 $s3 $s3 $s3 $s2 $s2 $s3 $s3 $s3 $s3 $s2 $s2 $s3 $s3 $s3 $s5 $s1 $s7 $s4 $s2 $s7 $s7 $s3 $s4,
+  $s1 $s3 $s3 $s3 $s3 $s6 $s5 $s5 $s5 $s3 $s3 $s3 $s2 $s2 $s1 $s1 $s1 $s1 $s2 $s2 $s3 $s3 $s3 $s5 $s1 $s7 $s1 $s7 $s1 $s8 $s7 $s3,
+  $s1 $s3 $s3 $s3 $s3 $s6 $s5 $s3 $s5 $s3 $s3 $s3 $s2 $s2 $s1 $s1 $s1 $s1 $s2 $s2 $s3 $s3 $s3 $s5 $s1 $s7 $s1 $s7 $s8 $s8 $s7 $s3,
+  $s1 $s3 $s3 $s6 $s6 $s6 $s6 $s6 $s5 $s3 $s3 $s3 $s2 $s2 $s1 $s1 $s1 $s1 $s2 $s2 $s3 $s3 $s3 $s5 $s1 $s7 $s4 $s2 $s7 $s7 $s3 $s4,
+  $s1 $s3 $s3 $s3 $s3 $s6 $s7 $s7 $s5 $s3 $s3 $s3 $s2 $s2 $s1 $s1 $s1 $s1 $s2 $s2 $s3 $s3 $s3 $s5 $s1 $s5 $s7 $s4 $s2 $s3 $s4 $s7,
+  $s1 $s1 $s2 $s1 $s2 $s6 $s6 $s6 $s5 $s2 $s2 $s2 $s1 $s1 $s1 $s1 $s1 $s1 $s1 $s1 $s2 $s2 $s2 $s5 $s1 $s3 $s4 $s7 $s7 $s7 $s7 $s4,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $s7 $a $s7 $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $s6 $a $s6 $a $a $a,
+  $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $a $s4 $a $s4 $a $a $a,
+  ;
+.support-1{
+  @include pixelmatic-ud($support, $size);
+  position: absolute;
+  height: $size;
+  width: $size;
+  right: 10%;
+  margin: -1*$size;
+  animation: move-1 $tick infinite;
+}
+
+@keyframes move-1 {
+  0% { right: 0%}
+  20% { right: 10%}
+  40% { right: 20%}
+  60% { right: 30%}
+  80% { right: 40%}
+  100% { right: 50%}
+}
+.support-2{
+  @include pixelmatic-ud($support, $size);
+  position: absolute;
+  height: $size;
+  width: $size;
+  right: 60%;
+  margin: -1*$size;
+  animation: move-2 $tick infinite;
+}
+
+@keyframes move-2 {
+  0% { right: 50%}
+  20% { right: 60%}
+  40% { right: 70%}
+  60% { right: 80%}
+  80% { right: 90%}
+  100% { right: 100%}
+}

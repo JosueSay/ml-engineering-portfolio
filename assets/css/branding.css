@@ -1,0 +1,136 @@
+/* ==========================================================================
+   branding.css — Design tokens, theming and base typography
+   Single source of truth for the portfolio's visual identity.
+   Theme is switched by toggling the `data-theme` attribute on <html>.
+   ========================================================================== */
+
+:root {
+  /* Brand palette (stable across themes) */
+  --brand-500: #4f46e5;
+  --brand-400: #6366f1;
+  --brand-300: #818cf8;
+  --brand-accent: #22d3ee;
+
+  /* Typography */
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  /* Spacing / sizing */
+  --sidebar-width: 264px;
+  --sidebar-width-collapsed: 72px;
+  --topbar-height: 60px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 200ms ease;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- Light theme (default) ---- */
+:root,
+:root[data-theme="light"] {
+  --bg: #f7f8fb;
+  --bg-elevated: #ffffff;
+  --bg-sidebar: #ffffff;
+  --surface-hover: #eef0f6;
+  --border: #e3e6ee;
+  --text: #1a1d29;
+  --text-muted: #5b6172;
+  --text-inverse: #ffffff;
+  --accent: var(--brand-500);
+  --accent-soft: rgba(79, 70, 229, 0.1);
+}
+
+/* ---- Dark theme ---- */
+:root[data-theme="dark"] {
+  --bg: #0d0f16;
+  --bg-elevated: #161923;
+  --bg-sidebar: #12141d;
+  --surface-hover: #1e2230;
+  --border: #262a38;
+  --text: #e7e9f0;
+  --text-muted: #9aa0b4;
+  --text-inverse: #0d0f16;
+  --accent: var(--brand-300);
+  --accent-soft: rgba(129, 140, 248, 0.14);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Follow OS preference when no explicit theme is set yet */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #0d0f16;
+    --bg-elevated: #161923;
+    --bg-sidebar: #12141d;
+    --surface-hover: #1e2230;
+    --border: #262a38;
+    --text: #e7e9f0;
+    --text-muted: #9aa0b4;
+    --accent: var(--brand-300);
+    --accent-soft: rgba(129, 140, 248, 0.14);
+  }
+}
+
+/* ---- Base ---- */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition), color var(--transition);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+/* Accessibility: keep focus visible */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
