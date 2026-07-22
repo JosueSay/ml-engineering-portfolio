@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="page.sonic.title">Sonic</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+    <link rel="stylesheet" href="../assets/css/branding.css" />
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+    <!-- Compiled from assets/scss/sonic.scss by the build step -->
+    <link rel="stylesheet" href="../assets/css/sonic.css" />
+    <script>
+      (function () {
+        var t = localStorage.getItem("portfolio.theme");
+        if (t === "light" || t === "dark") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      })();
+    </script>
+  </head>
+  <body data-page="sonic">
+    <main id="content" hidden>
+      <div class="content-inner">
+        <header class="page-header">
+          <p class="page-header__eyebrow" data-i18n="nav.sonic"></p>
+          <h1 data-i18n="page.sonic.title"></h1>
+          <p class="page-header__subtitle" data-i18n="page.sonic.subtitle"></p>
+        </header>
+
+        <!-- Self-contained pixel-art scene; all animation lives in sonic.css -->
+        <div class="sonic-stage" aria-hidden="true">
+          <div class="level-container">
+            <div class="row-container">
+              <div class="row"><div class="sonic"></div></div>
+            </div>
+            <div class="tube-container">
+              <div class="support-1"></div>
+              <div class="support-2"></div>
+              <div class="tube"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="../assets/js/app.js"></script>
+  </body>
+</html>
