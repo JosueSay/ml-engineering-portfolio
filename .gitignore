@@ -1,0 +1,11 @@
+# claude
+.claude/
+
+# node
+node_modules/
+
+# build output (generated from assets/scss)
+assets/css/sonic.css
+
+# assembled site (CI artifact)
+_site/

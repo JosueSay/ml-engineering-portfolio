@@ -1,0 +1,14 @@
+{
+  "name": "ml-engineering-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Machine Learning Engineering portfolio — static site for GitHub Pages.",
+  "scripts": {
+    "build": "sass assets/scss/sonic.scss assets/css/sonic.css --style=compressed --no-source-map",
+    "watch": "sass --watch assets/scss/sonic.scss assets/css/sonic.css",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "sass": "^1.77.8"
+  }
+}

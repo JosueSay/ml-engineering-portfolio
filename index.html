@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="site.title">ML Engineering Portfolio</title>
+    <meta name="description" content="Machine Learning Engineering portfolio: projects, labs, case studies and workshops." />
+
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="assets/css/branding.css" />
+    <link rel="stylesheet" href="assets/css/layout.css" />
+
+    <!-- Apply stored theme before paint to avoid a flash of the wrong theme -->
+    <script>
+      (function () {
+        var t = localStorage.getItem("portfolio.theme");
+        if (t === "light" || t === "dark") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      })();
+    </script>
+  </head>
+  <body data-page="home">
+    <main id="content" hidden>
+      <div class="content-inner">
+        <header class="page-header">
+          <p class="page-header__eyebrow" data-i18n="home.eyebrow"></p>
+          <h1 data-i18n="home.title"></h1>
+          <p class="page-header__subtitle" data-i18n="home.subtitle"></p>
+          <p class="page-header__subtitle" data-i18n="home.cta"></p>
+        </header>
+
+        <section class="card-grid">
+          <a class="card" href="pages/projects.html">
+            <h2 class="card__title" data-i18n="nav.projects"></h2>
+            <p class="card__desc" data-i18n="home.card.projects.desc"></p>
+          </a>
+          <a class="card" href="pages/labs.html">
+            <h2 class="card__title" data-i18n="nav.labs"></h2>
+            <p class="card__desc" data-i18n="home.card.labs.desc"></p>
+          </a>
+          <a class="card" href="pages/case-studies.html">
+            <h2 class="card__title" data-i18n="nav.caseStudies"></h2>
+            <p class="card__desc" data-i18n="home.card.caseStudies.desc"></p>
+          </a>
+          <a class="card" href="pages/workshops.html">
+            <h2 class="card__title" data-i18n="nav.workshops"></h2>
+            <p class="card__desc" data-i18n="home.card.workshops.desc"></p>
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="assets/js/app.js"></script>
+  </body>
+</html>
