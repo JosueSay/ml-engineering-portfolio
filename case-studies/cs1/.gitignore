@@ -4,8 +4,10 @@ models/*
 output/*
 !output/.gitkeep
 
-data/*
-!data/.gitkeep
+# Ignorar todo el contenido de data
+data/**
 
-logs/*
-!logs/.gitkeep
+# Mantener las carpetas mediante .gitkeep
+!data/.gitkeep
+!data/raw/
+!data/raw/.gitkeep
