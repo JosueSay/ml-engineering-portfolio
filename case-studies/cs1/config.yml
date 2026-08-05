@@ -1,0 +1,15 @@
+models:
+  path_storage_models: "./models"
+
+data:
+  path_storage_data: "./data"
+  path_raw_data: "./data/raw"
+
+logging:
+  path_storage_log: "./logs"
+  level: "INFO"
+
+output:
+  path_storage_output: "./outputs"
+
+
