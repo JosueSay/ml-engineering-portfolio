@@ -4,6 +4,10 @@ models/*
 output/*
 !output/.gitkeep
 
+# Los .jsonl de cada corrida son artefactos, no fuente
+logs/*
+!logs/.gitkeep
+
 # Ignorar todo el contenido de data
 data/**
 
@@ -18,4 +22,11 @@ data/**
 
 imageConvert/__pycache__/
 imageConvert/output/*
-imageConvert/output/.gitkeep
+!imageConvert/output/.gitkeep
+
+# __pycache__/
+__pycache__/
+
+# environment
+venv/
+.venv/
