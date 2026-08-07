@@ -1,0 +1,23 @@
+# text=auto: git decide si el archivo es texto. Deja que su deteccion de
+# binarios siga funcionando, para que un UTF-16 aparezca como "Bin" en el diff
+# en vez de colarse como texto normal. eol=lf solo aplica a lo que sea texto.
+* text=auto eol=lf
+
+# Scripts de Windows: CRLF o no corren.
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# Binarios: git no los toca ni intenta diffear.
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.webp          binary
+*.pdf           binary
+*.xlsx          binary
+*.safetensors   binary
+*.bin           binary
+*.pt            binary
+*.pth           binary
+*.onnx          binary
