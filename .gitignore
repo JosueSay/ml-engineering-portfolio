@@ -9,3 +9,18 @@ assets/css/sonic.css
 
 # assembled site (CI artifact)
 _site/
+
+# Entornos virtuales
+.venv/
+venv/
+venv_test/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
