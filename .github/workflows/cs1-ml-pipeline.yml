@@ -1,0 +1,221 @@
+name: CS1 - Pipeline MLOps Gasolina GT
+
+on:
+  push:
+    branches: [main, fuel-case-study]
+    paths:
+      - "case-studies/cs1/**"
+      - ".github/actions/setup-cs1-env/**"
+      - ".github/workflows/cs1-ml-pipeline.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "case-studies/cs1/**"
+      - ".github/actions/setup-cs1-env/**"
+      - ".github/workflows/cs1-ml-pipeline.yml"
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      combustible:
+        description: Combustible a entrenar
+        type: choice
+        options: [regular, super, diesel, vpower]
+        default: regular
+      horizonte:
+        description: Horizonte de prediccion en semanas
+        type: choice
+        options: ["1", "2", "4"]
+        default: "1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  COMBUSTIBLE: ${{ inputs.combustible || 'regular' }}
+  HORIZONTE: ${{ inputs.horizonte || '1' }}
+  RETENCION_DIAS: 14
+
+defaults:
+  run:
+    working-directory: case-studies/cs1
+
+jobs:
+  calidad-codigo:
+    name: 1. Calidad de codigo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-cs1-env
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Analisis estatico
+        run: make lint
+
+      - name: Pruebas unitarias e integracion
+        run: make test
+
+  extraccion:
+    name: 2. Extraccion (Bronze)
+    runs-on: ubuntu-latest
+    needs: calidad-codigo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-cs1-env
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Extraer precios de las fotografias
+        run: make extract
+
+      - name: Publicar capa Bronze
+        uses: actions/upload-artifact@v4
+        with:
+          name: bronze
+          path: case-studies/cs1/datos_procesados/bronze/
+          retention-days: ${{ env.RETENCION_DIAS }}
+
+  limpieza:
+    name: 3. Limpieza y features (Silver / Gold)
+    runs-on: ubuntu-latest
+    needs: extraccion
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-cs1-env
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Construir Silver y Gold
+        run: make transform
+
+      - name: Verificar que el dataset de modelado existe
+        run: test -s datos_procesados/gold/dataset_modelado.csv
+
+      - name: Publicar datos procesados
+        uses: actions/upload-artifact@v4
+        with:
+          name: datos-procesados
+          path: case-studies/cs1/datos_procesados/
+          retention-days: ${{ env.RETENCION_DIAS }}
+
+  entrenamiento:
+    name: 4. Entrenamiento
+    runs-on: ubuntu-latest
+    needs: limpieza
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-cs1-env
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Descargar datos procesados
+        uses: actions/download-artifact@v4
+        with:
+          name: datos-procesados
+          path: case-studies/cs1/datos_procesados/
+
+      - name: Entrenar modelos
+        run: make train COMBUSTIBLE=${{ env.COMBUSTIBLE }}
+
+      - name: Publicar modelos y reporte
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelos-y-reportes
+          path: |
+            case-studies/cs1/models/
+            case-studies/cs1/reports/
+          retention-days: ${{ env.RETENCION_DIAS }}
+
+  evaluacion:
+    name: 5. Evaluacion y compuerta de calidad
+    runs-on: ubuntu-latest
+    needs: entrenamiento
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-cs1-env
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Descargar datos procesados
+        uses: actions/download-artifact@v4
+        with:
+          name: datos-procesados
+          path: case-studies/cs1/datos_procesados/
+
+      - name: Descargar modelos y reporte
+        uses: actions/download-artifact@v4
+        with:
+          name: modelos-y-reportes
+          path: case-studies/cs1/
+
+      - name: Compuerta de calidad
+        run: make evaluate
+
+      - name: Inferencia de humo
+        run: make recommend COMBUSTIBLE=${{ env.COMBUSTIBLE }} HORIZONTE=${{ env.HORIZONTE }}
+
+      - name: Resumen de metricas
+        if: always()
+        run: |
+          {
+            echo "## Evaluacion del modelo (${{ env.COMBUSTIBLE }})"
+            echo
+            if [ -f reports/evaluacion_modelos.csv ]; then
+              head -1 reports/evaluacion_modelos.csv | sed 's/^/| /; s/,/ | /g; s/$/ |/'
+              head -1 reports/evaluacion_modelos.csv | sed 's/[^,]*/---/g; s/^/| /; s/,/ | /g; s/$/ |/'
+              tail -n +2 reports/evaluacion_modelos.csv | sed 's/^/| /; s/,/ | /g; s/$/ |/'
+            else
+              echo "No se genero el reporte de evaluacion."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  empaquetado:
+    name: 6. Imagen Docker y smoke test de la API
+    runs-on: ubuntu-latest
+    needs: evaluacion
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Construir imagen de produccion
+        uses: docker/build-push-action@v6
+        with:
+          context: case-studies/cs1
+          target: production
+          tags: gasolina-gt:ci
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Levantar la API
+        run: docker run -d --rm --name gasolina-gt-smoke -p 8000:8000 gasolina-gt:ci
+
+      - name: Verificar endpoint /health
+        run: |
+          for _ in $(seq 1 30); do
+            if curl -sf http://localhost:8000/health; then
+              echo "API respondiendo"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "La API no respondio a tiempo"
+          docker logs gasolina-gt-smoke
+          exit 1
+
+      - name: Detener contenedor
+        if: always()
+        run: docker stop gasolina-gt-smoke || true
