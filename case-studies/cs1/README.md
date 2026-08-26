@@ -1,9 +1,42 @@
 # CS1 — Fuel case study
 
-Caso de estudio sobre Florence-2 como modelo de caja negra. La reproducibilidad
-depende de fijar la revision exacta del modelo, no solo su nombre: el repo de
-Hugging Face no publica tags y sus pesos ya cambiaron una vez sobre la misma
-rama `main`.
+Caso de estudio de precios de combustible en Guatemala. La carpeta contiene dos
+partes complementarias:
+
+- `gasolina_gt`: pipeline MLOps completo de extracción OCR, capas
+  Bronze/Silver/Gold, entrenamiento temporal, evaluación, recomendación, API y
+  empaquetado Docker.
+- Los experimentos iniciales con Florence-2 como modelo de caja negra y el
+  conversor HEIC a JPG.
+
+La reproducibilidad de Florence-2 depende de fijar la revision exacta del
+modelo, no solo su nombre: el repo de Hugging Face no publica tags y sus pesos
+ya cambiaron una vez sobre la misma rama `main`.
+
+## Pipeline MLOps Gasolina GT
+
+Instalar el paquete y sus herramientas de desarrollo desde esta carpeta:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Ejecutar sus validaciones y etapas:
+
+```bash
+python -m ruff check src tests scripts
+python -m pytest -q
+python scripts/stage_extract.py
+python -m gasolina_gt.cli build-data
+python -m gasolina_gt.cli train --combustible regular
+python scripts/quality_gate.py
+python -m gasolina_gt.cli recommend --combustible regular --horizonte 1 --hora 18
+```
+
+En Linux o GitHub Actions también se puede ejecutar `make pipeline`. El
+workflow `.github/workflows/cs1-ml-pipeline.yml` separa calidad, extracción,
+transformación, entrenamiento, evaluación y smoke test Docker en jobs con
+artefactos trazables.
 
 ## Requisitos
 

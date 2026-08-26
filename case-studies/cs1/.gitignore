@@ -20,6 +20,10 @@ data/**
 *.heic
 *.HEIC
 
+# Las cinco fotografias piloto son datos versionados del caso de estudio.
+!datos/*.heic
+!datos/*.HEIC
+
 imageConvert/__pycache__/
 imageConvert/output/*
 !imageConvert/output/.gitkeep
@@ -30,3 +34,10 @@ __pycache__/
 # environment
 venv/
 .venv/
+
+# Artefactos reproducibles del pipeline MLOps
+datos_procesados/
+reports/
+.venv-ci/
+.ruff_cache/
+.pytest_cache/

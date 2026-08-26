@@ -1,0 +1,22 @@
+name: Setup entorno Python de CS1
+description: Instala Python, restaura la cache de pip e instala gasolina-gt en modo editable.
+
+inputs:
+  python-version:
+    description: Version de Python a utilizar
+    required: false
+    default: "3.12"
+
+runs:
+  using: composite
+  steps:
+    - name: Instalar Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: case-studies/cs1/pyproject.toml
+
+    - name: Instalar dependencias del proyecto
+      shell: bash
+      run: python -m pip install -e 'case-studies/cs1[dev]'
