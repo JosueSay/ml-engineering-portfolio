@@ -101,9 +101,14 @@ jobs:
           if [ "$locales" -gt 0 ]; then
             echo "hay_datos=true" >> "$GITHUB_OUTPUT"
             echo "motivo=$locales imagen(es) en data/raw" >> "$GITHUB_OUTPUT"
-          elif [ -s keys/google-drive-service-account.json ]; then
+          elif [ -s keys/google-drive-service-account.json ] && [ -f scripts/10_ingest_images.py ]; then
             echo "hay_datos=true" >> "$GITHUB_OUTPUT"
-            echo "motivo=credencial de almacenamiento remoto disponible" >> "$GITHUB_OUTPUT"
+            echo "motivo=credencial remota disponible y el paso de ingesta existe" >> "$GITHUB_OUTPUT"
+          elif [ -s keys/google-drive-service-account.json ]; then
+            # Tener la credencial no basta: sin el paso que la usa para
+            # descargar, la extraccion correria sobre una carpeta vacia.
+            echo "hay_datos=false" >> "$GITHUB_OUTPUT"
+            echo "motivo=hay credencial remota pero todavia no existe el paso de ingesta" >> "$GITHUB_OUTPUT"
           else
             echo "hay_datos=false" >> "$GITHUB_OUTPUT"
             echo "motivo=data/raw esta vacia y no hay credencial de almacenamiento remoto" >> "$GITHUB_OUTPUT"
@@ -123,8 +128,9 @@ jobs:
               echo "se omiten en esta corrida. La calidad de codigo y la imagen de"
               echo "contenedor si se verifican."
               echo
-              echo "Para habilitarlas hay que declarar el secreto"
-              echo '`GDRIVE_SERVICE_ACCOUNT_JSON` en el repositorio.'
+              echo "Hacen falta dos cosas: el secreto"
+              echo '`GDRIVE_SERVICE_ACCOUNT_JSON` y el paso de ingesta'
+              echo '`scripts/10_ingest_images.py`, que llega en la fase C.'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -147,6 +153,10 @@ jobs:
         run: bash scripts/02_keys_init.sh
         env:
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+
+      - name: Descargar las fotografias de la fuente configurada
+        if: hashFiles('case-studies/cs1/scripts/10_ingest_images.py') != ''
+        run: python scripts/10_ingest_images.py
 
       - name: Extraer precios de las fotografias
         run: python scripts/12_extract_prices.py
