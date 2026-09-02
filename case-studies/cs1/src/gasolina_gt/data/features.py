@@ -14,6 +14,12 @@ import pandas as pd
 
 
 def construir_features(serie: pd.DataFrame, config: dict) -> pd.DataFrame:
+    """Añade a la serie las variables con las que aprende el modelo.
+
+    Todas miran hacia atrás: rezagos, medias móviles y calendario. Ninguna
+    usa información posterior a la fecha de la fila, porque eso inflaría las
+    métricas con datos que en producción no existirían todavía.
+    """
     horizontes = config["negocio"]["horizontes_semanas"]
     umbral_tendencia = config["modelado"]["umbral_tendencia_gtq"]
 

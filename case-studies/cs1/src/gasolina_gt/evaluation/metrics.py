@@ -14,6 +14,12 @@ from ..config import load_config, resolve_path
 
 @dataclass
 class ResultadoEvaluacion:
+    """Métricas de un modelo frente a la referencia simple.
+
+    El error por sí solo no dice si el modelo sirve: hay que compararlo con
+    lo que se obtiene repitiendo el último precio conocido. Un modelo que no
+    supera esa referencia no aporta nada, por bajo que sea su error.
+    """
     combustible: str
     horizonte: int
     mae_modelo: float
@@ -35,6 +41,7 @@ def _tendencia(prediccion: np.ndarray, actual: np.ndarray, umbral: float) -> np.
 
 
 def evaluar_artefacto(artefacto: dict[str, Any], config: dict | None = None) -> ResultadoEvaluacion:
+    """Evalúa un modelo entrenado sobre su ventana de prueba."""
     cfg = config or load_config()
     test = artefacto["test"].copy()
     objetivo = f"objetivo_precio_h{artefacto['horizonte']}"
@@ -66,9 +73,10 @@ def evaluar_artefacto(artefacto: dict[str, Any], config: dict | None = None) -> 
 
 
 def guardar_reporte(resultados: list[ResultadoEvaluacion], config: dict | None = None) -> Path:
+    """Escribe el reporte de evaluación y devuelve su ruta."""
     cfg = config or load_config()
     reports = resolve_path(cfg["paths"]["reports"])
     reports.mkdir(parents=True, exist_ok=True)
-    ruta = reports / "evaluacion_modelos.csv"
+    ruta = reports / cfg["archivos"]["evaluacion"]
     pd.DataFrame([asdict(r) for r in resultados]).to_csv(ruta, index=False)
     return ruta
