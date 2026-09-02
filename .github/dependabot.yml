@@ -1,0 +1,78 @@
+# Actualizacion automatica de dependencias.
+#
+# Se declara aqui lo que el repositorio consume de fuera y se comprueba en la
+# integracion continua. Lo que no se comprueba no se actualiza solo: una
+# propuesta de cambio que nadie sabe si rompe algo es peor que una version
+# vieja, porque se acaba fusionando por costumbre.
+#
+# Por eso quedan fuera los dos ejercicios de workshop/: son entregas cerradas,
+# sin flujo que las verifique, y una propuesta semanal sobre ellas seria ruido.
+
+version: 2
+
+updates:
+  # --- Acciones de los flujos -----------------------------------------------
+  #
+  # La segunda ruta no es redundante: la accion compuesta propia declara sus
+  # dependencias en su propio archivo y no se ve desde la raiz.
+  - package-ecosystem: github-actions
+    directories:
+      - "/"
+      - "/.github/actions/setup-cs1-env"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Guatemala
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+    # Agrupadas en una sola propuesta: son diez acciones que se mueven juntas y
+    # abrir diez propuestas semanales garantiza que no se lea ninguna.
+    groups:
+      acciones:
+        patterns:
+          - "*"
+    labels:
+      - dependencias
+      - ci
+
+  # --- Dependencias del paquete ---------------------------------------------
+  - package-ecosystem: pip
+    directory: /case-studies/cs1
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Guatemala
+    open-pull-requests-limit: 5
+    versioning-strategy: increase-if-necessary
+    commit-message:
+      prefix: build
+      prefix-development: chore
+    # Separadas porque el riesgo no es el mismo: una subida de las de produccion
+    # viaja dentro de la distribucion publicada y llega a quien la instale; una
+    # de las de desarrollo se queda en esta maquina y en la integracion continua.
+    groups:
+      produccion:
+        dependency-type: production
+      desarrollo:
+        dependency-type: development
+    labels:
+      - dependencias
+      - cs1
+
+  # --- Imagen base del contenedor -------------------------------------------
+  - package-ecosystem: docker
+    directory: /case-studies/cs1
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Guatemala
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: build
+    labels:
+      - dependencias
+      - cs1
