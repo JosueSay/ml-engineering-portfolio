@@ -1,3 +1,8 @@
+"""Etapa de extracción: de las fotografías a la capa cruda.
+
+Se ejecuta como script y no como parte del paquete porque es una etapa de
+orquestación, no una función que alguien vaya a importar.
+"""
 from __future__ import annotations
 
 import json
@@ -9,6 +14,12 @@ from gasolina_gt.extraction.extractor import ExtractorPrecios
 
 
 def main() -> int:
+    """Ejecuta la extracción y reporta cuánto se pudo leer.
+
+    El recuento de lecturas válidas frente al total es la señal de salud de
+    la extracción: si cae, el problema está en las fotografías o en la
+    calibración, no en el modelo.
+    """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     cfg = load_config()
     extractor = ExtractorPrecios(cfg)

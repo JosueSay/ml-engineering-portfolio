@@ -1,100 +1,176 @@
-# Entry points ejecutables del caso de estudio. Correr desde case-studies/cs1/.
+# Atajos del caso de estudio CS1. Correr desde case-studies/cs1/.
 #
-# La ruta al interprete se detecta, no se quema: Windows pone el venv en
-# Scripts/ y el resto en bin/.
+# Doble interfaz: la logica vive en scripts/ y en el CLI del paquete; este
+# archivo es solo el atajo. Asi el mismo comando corre sin make, y la
+# integracion continua no depende de make para nada.
+#
+# Aqui solo se declara lo que existe. Un objetivo que apunta a un script
+# inexistente es una promesa rota. Lo pendiente esta en docs/work-plan.md.
+
+.DEFAULT_GOAL := help
+SHELL := /bin/bash
 
 VENV := .venv
 
+# La ruta al interprete se detecta, no se quema: Windows pone el entorno en
+# Scripts/ y el resto en bin/.
 ifeq ($(OS),Windows_NT)
 	DEFAULT_PY := $(if $(wildcard $(VENV)/Scripts/python.exe),$(VENV)/Scripts/python.exe,python)
 else
-	DEFAULT_PY := $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,python)
+	DEFAULT_PY := $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,python3)
 endif
-
 PY ?= $(DEFAULT_PY)
 
-.PHONY: help venv install install-mlops install-dev models convert lint test extract transform train evaluate recommend pipeline docker-build docker-smoke clean clean-logs clean-models
-
-help:
-	@echo "venv          crea el entorno virtual en $(VENV)"
-	@echo "install       instala requirements.txt en el venv"
-	@echo "install-mlops instala el paquete gasolina-gt"
-	@echo "install-dev   instala gasolina-gt y herramientas de desarrollo"
-	@echo "models        descarga y cachea Florence-2 en la revision fijada"
-	@echo "convert       HEIC -> JPG. Requiere INPUT= y OUTPUT="
-	@echo "lint          ejecuta Ruff sobre src, tests y scripts"
-	@echo "test          ejecuta la suite de pytest"
-	@echo "pipeline      ejecuta extraccion, datos, entrenamiento, evaluacion e inferencia"
-	@echo "docker-smoke  construye la imagen y verifica el endpoint /health"
-	@echo "clean-logs    borra los .jsonl de corrida"
-	@echo "clean-models  borra el cache de pesos (~1.5 GB, se vuelve a bajar)"
-
-venv:
-	python -m venv $(VENV)
-
-install:
-	$(PY) -m pip install -r requirements.txt
-
-install-mlops:
-	$(PY) -m pip install -e .
-
-install-dev:
-	$(PY) -m pip install -e '.[dev]'
-
-models:
-	$(PY) download_models.py
-
-# make convert INPUT=data/raw OUTPUT=imageConvert/output
-convert:
-ifndef INPUT
-	$(error falta INPUT. Uso: make convert INPUT=<dir> OUTPUT=<dir>)
-endif
-ifndef OUTPUT
-	$(error falta OUTPUT. Uso: make convert INPUT=<dir> OUTPUT=<dir>)
-endif
-	$(PY) -m imageConvert.convert --input $(INPUT) --output $(OUTPUT)
-
-COMBUSTIBLE ?= regular
-HORIZONTE ?= 1
-HORA ?= 18
+# Parametros de las etapas. Se sobreescriben en la linea de comandos:
+#   make train FUEL=super
+FUEL ?= regular
+HORIZON ?= 1
+HOUR ?= 18
 IMAGE ?= gasolina-gt:ci
 
-lint:
-	$(PY) -m ruff check src tests scripts
+.PHONY: help verify env-init env-check keys-init keys-status venv install install-dev \
+        lint test format gates extract transform train evaluate recommend pipeline \
+        models-status \
+        up down logs ps docker-build docker-smoke clean clean-logs clean-vendor clean-trained
 
-test:
-	$(PY) -m pytest -q
+define ayuda
+	@grep -E '^($(1)):.*?## .*$$' $(MAKEFILE_LIST) \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "    \033[36m%-16s\033[0m %s\n", $$1, $$2}'
+endef
 
-extract:
-	$(PY) scripts/stage_extract.py
+help: ## Muestra esta ayuda
+	@echo ""
+	@echo "  --- Puesta en marcha ---"
+	$(call ayuda,verify|venv|install|install-dev|env-init|env-check|keys-init|keys-status)
+	@echo ""
+	@echo "  --- Pipeline de datos   (FUEL=regular|super|diesel|vpower) ---"
+	$(call ayuda,extract|transform|train|evaluate|recommend|pipeline)
+	@echo ""
+	@echo "  --- Modelos ---"
+	$(call ayuda,models-status|clean-vendor|clean-trained)
+	@echo ""
+	@echo "  --- Contenedores ---"
+	$(call ayuda,up|down|logs|ps|docker-build|docker-smoke)
+	@echo ""
+	@echo "  --- Calidad ---"
+	$(call ayuda,gates|lint|test|format)
+	@echo ""
+	@echo "  --- Limpieza ---"
+	$(call ayuda,clean|clean-logs)
+	@echo ""
+	@echo "  Lo pendiente por implementar esta en docs/work-plan.md"
+	@echo ""
 
-transform:
-	$(PY) -m gasolina_gt.cli build-data
+# --- Puesta en marcha ------------------------------------------------------------
 
-train:
-	$(PY) -m gasolina_gt.cli train --combustible $(COMBUSTIBLE)
+verify: ## Comprueba que la maquina tiene lo necesario
+	@bash scripts/00_verify_environment.sh
 
-evaluate:
-	$(PY) scripts/quality_gate.py
+venv: ## Crea el entorno virtual en .venv
+	@python3 -m venv $(VENV)
 
-recommend:
-	$(PY) -m gasolina_gt.cli recommend --combustible $(COMBUSTIBLE) --horizonte $(HORIZONTE) --hora $(HORA)
+install: ## Instala el paquete
+	@$(PY) -m pip install -e .
 
-pipeline: extract transform train evaluate recommend
+install-dev: ## Instala el paquete y las herramientas de desarrollo
+	@$(PY) -m pip install -e '.[dev]'
 
-docker-build:
-	docker build --target production -t $(IMAGE) .
+env-init: ## Crea .env desde la plantilla versionada
+	@bash scripts/01_env_init.sh
 
-docker-smoke: docker-build
-	docker run -d --rm --name gasolina-gt-smoke -p 8000:8000 $(IMAGE)
-	for i in $$(seq 1 30); do curl -sf http://localhost:8000/health && break || sleep 2; done
-	docker stop gasolina-gt-smoke
+env-check: ## Compara .env contra la plantilla, sin escribir
+	@bash scripts/01_env_init.sh --check
 
-clean:
-	$(PY) -c "import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ('datos_procesados', 'reports')]"
+keys-init: ## Prepara keys/ y materializa lo que haya en el entorno
+	@bash scripts/02_keys_init.sh
 
-clean-logs:
-	$(PY) -c "import pathlib; [p.unlink() for p in pathlib.Path('logs').glob('*.jsonl')]"
+keys-status: ## Informa que credenciales faltan, sin crear nada
+	@bash scripts/02_keys_init.sh --status
 
-clean-models:
-	$(PY) -c "import shutil, pathlib; shutil.rmtree(pathlib.Path('models'), ignore_errors=True); pathlib.Path('models').mkdir(); pathlib.Path('models/.gitkeep').touch()"
+# --- Pipeline de datos -------------------------------------------------------------
+# Las etapas del pipeline son parte del paquete y se invocan por su interfaz de
+# linea de comandos, no por un script envoltorio: una capa que solo reenvia
+# argumentos es una capa que hay que mantener sin que aporte nada.
+
+extract: ## Lee los precios de las fotografias (Bronze)
+	@$(PY) scripts/12_extract_prices.py
+
+transform: ## Construye Silver y Gold
+	@$(PY) -m gasolina_gt.cli build-data
+
+train: ## Entrena y evalua los horizontes configurados
+	@$(PY) -m gasolina_gt.cli train --combustible $(FUEL)
+
+evaluate: ## Compuerta de calidad sobre el modelo entrenado
+	@$(PY) scripts/15_quality_gate.py
+
+recommend: ## Recomendacion de carga
+	@$(PY) -m gasolina_gt.cli recommend --combustible $(FUEL) --horizonte $(HORIZON) --hora $(HOUR)
+
+pipeline: extract transform train evaluate recommend ## Encadena todas las etapas
+
+# --- Modelos ---------------------------------------------------------------------------
+
+models-status: ## Que hay en cada almacen de modelos y con que datos se entreno
+	@$(PY) scripts/31_models_status.py
+
+# --- Contenedores --------------------------------------------------------------------
+
+up: ## Levanta el stack
+	@docker compose up -d
+
+down: ## Detiene el stack conservando los volumenes
+	@docker compose down
+
+logs: ## Sigue los logs. SERVICE=api para uno solo
+	@docker compose logs -f $(SERVICE)
+
+ps: ## Estado de los contenedores
+	@docker compose ps
+
+docker-build: ## Construye la imagen de produccion
+	@docker build --target production -t $(IMAGE) .
+
+docker-smoke: docker-build ## Construye y verifica que la API responda
+	@bash -c 'set -e; \
+	  port=$${API_PORT:-19010}; \
+	  docker run -d --rm --name gasolina-gt-smoke -p $$port:8000 $(IMAGE) >/dev/null; \
+	  trap "docker stop gasolina-gt-smoke >/dev/null 2>&1 || true" EXIT; \
+	  for _ in $$(seq 1 30); do \
+	    curl -sf http://localhost:$$port/health >/dev/null && { echo "  API respondiendo en $$port"; exit 0; }; \
+	    sleep 2; \
+	  done; \
+	  echo "  la API no respondio a tiempo"; docker logs gasolina-gt-smoke; exit 1'
+
+# --- Calidad ---------------------------------------------------------------------------
+
+gates: ## Todas las puertas: linter, pruebas y revision de secretos
+	@bash scripts/03_gates.sh
+
+lint: ## Analisis estatico
+	@$(PY) -m ruff check src tests scripts
+
+test: ## Pruebas
+	@$(PY) -m pytest -q
+
+format: ## Reformatea el codigo. Reescribe archivos
+	@$(PY) -m ruff format src tests scripts
+	@$(PY) -m ruff check --fix src tests scripts
+
+# --- Limpieza ------------------------------------------------------------------------------
+
+clean: ## Borra artefactos derivados. No toca data/, keys/ ni los modelos
+	@$(PY) -c "import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ('reports', '.ruff_cache', '.pytest_cache')]"
+	@find . -type d -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
+	@echo "  limpio"
+
+clean-logs: ## Borra los registros de corrida
+	@$(PY) -c "import pathlib; [p.unlink() for p in pathlib.Path('logs').glob('*.jsonl')]"
+
+clean-vendor: ## Borra los pesos descargados de terceros. Se vuelven a bajar
+	@$(PY) -c "import pathlib, shutil; d = pathlib.Path('models/vendor'); shutil.rmtree(d, ignore_errors=True); d.mkdir(parents=True); (d / '.gitkeep').touch()"
+	@echo "  models/vendor vaciado"
+
+clean-trained: ## Borra los modelos entrenados propios
+	@$(PY) -c "import pathlib, shutil; d = pathlib.Path('models/trained'); shutil.rmtree(d, ignore_errors=True); d.mkdir(parents=True); (d / '.gitkeep').touch()"
+	@echo "  models/trained vaciado"
