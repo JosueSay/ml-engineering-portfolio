@@ -1,5 +1,13 @@
 name: CS1 - Pipeline MLOps Gasolina GT
 
+# El flujo llama a los scripts del proyecto, no a make: el mismo comando corre
+# igual en cualquier maquina sin necesidad de tener make instalado.
+#
+# Las fotografias no estan en el repositorio. Cuando no hay fuente de datos
+# disponible, las etapas que dependen de ellas se omiten de forma explicita y
+# el motivo queda escrito en el resumen de la corrida. Un pipeline en verde que
+# no proceso nada seria peor que uno que falla.
+
 on:
   push:
     branches: [main, fuel-case-study]
@@ -46,6 +54,9 @@ defaults:
     working-directory: case-studies/cs1
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Siempre corre: no depende de que haya datos.
+  # ---------------------------------------------------------------------------
   calidad-codigo:
     name: 1. Calidad de codigo
     runs-on: ubuntu-latest
@@ -56,16 +67,20 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Analisis estatico
-        run: make lint
+      - name: Puertas de calidad
+        run: bash scripts/03_gates.sh
 
-      - name: Pruebas unitarias e integracion
-        run: make test
-
-  extraccion:
-    name: 2. Extraccion (Bronze)
+  # ---------------------------------------------------------------------------
+  # Decide si hay de donde sacar fotografias. Es el unico sitio donde se toma
+  # esa decision; el resto de trabajos la consultan.
+  # ---------------------------------------------------------------------------
+  fuente-datos:
+    name: 2. Fuente de datos
     runs-on: ubuntu-latest
     needs: calidad-codigo
+    outputs:
+      hay_datos: ${{ steps.decidir.outputs.hay_datos }}
+      motivo: ${{ steps.decidir.outputs.motivo }}
     steps:
       - uses: actions/checkout@v4
 
@@ -73,18 +88,78 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Preparar credenciales
+        run: bash scripts/02_keys_init.sh
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          OBJECT_STORE_CREDENTIALS: ${{ secrets.OBJECT_STORE_CREDENTIALS }}
+
+      - name: Determinar si hay fotografias disponibles
+        id: decidir
+        run: |
+          locales=$(find data/raw -type f \( -iname '*.heic' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) 2>/dev/null | wc -l)
+          if [ "$locales" -gt 0 ]; then
+            echo "hay_datos=true" >> "$GITHUB_OUTPUT"
+            echo "motivo=$locales imagen(es) en data/raw" >> "$GITHUB_OUTPUT"
+          elif [ -s keys/google-drive-service-account.json ]; then
+            echo "hay_datos=true" >> "$GITHUB_OUTPUT"
+            echo "motivo=credencial de almacenamiento remoto disponible" >> "$GITHUB_OUTPUT"
+          else
+            echo "hay_datos=false" >> "$GITHUB_OUTPUT"
+            echo "motivo=data/raw esta vacia y no hay credencial de almacenamiento remoto" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Dejar constancia en el resumen
+        run: |
+          {
+            echo "## Fuente de datos"
+            echo
+            if [ "${{ steps.decidir.outputs.hay_datos }}" = "true" ]; then
+              echo "Disponible: ${{ steps.decidir.outputs.motivo }}."
+            else
+              echo "**No disponible**: ${{ steps.decidir.outputs.motivo }}."
+              echo
+              echo "Las etapas de extraccion, transformacion, entrenamiento y evaluacion"
+              echo "se omiten en esta corrida. La calidad de codigo y la imagen de"
+              echo "contenedor si se verifican."
+              echo
+              echo "Para habilitarlas hay que declarar el secreto"
+              echo '`GDRIVE_SERVICE_ACCOUNT_JSON` en el repositorio.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # Etapas que necesitan fotografias.
+  # ---------------------------------------------------------------------------
+  extraccion:
+    name: 3. Extraccion (Bronze)
+    runs-on: ubuntu-latest
+    needs: fuente-datos
+    if: needs.fuente-datos.outputs.hay_datos == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-cs1-env
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Preparar credenciales
+        run: bash scripts/02_keys_init.sh
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+
       - name: Extraer precios de las fotografias
-        run: make extract
+        run: python scripts/12_extract_prices.py
 
       - name: Publicar capa Bronze
         uses: actions/upload-artifact@v4
         with:
           name: bronze
-          path: case-studies/cs1/datos_procesados/bronze/
+          path: case-studies/cs1/data/processed/bronze/
           retention-days: ${{ env.RETENCION_DIAS }}
 
   limpieza:
-    name: 3. Limpieza y features (Silver / Gold)
+    name: 4. Limpieza y features (Silver / Gold)
     runs-on: ubuntu-latest
     needs: extraccion
     steps:
@@ -95,20 +170,20 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Construir Silver y Gold
-        run: make transform
+        run: python -m gasolina_gt.cli build-data
 
-      - name: Verificar que el dataset de modelado existe
-        run: test -s datos_procesados/gold/dataset_modelado.csv
+      - name: Verificar que el conjunto de modelado existe
+        run: test -s data/processed/gold/dataset_modelado.csv
 
       - name: Publicar datos procesados
         uses: actions/upload-artifact@v4
         with:
           name: datos-procesados
-          path: case-studies/cs1/datos_procesados/
+          path: case-studies/cs1/data/processed/
           retention-days: ${{ env.RETENCION_DIAS }}
 
   entrenamiento:
-    name: 4. Entrenamiento
+    name: 5. Entrenamiento
     runs-on: ubuntu-latest
     needs: limpieza
     steps:
@@ -122,22 +197,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: datos-procesados
-          path: case-studies/cs1/datos_procesados/
+          path: case-studies/cs1/data/processed/
 
       - name: Entrenar modelos
-        run: make train COMBUSTIBLE=${{ env.COMBUSTIBLE }}
+        run: python -m gasolina_gt.cli train --combustible ${{ env.COMBUSTIBLE }}
 
       - name: Publicar modelos y reporte
         uses: actions/upload-artifact@v4
         with:
           name: modelos-y-reportes
           path: |
-            case-studies/cs1/models/
+            case-studies/cs1/models/trained/
             case-studies/cs1/reports/
           retention-days: ${{ env.RETENCION_DIAS }}
 
   evaluacion:
-    name: 5. Evaluacion y compuerta de calidad
+    name: 6. Evaluacion y compuerta de calidad
     runs-on: ubuntu-latest
     needs: entrenamiento
     steps:
@@ -151,7 +226,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: datos-procesados
-          path: case-studies/cs1/datos_procesados/
+          path: case-studies/cs1/data/processed/
 
       - name: Descargar modelos y reporte
         uses: actions/download-artifact@v4
@@ -160,10 +235,10 @@ jobs:
           path: case-studies/cs1/
 
       - name: Compuerta de calidad
-        run: make evaluate
+        run: python scripts/15_quality_gate.py
 
       - name: Inferencia de humo
-        run: make recommend COMBUSTIBLE=${{ env.COMBUSTIBLE }} HORIZONTE=${{ env.HORIZONTE }}
+        run: python -m gasolina_gt.cli recommend --combustible ${{ env.COMBUSTIBLE }} --horizonte ${{ env.HORIZONTE }}
 
       - name: Resumen de metricas
         if: always()
@@ -180,10 +255,15 @@ jobs:
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
+  # ---------------------------------------------------------------------------
+  # La imagen no necesita datos ni modelo entrenado: la prueba de humo solo
+  # comprueba que el servicio levanta y responde. Por eso cuelga de la calidad
+  # de codigo y no de la evaluacion, y asi se verifica en toda corrida.
+  # ---------------------------------------------------------------------------
   empaquetado:
-    name: 6. Imagen Docker y smoke test de la API
+    name: 7. Imagen de contenedor y prueba de humo de la API
     runs-on: ubuntu-latest
-    needs: evaluacion
+    needs: calidad-codigo
     if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v4
@@ -195,27 +275,27 @@ jobs:
         with:
           context: case-studies/cs1
           target: production
-          tags: gasolina-gt:ci
+          tags: fuel-price-gt:ci
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Levantar la API
-        run: docker run -d --rm --name gasolina-gt-smoke -p 8000:8000 gasolina-gt:ci
+        run: docker run -d --rm --name gt-smoke -p 19010:8000 fuel-price-gt:ci
 
       - name: Verificar endpoint /health
         run: |
           for _ in $(seq 1 30); do
-            if curl -sf http://localhost:8000/health; then
+            if curl -sf http://localhost:19010/health; then
               echo "API respondiendo"
               exit 0
             fi
             sleep 2
           done
           echo "La API no respondio a tiempo"
-          docker logs gasolina-gt-smoke
+          docker logs gt-smoke
           exit 1
 
       - name: Detener contenedor
         if: always()
-        run: docker stop gasolina-gt-smoke || true
+        run: docker stop gt-smoke || true
