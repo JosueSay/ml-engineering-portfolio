@@ -3,10 +3,13 @@ from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException, Query
 
+from .. import __version__
 from ..data.pipeline import load_gold_if_exists
 from .recommendation import recommendation_as_dict
 
-app = FastAPI(title="Gasolina GT", version="0.1.0")
+# La version se toma del paquete y no se escribe aqui: repetida, se queda atras
+# sin que nada avise, y quien consulta el servicio ve un numero que no es.
+app = FastAPI(title="Fuel Price GT", version=__version__)
 
 
 @app.get("/health")

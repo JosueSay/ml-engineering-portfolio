@@ -48,7 +48,9 @@ pip install "fuel-price-gt[all]"       # todo
 Las otras dos vías de ingesta —manifiesto y clave de API— no necesitan extra:
 usan el cliente HTTP que ya viene.
 
-Repartir dependencias tiene un coste que se paga la primera vez: una
+Repartir dependencias tiene un coste que se paga en todos los sitios que daban
+por hecho lo que antes venía de serie —la interfaz de línea de comandos, la
+imagen de contenedor— y se paga la primera vez: una
 importación de módulo se ejecuta siempre, también al pedir la ayuda, así que
 basta importar arriba algo que vive en un extra para que la instalación mínima
 no arranque. Lo que un extra provee se importa dentro del comando que lo usa, y
@@ -95,7 +97,12 @@ de etiquetar.
 cd case-studies/cs1
 make gates           # todas las puertas
 make publish-check   # construye y revisa que quedo dentro
+make docker-smoke    # la imagen construye y la API responde
 ```
+
+`docker-smoke` no es opcional aquí: la imagen instala extras distintos de los
+que instala una comprobación en entorno virtual, y ese desajuste ya rompió una
+publicación.
 
 ### Disparar la publicación
 

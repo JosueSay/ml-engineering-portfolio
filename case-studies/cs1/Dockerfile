@@ -32,7 +32,10 @@ COPY tests ./tests
 
 FROM base AS production
 
-RUN pip install --no-cache-dir .
+# Con los extras, la instalacion minima no trae ni el servidor web ni el motor
+# de entrenamiento, y esta imagen necesita los dos: sirve una recomendacion, y
+# para leer un modelo hace falta la misma biblioteca con la que se escribio.
+RUN pip install --no-cache-dir '.[serving,modeling]'
 
 # La estructura de datos existe vacia: los volumenes se montan encima y el
 # codigo no tiene que comprobar si cada carpeta esta antes de escribir.
@@ -51,8 +54,11 @@ RUN mkdir -p \
 
 # La raiz se declara de forma explicita: con el paquete instalado de forma no
 # editable, deducirla del arbol de archivos ya no aplica.
-ENV FUEL_PRICE_GT_ROOT=/app \
-    API_PORT=8000
+#
+# Dentro del contenedor el puerto es fijo. El parametrizable es el del anfitrion
+# y lo decide quien levanta el servicio, no la imagen: API_PORT vive en .env y
+# lo lee compose para el lado de fuera del mapeo.
+ENV FUEL_PRICE_GT_ROOT=/app
 
 EXPOSE 8000
 
