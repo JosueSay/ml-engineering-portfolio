@@ -1,3 +1,9 @@
+"""Compuerta de calidad: decide si el modelo entrenado puede seguir adelante.
+
+Devuelve un código de salida distinto de cero cuando no pasa, para que la
+integración continua detenga la cadena en vez de publicar un modelo peor
+que repetir el último precio conocido.
+"""
 from __future__ import annotations
 
 import sys
@@ -11,8 +17,9 @@ FUENTES_SIN_ANCLAS_REALES = ("sintetico",)
 
 
 def main() -> int:
+    """Aplica la compuerta de calidad y decide si la corrida pasa."""
     cfg = load_config()
-    ruta = resolve_path(cfg["paths"]["reports"]) / "evaluacion_modelos.csv"
+    ruta = resolve_path(cfg["paths"]["reports"]) / cfg["archivos"]["evaluacion"]
     if not ruta.exists():
         print(f"ERROR: no existe {ruta}. ¿Corrió la etapa de entrenamiento?", file=sys.stderr)
         return 1
