@@ -20,6 +20,7 @@ from xgboost import XGBRegressor
 
 from ..config import load_config, resolve_path
 from ..data.features import MODEL_FEATURES
+from ..db import record_trained_model, session_scope
 
 
 @dataclass
@@ -157,6 +158,22 @@ def train_model(
     path = artifact_path(fuel, horizon, cfg)
     path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(artifact, path)
+
+    # El manifiesto es un archivo de texto versionable; la base cierra el
+    # linaje. Se escribe en los dos porque responden preguntas distintas: el
+    # manifiesto dice que se entreno sin abrir nada, la base permite ir desde
+    # una prediccion hasta la fotografia que la sostiene.
+    with session_scope() as sesion:
+        record_trained_model(
+            sesion,
+            fuel_type=fuel,
+            horizon_weeks=horizon,
+            algorithm="xgboost",
+            dataset_fingerprint=dataset_fingerprint(data),
+            hyperparameters=search.best_params_,
+            artifact_path=str(path),
+            package_version=package_version(),
+        )
 
     record_in_manifest(
         {
