@@ -1,43 +1,71 @@
-models/*
-!models/.gitkeep
+# =============================================================================
+# Exclusiones del caso de estudio CS1
+#
+# Criterio: el repositorio guarda codigo y documentacion. Los datos, los pesos
+# de modelos y las credenciales viven fuera y se obtienen con los scripts de
+# arranque.
+# =============================================================================
+
+# --- Credenciales -------------------------------------------------------------
+# La carpeta entera, no un patron de nombre: ignorar por nombre falla en cuanto
+# alguien guarda el archivo tal como lo descargo del proveedor.
+keys/*
+!keys/.gitkeep
+!keys/README.md
+
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# --- Entorno ------------------------------------------------------------------
+.env
+.envrc
+.env.local
+.env.*
+!.env.example
+!.env.*.example
+
+# --- Datos --------------------------------------------------------------------
+# Ninguna imagen entra al control de versiones, ni siquiera de muestra.
+data/**
+!data/**/
+!data/**/.gitkeep
+
+*.heic
+*.HEIC
+*.jpg
+*.jpeg
+*.png
+!assets/**/*.png
+!assets/**/*.jpg
+
+# --- Modelos ------------------------------------------------------------------
+# Los pesos no se versionan; si el manifiesto.
+models/**
+!models/**/
+!models/**/.gitkeep
+!models/manifest.json
+
+# --- Artefactos de ejecucion ---------------------------------------------------
+logs/*
+!logs/.gitkeep
 
 output/*
 !output/.gitkeep
 
-# Los .jsonl de cada corrida son artefactos, no fuente
-logs/*
-!logs/.gitkeep
-
-# Ignorar todo el contenido de data
-data/**
-
-# Mantener las carpetas mediante .gitkeep
-!data/.gitkeep
-!data/raw/
-!data/raw/.gitkeep
-
-# Imagenes HEIC de entrada
-*.heic
-*.HEIC
-
-# Las cinco fotografias piloto son datos versionados del caso de estudio.
-!datos/*.heic
-!datos/*.HEIC
-
-imageConvert/__pycache__/
-imageConvert/output/*
-!imageConvert/output/.gitkeep
-
-# __pycache__/
-__pycache__/
-
-# environment
-venv/
-.venv/
-
-# Artefactos reproducibles del pipeline MLOps
-datos_procesados/
 reports/
+dist/
+build/
+
+# --- Python -------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
 .venv-ci/
-.ruff_cache/
 .pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
