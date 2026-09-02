@@ -17,6 +17,7 @@ está el detalle.
 | [07_image_source.md](07_image_source.md) | Conectar Google Drive paso a paso |
 | [08_publishing.md](08_publishing.md) | Construir, verificar y publicar el paquete |
 | [09_ci.md](09_ci.md) | Qué comprueba cada flujo de integración continua y cómo leer un fallo |
+| [10_supply_chain.md](10_supply_chain.md) | Dependencias al día, imagen publicada y qué activar en GitHub |
 | [work-plan.md](work-plan.md) | Diagnóstico, decisiones tomadas y pendientes |
 
 Las divisiones de commits de cada fase quedan como registro de cómo se
