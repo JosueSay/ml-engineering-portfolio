@@ -320,7 +320,7 @@ jobs:
       # nadie puede arreglar entrena a ignorar el rojo. Lo accionable se corta
       # en el flujo de publicacion, que es donde importa.
       - name: Analizar vulnerabilidades de la imagen
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: fuel-price-gt:ci
           scanners: vuln

@@ -248,7 +248,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Rechazar si hay algo grave con arreglo disponible
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: fuel-price-gt:candidata
           scanners: vuln
