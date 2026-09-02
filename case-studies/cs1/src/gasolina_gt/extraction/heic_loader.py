@@ -7,6 +7,7 @@ negocio pide usar para la recomendación final.
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -16,9 +17,17 @@ import pillow_heif
 from PIL import Image
 from PIL.ExifTags import TAGS
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ImagenCargada:
+    """Imagen en memoria junto con su fecha real de captura.
+
+    La fecha sale de los metadatos del archivo, no de cuándo se procesó: es
+    la que ancla cada precio en la serie temporal. Puede ser `None` si los
+    metadatos se perdieron, y entonces esa lectura no puede fecharse.
+    """
     ruta: Path
     arreglo: np.ndarray          # HxWx3 uint8 RGB
     capturada_en: datetime | None
@@ -65,6 +74,11 @@ def cargar_heic(ruta: Path | str) -> ImagenCargada:
 
 
 def listar_imagenes(directorio: Path | str) -> list[Path]:
+    """Fotografías de un directorio, en orden estable.
+
+    El orden fijo hace que dos corridas sobre el mismo directorio produzcan
+    la capa cruda en la misma secuencia, que es lo que permite compararlas.
+    """
     directorio = Path(directorio)
     exts = {".heic", ".HEIC", ".jpg", ".jpeg", ".JPG", ".JPEG", ".png", ".PNG"}
     return sorted(p for p in directorio.iterdir() if p.suffix in exts)
@@ -84,6 +98,6 @@ def cargar_imagen_generica(ruta: Path | str) -> ImagenCargada:
         raw = exif_ifd.get(36867)
         if raw:
             capturada_en = datetime.strptime(raw, "%Y:%m:%d %H:%M:%S")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001  # EXIF ausente o corrupto no debe abortar la carga
+        logger.warning("Sin fecha EXIF utilizable en %s: %s", ruta.name, exc)
     return ImagenCargada(ruta=ruta, arreglo=arr, capturada_en=capturada_en, ancho=arr.shape[1], alto=arr.shape[0])
