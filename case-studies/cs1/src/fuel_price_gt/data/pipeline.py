@@ -17,6 +17,7 @@ from datetime import date, timedelta
 
 import pandas as pd
 from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
 
 from ..augmentation.series_augment import generate_synthetic_series
 from ..config import load_config, resolve_path
@@ -253,21 +254,33 @@ def load_gold_if_exists(config: dict | None = None) -> pd.DataFrame | None:
     """
     cfg = config or load_config()
 
-    with session_scope() as session:
-        filas = list(session.scalars(select(GoldRow).order_by(GoldRow.observed_on)))
-        if filas:
-            registros = []
-            for fila in filas:
-                registro = {
-                    "date": pd.Timestamp(fila.observed_on),
-                    "fuel_type": fila.fuel_type,
-                    "price_gtq_per_gallon": fila.price_gtq_per_gallon,
-                    "source": fila.source,
-                    "method": fila.method,
-                }
-                registro.update(fila.features or {})
-                registros.append(registro)
-            return pd.DataFrame(registros)
+    try:
+        with session_scope() as session:
+            filas = list(session.scalars(select(GoldRow).order_by(GoldRow.observed_on)))
+    except OperationalError:
+        # En una instalacion recien hecha la base todavia no existe. Es un
+        # estado normal, no un fallo: quien lea esto acaba de instalar el
+        # paquete y aun no ha construido nada. Consultar no debe crear el
+        # esquema por su cuenta, que seria un efecto sorprendente para una
+        # funcion de lectura.
+        logger.info("La base no tiene esquema todavia; se busca el archivo exportado")
+        filas = []
+
+    if filas:
+        # Las filas se leyeron dentro de la sesion y siguen accesibles fuera
+        # porque no se invalidan al confirmar, asi que no hace falta abrir otra.
+        registros = []
+        for fila in filas:
+            registro = {
+                "date": pd.Timestamp(fila.observed_on),
+                "fuel_type": fila.fuel_type,
+                "price_gtq_per_gallon": fila.price_gtq_per_gallon,
+                "source": fila.source,
+                "method": fila.method,
+            }
+            registro.update(fila.features or {})
+            registros.append(registro)
+        return pd.DataFrame(registros)
 
     path = resolve_path(cfg["paths"]["gold"]) / cfg["files"]["gold"]
     if not path.exists():

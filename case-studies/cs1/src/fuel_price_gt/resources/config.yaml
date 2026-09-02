@@ -1,0 +1,96 @@
+# =============================================================================
+# Configuración central del proyecto — Precios de Gasolina Guatemala
+# Fase CRISP-DM: Modelado y Evaluación (con soporte de Preparación de datos)
+# =============================================================================
+
+paths:
+  # Estructura unica de datos. Todo lo que cuelga de data/ queda fuera del
+  # control de versiones: el repositorio guarda codigo, no fotografias.
+  raw: "data/raw"                       # originales, nunca se editan
+  interim: "data/interim"                     # recortes de la franja de precios
+  bronze: "data/processed/bronze"             # extracción cruda por imagen
+  silver: "data/processed/silver"             # tabla limpia precio x fecha x combustible
+  gold: "data/processed/gold"                 # dataset con features, listo para modelar
+  augmented: "data/processed/augmented"
+  models: "models"
+  models_vendor: "models/vendor"              # pesos de terceros, desechables
+  models_trained: "models/trained"            # artefactos propios del entrenamiento
+  reports: "reports"
+  calibration: "config/panelCalibration.json"
+
+files:
+  # Los nombres estaban repetidos en el modulo que escribe y en el que lee.
+  # Cambiar uno solo rompia la cadena sin que nada avisara.
+  silver: "real_prices.csv"
+  gold: "modeling_dataset.csv"
+  evaluation: "model_evaluation.csv"
+
+extraction:
+  # Orden físico fijo de los paneles del dispensor Shell, izquierda -> derecha
+  # (validado visualmente contra las 5 fotos piloto). Ver S6 en business-understanding.
+  fuel_order: ["diesel", "regular", "super", "vpower"]
+  valid_price_range_gtq: [10.0, 80.0]   # cota de plausibilidad (R7 - rechazar precios ilógicos)
+  min_confidence: 0.55
+
+camera_calibration:
+  # Dos perfiles de encuadre observados en el set piloto (5 fotos, agosto 2026).
+  # Fracciones (x0, y0, x1, y1) relativas al tamaño de imagen (ancho, alto).
+  default_profile: "wide"
+
+business:
+  main_fuel: "regular"    # S1: se predice inicialmente Regular
+  horizon_weeks: [1, 2, 4]       # S2
+  frequency: "semanal"               # D2: decisión tomada (datos escasos -> semanal)
+  currency: "GTQ"
+  unit: "galon"
+
+modeling:
+  # Fecha hasta la que llega la serie. Vacio significa deducirla de los datos, y
+  # solo si tampoco hay datos se recurre al dia de hoy, avisando.
+  #
+  # Existe porque un conjunto que se genera "hasta hoy" cambia solo por el paso
+  # del tiempo: dos corridas en dias distintos entrenan sobre datos distintos, y
+  # entonces ni el modelo ni sus metricas son reproducibles.
+  data_cutoff:
+  min_training_rows: 12   # por debajo de esto no hay serie que aprender
+  synthetic_history_weeks: 52    # ventana a generar cuando no hay ancla real
+  min_training_margin_weeks: 6   # colchon sobre la ventana de prueba
+  test_size_weeks: 6          # ventana de test (validación temporal estricta, sin leakage)
+  seed: 42
+  baseline: "persistencia"      # último precio conocido
+  trend_threshold_gtq: 0.15    # cambio mínimo para considerar alza/baja vs estable
+  xgboost_hyperparameters:
+    n_estimators: [100, 200, 300, 400]
+    max_depth: [2, 3, 4, 5]
+    learning_rate: [0.02, 0.05, 0.1, 0.2]
+    subsample: [0.7, 0.85, 1.0]
+    colsample_bytree: [0.7, 0.85, 1.0]
+    reg_lambda: [0.5, 1.0, 2.0]
+  search_iterations: 25
+  cv_splits: 3
+
+evaluation:
+  # Criterios de éxito técnico T1-T5 del Business Understanding
+  mae_threshold_gtq: 1.00          # T3: referencia "< Q1.00/galón"
+  improvement_threshold_pct: 0.0   # T2/C2: debe superar al baseline (MAE menor)
+  f1_trend_threshold: 0.55     # T5: debe superar una predicción simple de tendencia
+
+recommendation:
+  decision_margin_gtq: 0.10     # diferencia mínima para no quedar en "neutral"
+  peak_hours: [6, 7, 8, 17, 18, 19]  # horas de mayor consumo/tráfico (contexto, no precio)
+
+scraping:
+  source: "globalpetrolprices"
+  urls:
+    gasoline: "https://es.globalpetrolprices.com/Guatemala/gasoline_prices/"
+    diesel: "https://es.globalpetrolprices.com/Guatemala/diesel_prices/"
+  timeout_seconds: 15
+  offline_fixture: "tests/fixtures/reference_price_offline.json"
+
+augmentation:
+  images_per_original: 6
+  max_rotation_degrees: 4
+  brightness_range: [0.75, 1.25]
+  contrast_range: [0.8, 1.2]
+  gaussian_noise_sigma: 4
+  perspective_jitter_px: 6

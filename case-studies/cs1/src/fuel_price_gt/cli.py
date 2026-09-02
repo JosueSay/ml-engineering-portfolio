@@ -7,6 +7,7 @@ import logging
 from dataclasses import asdict
 
 from .data.pipeline import build_gold, build_silver, load_gold_if_exists
+from .db import create_schema
 from .evaluation import evaluate_artifact, save_report
 from .modeling import train_all_horizons
 from .serving import recommend_refuel
@@ -35,6 +36,12 @@ def main() -> None:
     p_rec.add_argument("--hour", type=int, default=None)
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+
+    # El punto de entrada garantiza sus precondiciones. Sin esto, cada consulta
+    # tendria que defenderse por su cuenta de que la base no exista todavia, y
+    # bastaria una sin proteger para que la distribucion recien instalada
+    # fallara con un error de SQL en vez de decir que aun no hay datos.
+    create_schema()
 
     if args.command == "build-data":
         silver = build_silver()
