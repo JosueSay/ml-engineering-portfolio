@@ -1,0 +1,107 @@
+# Dependencias y cadena de suministro
+
+Cómo se mantienen al día las dependencias, qué publica el repositorio además
+del paquete, y qué hay que activar en la configuración de GitHub para que nada
+de esto sea decorativo. Parte de la documentación; el índice está en
+[README.md](README.md).
+
+Esto empieza a importar al publicar. Mientras el código solo corría aquí, una
+dependencia vieja era un problema propio. Publicado, viaja dentro de la
+distribución y llega a quien la instale.
+
+## Actualización automática
+
+`.github/dependabot.yml` declara tres cosas que el repositorio consume de
+fuera:
+
+| Qué | Dónde | Prefijo del commit |
+|---|---|---|
+| Acciones de los flujos | `/` y `/.github/actions/setup-cs1-env` | `ci` |
+| Dependencias del paquete | `/case-studies/cs1` | `build` (producción), `chore` (desarrollo) |
+| Imagen base del contenedor | `/case-studies/cs1` | `build` |
+
+La segunda ruta de las acciones no es redundante: la acción compuesta propia
+declara sus dependencias en su propio archivo y no se ve desde la raíz.
+
+Las dependencias del paquete van en dos grupos porque el riesgo no es el mismo.
+Una subida de las de producción viaja dentro de la distribución publicada y
+llega a quien la instale; una de las de desarrollo se queda aquí y en la
+integración continua.
+
+Las acciones van en un solo grupo por el motivo contrario: son diez que se
+mueven juntas, y abrir diez propuestas semanales garantiza que no se lea
+ninguna.
+
+### Qué queda fuera y por qué
+
+Los dos ejercicios de `workshop/` no se actualizan. Son entregas cerradas, sin
+flujo que las verifique, y una propuesta semanal sobre ellas sería ruido. La
+regla es que lo que no se comprueba no se actualiza solo: una propuesta de
+cambio que nadie sabe si rompe algo acaba fusionándose por costumbre, que es
+peor que una versión vieja.
+
+## La imagen de contenedor
+
+Sale de la misma etiqueta que el paquete, con el mismo número de versión:
+
+```bash
+docker pull ghcr.io/josuesay/fuel-price-gt:0.3.3
+```
+
+Va **después** de publicar el paquete y no en paralelo. Si la publicación se
+rechaza en la aprobación, una imagen ya publicada anunciaría una versión que no
+existe en el índice.
+
+No pide aprobación propia, y la asimetría es deliberada: una versión del
+registro de contenedores se puede borrar, una del índice de paquetes no. Lo
+irreversible es lo que se detiene a mirar.
+
+Los datos y los modelos no van dentro. Entran por volumen:
+
+```bash
+docker run -p 19010:8000 \
+  -v "$PWD/data:/app/data" \
+  -v "$PWD/models:/app/models" \
+  ghcr.io/josuesay/fuel-price-gt:0.3.3
+```
+
+## Lo que hay que activar en GitHub
+
+El archivo de configuración solo describe qué actualizar. Que se actualice
+depende de ajustes del repositorio, y ninguno se activa escribiendo código.
+
+En Settings, Advanced Security:
+
+| Ajuste | Para qué | Sin él |
+|---|---|---|
+| **Dependabot version updates** | Es lo que lee `dependabot.yml` | El archivo no hace nada |
+| Dependabot malware alerts | Avisa de dependencias con software malicioso | Solo se avisa de vulnerabilidades conocidas |
+| Grouped security updates | Agrupa también las propuestas de seguridad | Una propuesta por vulnerabilidad |
+| CodeQL analysis | Análisis de seguridad del código propio | Solo se revisa lo que viene de fuera |
+
+Y en el registro de contenedores, hacer pública la imagen la primera vez: nace
+privada, y una imagen que nadie puede descargar no sirve de entregable.
+
+### La condición que se olvida
+
+**Dependabot lee `dependabot.yml` solo de la rama por defecto.** Mientras el
+archivo viva en una rama de trabajo, no pasa nada: ni error, ni aviso, ni
+propuestas. Parece configurado y no lo está.
+
+Es el mismo tipo de fallo silencioso que el resto del proyecto trata de evitar:
+algo que aparenta funcionar sin hacerlo. La diferencia es que aquí no hay
+comprobación que lo detecte, así que queda escrito.
+
+## Qué revisar cuando llegue una propuesta
+
+Una actualización automática no se fusiona por venir de una máquina.
+
+1. Que la integración continua esté en verde. Cubre el análisis estático, las
+   pruebas y el contenedor.
+2. Si toca una dependencia de producción, que el cambio de versión no sea
+   mayor. Un salto de mayor puede cambiar la interfaz.
+3. Si toca la imagen base, que `make docker-smoke` siga pasando en local.
+
+Lo que la integración continua no cubre en una propuesta de cambio: el trabajo
+del contenedor se salta en propuestas hacia `main`, así que ese tercer punto es
+manual. Está en [09_ci.md](09_ci.md).

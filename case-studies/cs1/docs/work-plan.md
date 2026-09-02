@@ -721,6 +721,20 @@ otra cosa.
 - [ ] Publicar el caso en la página de casos de estudio
 - [ ] Etiquetas por entrega
 
+### 6.6 Fase F — Mantenimiento y cadena de suministro
+
+Fase añadida después de publicar. Un paquete publicado deja de ser un
+entregable y pasa a ser algo que alguien instala: sus dependencias envejecen y
+sus vulnerabilidades pasan a ser de quien lo publicó.
+
+- [x] Declarar la actualización automática de dependencias en `.github/dependabot.yml`
+- [x] Publicar la imagen de contenedor en el registro, desde la misma etiqueta
+- [ ] Activar las actualizaciones de versión en la configuración del repositorio
+- [ ] Activar las alertas de software malicioso y las actualizaciones de seguridad agrupadas
+- [ ] Activar el análisis de código
+- [ ] Hacer pública la imagen del registro de contenedores
+- [ ] Fusionar a `main`: la configuración de dependencias solo se lee de la rama por defecto
+
 ## 7. Orden recomendado
 
 Fase A primero: es preventiva, barata, y sin ella las demás arrancan sobre una
@@ -735,6 +749,10 @@ propia.
 
 Fase D al final: se cierra rápido una vez destrabado el problema de la
 configuración.
+
+Fase F después de D y no antes: hasta que hay algo publicado, no hay nada que
+mantener. Fase E cierra, y conviene que sea lo último porque documenta el
+resultado, no la intención.
 
 ## 8. Lo que no se va a hacer
 
