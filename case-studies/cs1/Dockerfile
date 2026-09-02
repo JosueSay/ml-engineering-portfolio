@@ -25,6 +25,12 @@ RUN apt-get update \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
+# pip viene en la imagen base y envejece con ella. La version que trae hoy
+# acumula seis vulnerabilidades con arreglo publicado, y son las unicas que el
+# analisis encuentra en toda la imagen. Actualizarlo es una linea; dejarlo es
+# publicar una imagen con lo unico que se podia cerrar sin cerrar.
+RUN python -m pip install --no-cache-dir --upgrade pip
+
 WORKDIR /app
 
 COPY pyproject.toml README.md ./
@@ -33,13 +39,6 @@ COPY config ./config
 COPY scripts ./scripts
 COPY tests ./tests
 
-
-FROM base AS production
-
-# Con los extras, la instalacion minima no trae ni el servidor web ni el motor
-# de entrenamiento, y esta imagen necesita los dos: sirve una recomendacion, y
-# para leer un modelo hace falta la misma biblioteca con la que se escribio.
-RUN pip install --no-cache-dir '.[serving,modeling]'
 
 # La estructura de datos existe vacia: los volumenes se montan encima y el
 # codigo no tiene que comprobar si cada carpeta esta antes de escribir.
@@ -64,6 +63,22 @@ RUN mkdir -p \
 # lo lee compose para el lado de fuera del mapeo.
 ENV FUEL_PRICE_GT_ROOT=/app
 
+
+FROM base AS production
+
+# Con los extras, la instalacion minima no trae ni el servidor web ni el motor
+# de entrenamiento, y esta imagen necesita los dos: sirve una recomendacion, y
+# para leer un modelo hace falta la misma biblioteca con la que se escribio.
+#
+# Y despues se quita pip. Un contenedor que ya tiene su codigo instalado no
+# necesita un instalador dentro, y el que traia la imagen base era lo unico que
+# el analisis encontraba: sus dependencias empotradas no se pueden actualizar
+# por separado, harian falta versiones de pip que cambien lo que empotra.
+# Quitarlo cierra ese frente entero y reduce lo que se puede hacer dentro del
+# contenedor si alguien llega a el.
+RUN pip install --no-cache-dir '.[serving,modeling]' \
+    && python -m pip uninstall --yes pip
+
 EXPOSE 8000
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=5 \
@@ -72,7 +87,9 @@ HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=5 \
 CMD ["uvicorn", "fuel_price_gt.serving.api:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
-FROM production AS test
+# Cuelga de la base y no de produccion: alli ya no hay instalador con el que
+# anadir las herramientas de desarrollo.
+FROM base AS test
 
 RUN pip install --no-cache-dir '.[dev]'
 CMD ["pytest", "-q"]

@@ -107,6 +107,30 @@ de seguridad es exactamente lo que impediría publicar. Lo que la distribución
 aún no ha arreglado sigue visible en el registro del trabajo, que es donde
 corresponde consultarlo.
 
+### Lo que el análisis encontró y se cerró
+
+Con el informe ya filtrado quedaron seis avisos, todos del mismo sitio: el
+`pip` que trae la imagen base. Se cerraron en dos pasos, y ninguno de los dos
+consistió en silenciar nada.
+
+Actualizar `pip` cerró los seis y destapó dos que estaban debajo, `msgpack` y
+`setuptools`. Esos dos viven **dentro** de `pip`, en su árbol de dependencias
+empotradas: no se pueden actualizar por separado, haría falta una versión de
+`pip` que cambie lo que empotra. `ignore-unfixed` no los filtra porque el
+arreglo existe para el paquete suelto, no para la copia empotrada.
+
+La salida fue quitar `pip` de la imagen de producción. Un contenedor que ya
+tiene su código instalado no necesita un instalador dentro, y tenerlo amplía lo
+que se puede hacer ahí si alguien llega. Eso cerró el frente entero.
+
+La consecuencia de estructura: la etapa de pruebas ya no puede colgar de
+producción, porque allí no queda con qué instalar las herramientas de
+desarrollo. Cuelga de la base, y lo que las dos comparten —la estructura de
+carpetas y la raíz declarada— subió ahí.
+
+Resultado: **cero hallazgos accionables**. Quedan 38 graves sin arreglo
+publicado, que se informan y no bloquean.
+
 ### Dónde corta y dónde solo informa
 
 | Flujo | Qué analiza | Qué hace |

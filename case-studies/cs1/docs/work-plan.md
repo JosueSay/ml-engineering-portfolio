@@ -729,16 +729,16 @@ sus vulnerabilidades pasan a ser de quien lo publicó.
 
 - [x] Declarar la actualización automática de dependencias en `.github/dependabot.yml`
 - [x] Publicar la imagen de contenedor en el registro, desde la misma etiqueta
-- [ ] Activar las actualizaciones de versión en la configuración del repositorio
-- [ ] Activar las alertas de software malicioso y las actualizaciones de seguridad agrupadas
 - [x] Analizar vulnerabilidades de la imagen, informando en el pipeline y cortando al publicar
 - [x] Cerrar las vulnerabilidades con arreglo disponible en la construcción de la imagen
-- [ ] Activar el análisis de código
 - [ ] Hacer pública la imagen del registro de contenedores
 - [x] Fusionar a `main`: la configuración de dependencias solo se lee de la rama por defecto
 - [x] Purgar las fotografías del historial y cerrar el punto ciego de la puerta
 - [x] Dejar el informe de vulnerabilidades en lo accionable
 - [x] Quitar el manifiesto del experimento descartado, conservando el registro
+- [x] Cerrar los hallazgos accionables de la imagen: actualizar pip y sacarlo de producción
+- [x] Activar en el repositorio las actualizaciones de versión, las alertas de software malicioso y las agrupadas
+- [x] Activar el análisis de código
 
 ## 7. Orden recomendado
 
