@@ -194,3 +194,65 @@ jobs:
             echo "El segundo indice hace falta porque las dependencias viven en"
             echo "el indice normal, no en el de pruebas."
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # La imagen entrega la misma version que el paquete y sale de la misma
+  # etiqueta. Va despues y no en paralelo: si la publicacion del paquete se
+  # rechaza en la aprobacion, una imagen ya publicada anunciaria una version que
+  # no existe en el indice.
+  #
+  # Esta no pide aprobacion propia. La asimetria es deliberada: una version del
+  # registro de contenedores se puede borrar, una del indice de paquetes no. Lo
+  # irreversible es lo que se detiene a mirar.
+  image:
+    name: 4. Publicar la imagen de contenedor
+    runs-on: ubuntu-latest
+    needs: publish
+    if: startsWith(github.ref, 'refs/tags/') && !inputs.dry_run
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Entrar al registro de contenedores
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derivar nombre y etiquetas de la imagen
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/fuel-price-gt
+          # La etiqueta del repositorio lleva prefijo de caso; la de la imagen
+          # es la version a secas, que es lo que espera quien la descarga.
+          tags: |
+            type=match,pattern=cs1-v(.*),group=1
+            type=raw,value=latest
+
+      - name: Construir y publicar
+        uses: docker/build-push-action@v7
+        with:
+          context: case-studies/cs1
+          target: production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Dejar constancia
+        run: |
+          {
+            echo "## Imagen publicada"
+            echo
+            echo '```bash'
+            echo "docker pull ghcr.io/${{ github.repository_owner }}/fuel-price-gt:${GITHUB_REF_NAME#cs1-v}"
+            echo '```'
+            echo
+            echo "Los datos y los modelos entran por volumen, no dentro de la imagen."
+          } >> "$GITHUB_STEP_SUMMARY"
