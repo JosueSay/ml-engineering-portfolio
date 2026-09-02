@@ -1,0 +1,172 @@
+name: CS1 - Publicar el paquete
+
+# Se dispara por etiqueta y no en cada empujon: publicar es una accion con
+# efecto fuera del repositorio y no se deshace. Una version subida al indice no
+# se puede reemplazar, solo retirar, asi que conviene que salga de un acto
+# deliberado.
+#
+# El entorno declarado exige aprobacion manual antes de publicar. Es la ultima
+# oportunidad de mirar que se esta subiendo.
+
+on:
+  push:
+    tags:
+      - "cs1-v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Construir y verificar sin publicar
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: case-studies/cs1
+
+jobs:
+  build:
+    name: 1. Construir y verificar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar herramientas de construccion
+        run: python -m pip install --upgrade build twine
+
+      - name: Comprobar que la etiqueta coincide con la version del paquete
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          declarada=$(grep -oP '__version__ = "\K[^"]+' src/fuel_price_gt/__init__.py)
+          etiqueta="${GITHUB_REF_NAME#cs1-v}"
+          echo "version del paquete: $declarada"
+          echo "etiqueta:            $etiqueta"
+          if [ "$declarada" != "$etiqueta" ]; then
+            echo "::error::La etiqueta y la version del paquete no coinciden."
+            echo "Publicar asi dejaria en el indice una version que el codigo no declara."
+            exit 1
+          fi
+
+      - name: Construir
+        run: python -m build
+
+      - name: Verificar los metadatos
+        run: python -m twine check dist/*
+
+      - name: Comprobar que no se cuela nada indebido
+        run: |
+          python - <<'EOF'
+          import sys, zipfile, glob
+          rueda = glob.glob("dist/*.whl")[0]
+          with zipfile.ZipFile(rueda) as z:
+              nombres = z.namelist()
+          prohibido = [
+              n for n in nombres
+              if any(x in n.lower() for x in (".env", "keys/", ".heic", ".jpg", ".db", ".joblib"))
+          ]
+          if prohibido:
+              print("::error::La distribucion incluye archivos que no deberia:")
+              for n in prohibido:
+                  print(f"  {n}")
+              sys.exit(1)
+          recursos = [n for n in nombres if "resources/config.yaml" in n]
+          if not recursos:
+              print("::error::Falta la configuracion de referencia dentro del paquete.")
+              print("Sin ella la distribucion instalada no arranca fuera del repositorio.")
+              sys.exit(1)
+          print(f"Distribucion correcta: {len(nombres)} archivos, recursos incluidos")
+          EOF
+
+      - name: Publicar los artefactos de la corrida
+        uses: actions/upload-artifact@v7
+        with:
+          name: distribucion
+          path: case-studies/cs1/dist/
+          retention-days: 14
+
+  smoke:
+    name: 2. Instalar en limpio y ejecutar
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      # Las dos plataformas son el punto: la actividad pedia demostrar que el
+      # paquete corre en maquinas distintas, y esto lo comprueba en cada
+      # publicacion en vez de con una captura de pantalla.
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: distribucion
+          path: dist
+
+      - name: Instalar desde la rueda, sin el repositorio
+        shell: bash
+        working-directory: .
+        run: python -m pip install dist/*.whl
+
+      - name: Ejecutar el flujo completo desde una carpeta cualquiera
+        shell: bash
+        working-directory: .
+        run: |
+          mkdir -p prueba && cd prueba
+          fuel-price-gt --help
+          fuel-price-gt build-data
+          echo "El paquete instalado funciona sin clonar el repositorio"
+
+  publish:
+    name: 3. Publicar en el indice de pruebas
+    runs-on: ubuntu-latest
+    needs: smoke
+    if: startsWith(github.ref, 'refs/tags/') && !inputs.dry_run
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/fuel-price-gt/
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: distribucion
+          path: dist
+
+      - name: Publicar
+        working-directory: .
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_API_TOKEN }}
+          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+        run: |
+          python -m pip install --upgrade twine
+          python -m twine upload dist/*
+
+      - name: Dejar constancia
+        run: |
+          {
+            echo "## Publicado"
+            echo
+            echo "\`${GITHUB_REF_NAME}\` en el indice de pruebas."
+            echo
+            echo "Para instalarlo:"
+            echo
+            echo '```bash'
+            echo "pip install -i https://test.pypi.org/simple/ \\"
+            echo "  --extra-index-url https://pypi.org/simple/ fuel-price-gt"
+            echo '```'
+            echo
+            echo "El segundo indice hace falta porque las dependencias viven en"
+            echo "el indice normal, no en el de pruebas."
+          } >> "$GITHUB_STEP_SUMMARY"
