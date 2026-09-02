@@ -34,12 +34,19 @@ src/fuel_price_gt/
 │   ├── heic_loader.py    Carga y fecha real de captura
 │   ├── privacy.py        Difuminado de caras
 │   ├── calibration.py    Region del panel de cada combustible
+│   ├── display_detector.py  Localizacion del visor por su aspecto
 │   ├── preprocess.py     Aislamiento del visor
 │   ├── digit_ocr.py      Lectura de digitos
 │   └── extractor.py      Orquestador y validacion
+├── db/                   Persistencia y linaje
+│   ├── models.py         Las siete tablas y sus relaciones
+│   ├── session.py        Conexion y transacciones
+│   ├── repositories.py   Acceso desde la logica del pipeline
+│   └── lineage.py        Consulta inversa: de un precio a la fotografia
 ├── data/                 Capas Bronze, Silver y Gold
 │   ├── pipeline.py       Construccion de las capas
-│   └── features.py       Variables de modelado
+│   ├── features.py       Variables de modelado
+│   └── recovery.py       Reconstruccion aritmetica y relleno marcado
 ├── augmentation/         Aumento de imagenes y de series
 ├── modeling/training.py  Entrenamiento con validacion temporal
 ├── evaluation/metrics.py Metricas y compuerta de calidad

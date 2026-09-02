@@ -85,6 +85,20 @@ make train FUEL=super
 make recommend FUEL=diesel HORIZON=2 HOUR=7
 ```
 
+## Base de datos
+
+| Comando | Qué hace |
+|---|---|
+| `make db-init` | Crea el esquema si falta y dice cuántas filas hay en cada tabla |
+| `make db-browser` | Levanta el explorador web para recorrer el linaje |
+
+`db-init` es idempotente y no borra nada. Vaciar la base es una operación
+aparte y deliberada, porque perder el linaje significa perder la respuesta a
+por qué un precio vale lo que vale.
+
+El modelo de datos y cómo consultarlo están en
+[06_data_model.md](06_data_model.md).
+
 ## Modelos
 
 | Comando | Qué hace |
@@ -153,6 +167,8 @@ trabajo, no aquí.
 | `01_env_init.sh` | Crea `.env` desde la plantilla. Admite `--check` y `--force` |
 | `02_keys_init.sh` | Prepara `keys/`. Admite `--status` |
 | `03_gates.sh` | Puertas de calidad |
-| `12_extract_prices.py` | Etapa de extracción |
+| `12_extract_prices.py` | Etapa de extracción, con caché por huella |
+| `20_db_init.py` | Crea el esquema y reporta su estado |
 | `15_quality_gate.py` | Compuerta de calidad |
 | `31_models_status.py` | Estado del almacén de modelos |
+| `tools/compare_ocr_engines.py` | Compara motores de reconocimiento sobre los mismos recortes |

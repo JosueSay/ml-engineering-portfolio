@@ -98,6 +98,11 @@ pantalla de la terminal.
   script inexistente es una promesa rota; lo pendiente vive en este documento.
 - Todo lo que se ejecute debe funcionar igual en Windows, Linux, macOS y en un
   servidor modesto sin tarjeta gráfica.
+- Ninguna etapa cara se repite sin motivo. Si el resultado dependía solo del
+  código y de la configuración, y ninguno de los dos ha cambiado, se reutiliza
+  lo ya calculado. La comprobación va contra las tres cosas a la vez —dato,
+  versión y configuración—, porque basta que cambie un umbral para que el
+  resultado deje de ser válido.
 
 ### 2.5 Puertos
 
@@ -299,7 +304,19 @@ trabajo pasó a colgar de la calidad de código en vez de la evaluación.
 Cuando exista el adaptador de la fase C, ese mismo trabajo descargará las
 imágenes en vez de limitarse a comprobar si están.
 
-### 4.16 La extracción no lee ninguna de las fotografías piloto
+### 4.16 La extracción lee poco, y eso es parte del problema a resolver
+
+**El objetivo no es leer el cien por cien.** Con fotografías tomadas en la
+calle, a distintas horas y desde distintos ángulos, siempre habrá lecturas que
+no salgan. Lo que el caso tiene que resolver bien es lo que pasa *después*: qué
+se hace con esos huecos, con qué método se rellenan y cómo queda registrado que
+se rellenaron. Un pipeline que lee el ochenta por ciento y trata con rigor el
+veinte restante vale más que uno que promete el cien y esconde sus fallos.
+
+Lo medido hasta ahora, y las decisiones que salieron de ahí, quedan recogidas
+en esta sección.
+
+### 4.16.1 Estado del reconocimiento
 
 Detectado al verificar el pipeline completo. De las cinco fotografías salen
 veinte lecturas y **ninguna válida**: quince fallan en el reconocimiento de
@@ -315,6 +332,59 @@ vez de bloquear, y la recomendación lo advierte. Pero significa que la mitad de
 visión del caso todavía no funciona sobre datos reales, y que el trabajo de la
 fase C sobre la calibración y la detección del visor no es una mejora opcional
 sino lo que hace falta para que el caso tenga datos propios.
+
+### 4.16.2 Qué se midió y qué se corrigió
+
+Se montó un conjunto de referencia con los seis precios legibles anotados a
+mano y los diez recortes vacíos como casos negativos, y una herramienta que
+compara motores sobre los mismos datos. Sin eso, "mejorar el reconocimiento" no
+era una afirmación comprobable.
+
+Dos hallazgos y sus arreglos:
+
+- **Los dígitos son itálicos por diseño**, como los de un reloj digital. No es
+  perspectiva de la fotografía: rectificarla no cambiaba nada. Las plantillas de
+  comparación eran de trazos rectos, y por eso se confundían justo los dígitos
+  que más se parecen al inclinarse. Enderezar la inclinación antes de comparar
+  llevó la lectura de cero dígitos correctos a cuatro de cinco en el mejor caso.
+- **El separador decimal se perdía.** Se llegó a leer 4609 donde decía 40.09,
+  con confianza suficiente para casi pasar. Un precio en quetzales por galón
+  siempre tiene dos decimales, así que el punto se recoloca por posición cuando
+  el número de dígitos es el esperado, y solo entonces.
+
+Y una consecuencia que hubo que atajar: recolocar el punto hacía que texto
+basura de cuatro dígitos se convirtiera en precios de aspecto plausible, y la
+tasa de invención subió al cuarenta por ciento. Se resolvió buscando el visor
+por su aspecto antes de leer: donde no hay visor, no se intenta leer.
+
+### 4.16.3 Cuándo pasar a un modelo entrenado
+
+Un detector entrenado sigue siendo el camino para encuadres variados, y el
+Business Understanding ya lo contemplaba. El criterio de disparo: si con el
+histórico completo la tasa de lecturas válidas queda por debajo del setenta por
+ciento, se entrena uno para localizar el visor. Con ese conjunto habrá con qué
+entrenar y con qué validar, que hoy no existe.
+
+La inferencia de un detector pequeño corre en procesador, así que no rompe la
+restricción del servidor modesto; la tarjeta gráfica solo haría falta para
+entrenarlo una vez.
+
+### 4.17 El conjunto sintético no es reproducible
+
+La serie generada se construye hasta la fecha actual, así que dos corridas en
+días distintos producen conjuntos distintos y, con ellos, huellas distintas.
+
+Tiene dos consecuencias. La primera es que el manifiesto de modelos, que
+debería versionarse por ser texto y dejar constancia de con qué datos se
+entrenó cada modelo, ensuciaría el historial cambiando en cada corrida sin que
+nada real haya cambiado; por eso hoy está excluido, con el motivo escrito en las
+exclusiones. La segunda es más de fondo: un pipeline cuyo conjunto de
+entrenamiento cambia solo por el paso del tiempo no es reproducible, y la
+reproducibilidad es un requisito del caso.
+
+Se resuelve solo en cuanto haya datos reales, porque entonces la serie deja de
+generarse. Mientras tanto, fijar la fecha de corte por configuración lo haría
+determinista sin esperar a las fotografías.
 
 ## 5. Decisiones tomadas
 
@@ -583,19 +653,21 @@ otra cosa.
 
 ### 6.2 Fase B — Persistencia, recorte y linaje
 
-- [ ] Modelo de datos declarativo con el esquema de 5.2
-- [ ] Script de creación de esquema, idempotente
-- [ ] Contenedor de base de datos con volumen y ruta de imágenes montada
-- [ ] Recorte de la franja de precios, guardado en `data/interim`
-- [ ] Registrar cada recorte con su caja delimitadora y su ruta
-- [ ] Migrar Bronze a la base, con el resultado crudo en columna de documento
-- [ ] Migrar Silver y Gold, dejando los archivos tabulares como exportación
-- [ ] Corrección aritmética de precios ilegibles
-- [ ] Relleno de faltantes, siempre marcado en el campo de método
-- [ ] Campos de marca y estación
-- [ ] Consulta de linaje inverso: de un precio a la foto y el recorte
-- [ ] Registrar cada modelo entrenado con la huella de su conjunto
-- [ ] Pruebas de linaje, de reconstrucción aritmética y de relleno
+- [x] Modelo de datos declarativo con el esquema de 5.2
+- [x] Script de creación de esquema, idempotente
+- [x] Contenedor de base de datos con volumen dedicado y explorador web
+- [x] Caché de extracción: no reprocesar una fotografía sin cambios de código ni configuración
+- [x] Registrar por lectura qué motor la produjo
+- [x] Recorte de la franja de precios, guardado en `data/interim`
+- [x] Registrar cada recorte con su caja delimitadora y su ruta
+- [x] Migrar Bronze a la base, con el resultado crudo en columna de documento
+- [x] Migrar Silver y Gold, dejando los archivos tabulares como exportación
+- [x] Corrección aritmética de precios ilegibles
+- [x] Relleno de faltantes, siempre marcado en el campo de método
+- [x] Campos de marca y estación
+- [x] Consulta de linaje inverso: de un precio a la foto y el recorte
+- [x] Registrar cada modelo entrenado con la huella de su conjunto
+- [x] Pruebas de linaje, de reconstrucción aritmética y de relleno
 
 ### 6.3 Fase C — Ingesta y análisis con datos reales
 
@@ -604,9 +676,21 @@ otra cosa.
 - [ ] Adaptador de almacenamiento de objetos
 - [ ] Subir las fotos disponibles a una carpeta propia y generar la credencial
 - [ ] Probar el camino completo de descarga, recorte, extracción y carga
-- [ ] Caché por huella para no descargar ni reprocesar dos veces
-- [ ] Procesamiento por lotes e idempotencia
+- [x] Caché por huella para no reprocesar una fotografía ya leída
+- [ ] Caché por huella para no volver a descargar una fotografía ya traída
+- [x] Idempotencia: reprocesar no duplica imágenes ni recortes
+- [ ] Procesamiento por lotes, para que el histórico completo quepa en memoria
 - [ ] Trabajo de ingesta condicionado a que exista la credencial
+- [x] Conjunto de referencia con verdad conocida y casos negativos
+- [x] Herramienta para comparar motores de reconocimiento sobre los mismos datos
+- [x] Corregir la inclinación propia del display antes de comparar
+- [x] Recolocar el separador decimal por posición cuando los dígitos están completos
+- [x] Detectar el visor por su aspecto antes de leer, para no inventar sobre carcasa
+- [ ] Revisar la verdad conocida anotada a mano antes de darla por buena
+- [ ] Hacer reproducible el conjunto sintético fijando la fecha de corte (ver 4.17)
+- [ ] Versionar el manifiesto de modelos cuando el conjunto sea reproducible
+- [ ] Volver a medir con el histórico completo y decidir si hace falta un detector entrenado
+- [ ] Si la tasa de lecturas válidas queda por debajo del 70%, entrenar un detector de visor
 - [ ] Revisar la calibración de paneles contra el conjunto real
 - [ ] Análisis exploratorio sobre la base ya poblada, en cuaderno aparte
 - [ ] Decidir y aplicar la estrategia de relleno según lo que muestre el análisis
@@ -615,7 +699,7 @@ otra cosa.
 ### 6.4 Fase D — Publicación del paquete
 
 - [ ] Cambiar el sistema de construcción a `hatchling`
-- [ ] Renombrar la distribución, el módulo y el comando de consola
+- [x] Renombrar la distribución, el módulo y el comando de consola
 - [ ] Mover la configuración dentro del paquete y leerla como recurso
 - [ ] Completar los metadatos de distribución según el estándar de 5.6
 - [ ] Declarar extras opcionales para no arrastrar dependencias pesadas
