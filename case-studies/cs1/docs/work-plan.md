@@ -671,23 +671,25 @@ otra cosa.
 
 ### 6.3 Fase C — Ingesta y análisis con datos reales
 
-- [ ] Contrato de fuente de imágenes con implementación local
-- [ ] Adaptador de Google Drive con cuenta de servicio
+- [x] Contrato de fuente de imágenes con implementación local
+- [x] Adaptador de Google Drive con cuenta de servicio
+- [x] Adaptador de Drive por enlace, con clave de API
+- [x] Fuente de manifiesto: lista de direcciones, sin credencial
 - [ ] Adaptador de almacenamiento de objetos
 - [ ] Subir las fotos disponibles a una carpeta propia y generar la credencial
 - [ ] Probar el camino completo de descarga, recorte, extracción y carga
 - [x] Caché por huella para no reprocesar una fotografía ya leída
-- [ ] Caché por huella para no volver a descargar una fotografía ya traída
+- [x] Caché por huella para no volver a descargar una fotografía ya traída
 - [x] Idempotencia: reprocesar no duplica imágenes ni recortes
-- [ ] Procesamiento por lotes, para que el histórico completo quepa en memoria
-- [ ] Trabajo de ingesta condicionado a que exista la credencial
+- [x] Procesamiento por lotes, para que el histórico completo quepa en memoria
+- [x] Trabajo de ingesta condicionado a que exista la credencial
 - [x] Conjunto de referencia con verdad conocida y casos negativos
 - [x] Herramienta para comparar motores de reconocimiento sobre los mismos datos
 - [x] Corregir la inclinación propia del display antes de comparar
 - [x] Recolocar el separador decimal por posición cuando los dígitos están completos
 - [x] Detectar el visor por su aspecto antes de leer, para no inventar sobre carcasa
 - [ ] Revisar la verdad conocida anotada a mano antes de darla por buena
-- [ ] Hacer reproducible el conjunto sintético fijando la fecha de corte (ver 4.17)
+- [x] Hacer reproducible el conjunto sintético fijando la fecha de corte (ver 4.17)
 - [ ] Versionar el manifiesto de modelos cuando el conjunto sea reproducible
 - [ ] Volver a medir con el histórico completo y decidir si hace falta un detector entrenado
 - [ ] Si la tasa de lecturas válidas queda por debajo del 70%, entrenar un detector de visor

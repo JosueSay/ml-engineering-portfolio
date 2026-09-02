@@ -236,3 +236,106 @@ git push origin fuel-case-study --follow-tags
 
 Es una versión menor y no un parche porque añade funcionalidad compatible: el
 modelo de datos, la recuperación de faltantes y el linaje consultable.
+
+---
+
+# Commits de la fase C, primera parte
+
+Lo hecho hasta que lleguen las fotografías reales.
+
+## 1. Aislar las pruebas
+
+Corrige el fallo de integración continua.
+
+```bash
+git add case-studies/cs1/tests/conftest.py \
+        case-studies/cs1/src/fuel_price_gt/modeling/training.py
+git commit -m "fix(cs1): aislar las pruebas de la base real y asegurar el esquema
+
+Las pruebas escribian en la base del proyecto: cada corrida dejaba modelos y
+filas inventadas mezclados con los datos de verdad. Ahora se redirigen a un
+archivo temporal, y el aislamiento se aplica a todas sin que tengan que pedirlo.
+
+Ademas, entrenar registraba en la base sin garantizar que el esquema existiera.
+En una maquina donde ya estaba creada el fallo quedaba oculto; en una limpia,
+como la de integracion continua, salta."
+```
+
+## 2. Fecha de corte explícita
+
+```bash
+git add case-studies/cs1/config/config.yaml \
+        case-studies/cs1/src/fuel_price_gt/data/pipeline.py \
+        case-studies/cs1/tests/unit/test_cutoff.py
+git commit -m "fix(cs1): hacer reproducible el conjunto fijando la fecha de corte
+
+La serie se generaba hasta el dia de hoy, asi que dos corridas en dias
+distintos entrenaban sobre datos distintos sin que nada hubiera cambiado. Un
+pipeline cuyo conjunto se mueve solo por el paso del tiempo no es reproducible,
+y la reproducibilidad es un requisito del caso.
+
+El corte se resuelve en orden: lo que pida quien llama, lo declarado en
+configuracion, la ultima observacion real, y solo entonces el dia de hoy,
+avisando. Ese ultimo caso es el unico que rompe la reproducibilidad y no puede
+pasar en silencio."
+```
+
+## 3. La ingesta
+
+```bash
+git add case-studies/cs1/src/fuel_price_gt/ingestion/ \
+        case-studies/cs1/scripts/10_ingest_images.py \
+        case-studies/cs1/tests/unit/test_ingestion.py \
+        case-studies/cs1/Makefile \
+        case-studies/cs1/pyproject.toml \
+        case-studies/cs1/.env.example \
+        .github/workflows/cs1-ml-pipeline.yml
+git commit -m "feat(cs1): traer las fotografias de la fuente configurada
+
+El almacenamiento es infraestructura, no logica del caso: el pipeline habla con
+un contrato y cada proveedor es una implementacion intercambiable.
+
+Tres vias, y la diferencia no es tecnica sino sobre quien puede ver esas
+fotografias y cuanto cuesta mantener la lista:
+
+- manifest: una lista de direcciones ya hecha. No necesita credencial porque no
+  pregunta que hay en ninguna carpeta. Acepta enlaces de Drive tal cual y los
+  traduce a su direccion de descarga.
+- gdrive-public: recorre una carpeta compartida por enlace con una clave de API.
+  Descubre lo que se anada, sin dependencias nuevas.
+- gdrive: carpeta privada con cuenta de servicio, permiso de solo lectura. Deja
+  constancia de quien tiene acceso.
+
+Sin credencial se cae a la carpeta local en vez de fallar, que es lo que
+mantiene la integracion continua funcionando en ramas sin acceso.
+
+Dos cosas que solo importan con el conjunto completo: no volver a descargar lo
+ya traido, comparando por la huella que da el proveedor, y recorrer en lotes
+para que la memoria no dependa de cuantas fotografias haya.
+
+Con esto el flujo deja de omitir las etapas de datos en cuanto exista la
+credencial: hasta ahora tenerla no bastaba porque nadie la usaba para
+descargar."
+```
+
+## 4. Documentación
+
+```bash
+git add case-studies/cs1/docs/ case-studies/cs1/keys/README.md
+git commit -m "docs(cs1): guiar la conexion de la fuente de fotografias
+
+Compara las tres vias con su coste de configuracion y su implicacion sobre quien
+puede ver el material, con el paso a paso de cada una y los fallos habituales.
+
+Deja explicito lo que no conviene dar por supuesto: las fotografias originales
+no estan tratadas. El difuminado de caras ocurre al procesarlas, no antes, asi
+que lo que hay en el origen es el archivo tal como salio de la camara."
+```
+
+## Comprobar y empujar
+
+```bash
+cd case-studies/cs1 && make gates && cd ../..
+git log --oneline -4
+git push origin fuel-case-study
+```

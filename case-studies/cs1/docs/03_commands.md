@@ -57,6 +57,7 @@ make gates
 
 | Comando | Equivalente sin make | Qué hace |
 |---|---|---|
+| `make ingest` | `python scripts/10_ingest_images.py` | Trae las fotografías de la fuente configurada. `LIMIT=10` para probar |
 | `make extract` | `python scripts/12_extract_prices.py` | Lee los precios de las fotografías (Bronze) |
 | `make transform` | `python -m fuel_price_gt.cli build-data` | Construye Silver y Gold |
 | `make train` | `python -m fuel_price_gt.cli train --fuel regular` | Entrena y evalúa los horizontes configurados |
@@ -167,6 +168,7 @@ trabajo, no aquí.
 | `01_env_init.sh` | Crea `.env` desde la plantilla. Admite `--check` y `--force` |
 | `02_keys_init.sh` | Prepara `keys/`. Admite `--status` |
 | `03_gates.sh` | Puertas de calidad |
+| `10_ingest_images.py` | Etapa de ingesta, con caché de descarga y lotes |
 | `12_extract_prices.py` | Etapa de extracción, con caché por huella |
 | `20_db_init.py` | Crea el esquema y reporta su estado |
 | `15_quality_gate.py` | Compuerta de calidad |

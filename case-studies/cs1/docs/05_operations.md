@@ -76,6 +76,14 @@ saber si el fallo está en la lectura o en el recorte.
 
 Desbloquea: la fase C completa, y que la integración continua tenga datos.
 
+El paso a paso completo, con las comprobaciones y los fallos habituales, está
+en [07_image_source.md](07_image_source.md). Aquí queda el resumen.
+
+**Lo más importante: no compartir la carpeta como "cualquiera con el enlace".**
+Las fotografías originales no están tratadas —el difuminado de caras ocurre al
+procesarlas, no antes— y un enlace se propaga sin que se sepa quién lo tiene.
+Se comparte solo con el correo de la cuenta de servicio, como lectora.
+
 ### Crear la cuenta de servicio
 
 1. En la consola de Google Cloud, crear un proyecto.
