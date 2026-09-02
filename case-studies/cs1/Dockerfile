@@ -42,6 +42,7 @@ RUN mkdir -p \
         data/processed/bronze \
         data/processed/silver \
         data/processed/gold \
+        data/db \
         models/vendor \
         models/trained \
         reports \
