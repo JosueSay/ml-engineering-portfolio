@@ -19,7 +19,7 @@ import numpy as np
 class DisplayCrop:
     """Visor aislado del resto del panel.
 
-    `encontrado_automaticamente` distingue si el visor se localizó por sus
+    `auto_detected` distingue si el visor se localizó por sus
     características o si se cayó al recorte calibrado. Sin ese dato no se
     puede separar un fallo de localización de un fallo de lectura al analizar
     los rechazos.
