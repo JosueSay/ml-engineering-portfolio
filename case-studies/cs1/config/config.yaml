@@ -4,13 +4,26 @@
 # =============================================================================
 
 paths:
-  datos_raw: "datos"
-  bronze: "datos_procesados/bronze"      # extracción cruda por imagen (JSON)
-  silver: "datos_procesados/silver"      # tabla limpia precio x fecha x combustible
-  gold: "datos_procesados/gold"          # dataset con features, listo para modelar
-  augmented: "datos_procesados/augmented"
+  # Estructura unica de datos. Todo lo que cuelga de data/ queda fuera del
+  # control de versiones: el repositorio guarda codigo, no fotografias.
+  datos_raw: "data/raw"                       # originales, nunca se editan
+  interim: "data/interim"                     # recortes de la franja de precios
+  bronze: "data/processed/bronze"             # extracción cruda por imagen
+  silver: "data/processed/silver"             # tabla limpia precio x fecha x combustible
+  gold: "data/processed/gold"                 # dataset con features, listo para modelar
+  augmented: "data/processed/augmented"
   models: "models"
+  models_vendor: "models/vendor"              # pesos de terceros, desechables
+  models_trained: "models/trained"            # artefactos propios del entrenamiento
   reports: "reports"
+  calibracion: "config/panelCalibration.json"
+
+archivos:
+  # Los nombres estaban repetidos en el modulo que escribe y en el que lee.
+  # Cambiar uno solo rompia la cadena sin que nada avisara.
+  silver: "precios_reales.csv"
+  gold: "dataset_modelado.csv"
+  evaluacion: "evaluacion_modelos.csv"
 
 extraccion:
   # Orden físico fijo de los paneles del dispensor Shell, izquierda -> derecha
@@ -32,6 +45,9 @@ negocio:
   unidad: "galon"
 
 modelado:
+  filas_minimas_entrenamiento: 12   # por debajo de esto no hay serie que aprender
+  historia_sintetica_semanas: 52    # ventana a generar cuando no hay ancla real
+  margen_minimo_entrenamiento_semanas: 6   # colchon sobre la ventana de prueba
   test_size_semanas: 6          # ventana de test (validación temporal estricta, sin leakage)
   semilla: 42
   baseline: "persistencia"      # último precio conocido
