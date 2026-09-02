@@ -171,6 +171,11 @@ Para que la publicación exija una aprobación manual en vez de dispararse sola:
 
 Hoy el repositorio solo tiene el entorno de páginas.
 
+Sin el entorno, el paso de publicación no encuentra dónde correr y el flujo
+falla ahí; sin la revisión, publica sin preguntar. El procedimiento completo
+—qué se publica, cómo se dispara y qué comprobar después— está en
+[08_publishing.md](08_publishing.md).
+
 ## 5. Almacenamiento de objetos
 
 Desbloquea: la alternativa a Drive, si se prefiere servidor propio.

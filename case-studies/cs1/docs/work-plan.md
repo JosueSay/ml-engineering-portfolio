@@ -700,17 +700,17 @@ otra cosa.
 
 ### 6.4 Fase D — Publicación del paquete
 
-- [ ] Cambiar el sistema de construcción a `hatchling`
+- [x] Cambiar el sistema de construcción a `hatchling`
 - [x] Renombrar la distribución, el módulo y el comando de consola
-- [ ] Mover la configuración dentro del paquete y leerla como recurso
-- [ ] Completar los metadatos de distribución según el estándar de 5.6
-- [ ] Declarar extras opcionales para no arrastrar dependencias pesadas
-- [ ] Versión leída de una sola fuente
-- [ ] Comprobar que la instalación limpia permite el flujo completo sin clonar
+- [x] Mover la configuración dentro del paquete y leerla como recurso
+- [x] Completar los metadatos de distribución según el estándar de 5.6
+- [x] Declarar extras opcionales para no arrastrar dependencias pesadas
+- [x] Versión leída de una sola fuente
+- [x] Comprobar que la instalación limpia permite el flujo completo sin clonar
 - [ ] Guardar la credencial del índice de pruebas en `keys/`
-- [ ] Trabajo de publicación disparado por etiqueta
-- [ ] Verificación cruzada instalando desde el índice de pruebas en dos sistemas
-- [ ] Documentar el procedimiento de publicación en `docs/`
+- [x] Trabajo de publicación disparado por etiqueta
+- [x] Verificación cruzada instalando desde el índice de pruebas en dos sistemas
+- [x] Documentar el procedimiento de publicación en `docs/`
 
 `fuel-price-gt` está libre en el índice público y en el de pruebas, verificado.
 
