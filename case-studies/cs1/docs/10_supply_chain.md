@@ -65,6 +65,41 @@ docker run -p 19010:8000 \
   ghcr.io/josuesay/fuel-price-gt:0.3.3
 ```
 
+## Análisis de vulnerabilidades de la imagen
+
+Dependabot no cubre la imagen. Ve dos cosas: lo que `pyproject.toml` declara y
+la etiqueta de la imagen base. No ve lo que hay realmente dentro del
+contenedor, que son 192 paquetes de la distribución y 39 de Python una vez
+resueltas las dependencias transitivas.
+
+Ese hueco se midió antes de decidir si hacía falta un escáner. El primer
+análisis de la imagen dio 68 vulnerabilidades graves, **todas de paquetes de la
+distribución y ninguna del lado de Python**. Es decir: Dependabot cubre bien lo
+que le toca, y lo que quedaba fuera era justo lo que no ve.
+
+De las 68, treinta tenían arreglo publicado. No eran un problema del escáner
+sino del `Dockerfile`: la imagen base se reconstruye cada cierto tiempo y entre
+reconstrucciones acumula actualizaciones de seguridad de la distribución ya
+disponibles. Un `apt-get upgrade` en la construcción cerró las treinta. Las 38
+restantes no tienen arreglo publicado.
+
+### Dónde corta y dónde solo informa
+
+| Flujo | Qué analiza | Qué hace |
+|---|---|---|
+| Pipeline, trabajo 7 | La imagen recién construida | Informa. El resultado va a la pestaña de seguridad |
+| Publicación, trabajo 4 | La imagen candidata, antes de subirla | **Corta** si hay algo grave con arreglo disponible |
+
+La diferencia es deliberada. La mayor parte de lo que un escáner encuentra en
+una imagen son paquetes de la distribución sin arreglo publicado: cortar el
+pipeline por algo que nadie puede arreglar entrena a ignorar el rojo, y a
+partir de ahí el rojo deja de significar nada.
+
+En la publicación sí corta, y solo por lo que tiene arreglo. Una imagen
+publicada con una vulnerabilidad que se podía cerrar la hereda quien la
+descargue. Sin `ignore-unfixed` la compuerta estaría permanentemente en rojo y
+sería igual de inútil.
+
 ## Lo que hay que activar en GitHub
 
 El archivo de configuración solo describe qué actualizar. Que se actualice
@@ -78,6 +113,7 @@ En Settings, Advanced Security:
 | Dependabot malware alerts | Avisa de dependencias con software malicioso | Solo se avisa de vulnerabilidades conocidas |
 | Grouped security updates | Agrupa también las propuestas de seguridad | Una propuesta por vulnerabilidad |
 | CodeQL analysis | Análisis de seguridad del código propio | Solo se revisa lo que viene de fuera |
+| Code scanning | Recibe el resultado del análisis de la imagen | El análisis corre y su resultado no se ve en ningún sitio |
 
 Y en el registro de contenedores, hacer pública la imagen la primera vez: nace
 privada, y una imagen que nadie puede descargar no sirve de entregable.
@@ -100,7 +136,8 @@ Una actualización automática no se fusiona por venir de una máquina.
    pruebas y el contenedor.
 2. Si toca una dependencia de producción, que el cambio de versión no sea
    mayor. Un salto de mayor puede cambiar la interfaz.
-3. Si toca la imagen base, que `make docker-smoke` siga pasando en local.
+3. Si toca la imagen base, que `make docker-smoke` siga pasando en local, y
+   mirar si el análisis de la imagen mejoró o empeoró.
 
 Lo que la integración continua no cubre en una propuesta de cambio: el trabajo
 del contenedor se salta en propuestas hacia `main`, así que ese tercer punto es

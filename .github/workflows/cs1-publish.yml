@@ -234,6 +234,31 @@ jobs:
             type=match,pattern=cs1-v(.*),group=1
             type=raw,value=latest
 
+      # Se construye antes de publicar para poder analizarla. Cortar aqui es
+      # distinto de cortar en el pipeline: una imagen publicada con una
+      # vulnerabilidad que tiene arreglo la hereda quien la descargue.
+      - name: Construir para analizar
+        uses: docker/build-push-action@v7
+        with:
+          context: case-studies/cs1
+          target: production
+          load: true
+          tags: fuel-price-gt:candidata
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Rechazar si hay algo grave con arreglo disponible
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: fuel-price-gt:candidata
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          # Sin esto, la compuerta estaria siempre en rojo por vulnerabilidades
+          # que la distribucion aun no ha arreglado, y dejaria de significar
+          # nada. Lo que se exige es que no quede fuera nada que se pueda cerrar.
+          ignore-unfixed: true
+          exit-code: "1"
+
       - name: Construir y publicar
         uses: docker/build-push-action@v7
         with:
