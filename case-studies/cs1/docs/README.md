@@ -16,6 +16,7 @@ está el detalle.
 | [06_data_model.md](06_data_model.md) | Modelo de datos, linaje y tratamiento de faltantes |
 | [07_image_source.md](07_image_source.md) | Conectar Google Drive paso a paso |
 | [08_publishing.md](08_publishing.md) | Construir, verificar y publicar el paquete |
+| [09_ci.md](09_ci.md) | Qué comprueba cada flujo de integración continua y cómo leer un fallo |
 | [work-plan.md](work-plan.md) | Diagnóstico, decisiones tomadas y pendientes |
 
 Las divisiones de commits de cada fase quedan como registro de cómo se
@@ -33,6 +34,7 @@ quedó, con el motivo del descarte.
 - **Buscando un comando**: [03_commands.md](03_commands.md), o `make help`.
 - **Añadiendo un valor de configuración**: [02_environment.md](02_environment.md)
   explica los tres niveles y cómo decidir en cuál va.
+- **Ante una corrida en rojo**: [09_ci.md](09_ci.md).
 - **Entendiendo el estado del caso**: [work-plan.md](work-plan.md).
 
 ## Las tres reglas que explican casi todo
