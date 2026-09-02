@@ -20,7 +20,7 @@ from xgboost import XGBRegressor
 
 from ..config import load_config, resolve_path
 from ..data.features import MODEL_FEATURES
-from ..db import record_trained_model, session_scope
+from ..db import create_schema, record_trained_model, session_scope
 
 
 @dataclass
@@ -163,6 +163,9 @@ def train_model(
     # linaje. Se escribe en los dos porque responden preguntas distintas: el
     # manifiesto dice que se entreno sin abrir nada, la base permite ir desde
     # una prediccion hasta la fotografia que la sostiene.
+    # El esquema se asegura aqui porque entrenar no deberia fallar solo porque
+    # nadie inicializo la base antes. Es idempotente: si ya esta, no hace nada.
+    create_schema()
     with session_scope() as sesion:
         record_trained_model(
             sesion,
