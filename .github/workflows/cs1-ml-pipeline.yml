@@ -277,6 +277,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: code-quality
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v7
 
@@ -311,3 +314,22 @@ jobs:
       - name: Detener contenedor
         if: always()
         run: docker stop gt-smoke || true
+
+      # Informa, no bloquea. La mayor parte de lo que encuentra son paquetes de
+      # la distribucion sin arreglo publicado: cortar el pipeline por algo que
+      # nadie puede arreglar entrena a ignorar el rojo. Lo accionable se corta
+      # en el flujo de publicacion, que es donde importa.
+      - name: Analizar vulnerabilidades de la imagen
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: fuel-price-gt:ci
+          scanners: vuln
+          format: sarif
+          output: trivy.sarif
+          exit-code: "0"
+
+      - name: Publicar el resultado en la pestana de seguridad
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy.sarif
+          category: contenedor

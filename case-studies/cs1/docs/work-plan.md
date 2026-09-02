@@ -731,6 +731,8 @@ sus vulnerabilidades pasan a ser de quien lo publicó.
 - [x] Publicar la imagen de contenedor en el registro, desde la misma etiqueta
 - [ ] Activar las actualizaciones de versión en la configuración del repositorio
 - [ ] Activar las alertas de software malicioso y las actualizaciones de seguridad agrupadas
+- [x] Analizar vulnerabilidades de la imagen, informando en el pipeline y cortando al publicar
+- [x] Cerrar las vulnerabilidades con arreglo disponible en la construcción de la imagen
 - [ ] Activar el análisis de código
 - [ ] Hacer pública la imagen del registro de contenedores
 - [ ] Fusionar a `main`: la configuración de dependencias solo se lee de la rama por defecto
