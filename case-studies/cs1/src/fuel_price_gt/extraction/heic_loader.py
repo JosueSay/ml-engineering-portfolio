@@ -7,6 +7,7 @@ negocio pide usar para la recomendación final.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 from dataclasses import dataclass
 from datetime import datetime
@@ -20,6 +21,19 @@ from PIL.ExifTags import TAGS
 logger = logging.getLogger(__name__)
 
 
+def file_fingerprint(path: Path) -> str:
+    """Huella del archivo, leyéndolo por bloques.
+
+    Por bloques y no de una vez porque una fotografía de móvil ronda los dos
+    megabytes y el histórico completo son miles.
+    """
+    digest = hashlib.sha256()
+    with open(path, 'rb') as fh:
+        for bloque in iter(lambda: fh.read(65536), b''):
+            digest.update(bloque)
+    return digest.hexdigest()
+
+
 @dataclass
 class LoadedImage:
     """Imagen en memoria junto con su fecha real de captura.
@@ -27,9 +41,14 @@ class LoadedImage:
     La fecha sale de los metadatos del archivo, no de cuándo se procesó: es
     la que ancla cada precio en la serie temporal. Puede ser `None` si los
     metadatos se perdieron, y entonces esa lectura no puede fecharse.
+
+    La huella `sha256` es del archivo tal como llegó, antes de cualquier
+    tratamiento: es la identidad que permite saber si una fotografía ya se
+    procesó, aunque llegue con otro nombre.
     """
     path: Path
     array: np.ndarray          # HxWx3 uint8 RGB
+    sha256: str
     captured_at: datetime | None
     width: int
     height: int
@@ -67,6 +86,7 @@ def load_heic(path: Path | str) -> LoadedImage:
     return LoadedImage(
         path=path,
         array=arr,
+        sha256=file_fingerprint(path),
         captured_at=captured_at,
         width=arr.shape[1],
         height=arr.shape[0],
@@ -100,4 +120,11 @@ def load_image(path: Path | str) -> LoadedImage:
             captured_at = datetime.strptime(raw, "%Y:%m:%d %H:%M:%S")
     except Exception as exc:  # noqa: BLE001  # EXIF ausente o corrupto no debe abortar la carga
         logger.warning("Sin fecha EXIF utilizable en %s: %s", path.name, exc)
-    return LoadedImage(path=path, array=arr, captured_at=captured_at, width=arr.shape[1], height=arr.shape[0])
+    return LoadedImage(
+        path=path,
+        array=arr,
+        sha256=file_fingerprint(path),
+        captured_at=captured_at,
+        width=arr.shape[1],
+        height=arr.shape[0],
+    )
