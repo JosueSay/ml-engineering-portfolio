@@ -7,6 +7,14 @@
     <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
     <link rel="stylesheet" href="../assets/css/branding.css" />
     <link rel="stylesheet" href="../assets/css/layout.css" />
+
+    <link rel="modulepreload" href="../assets/js/app.js" />
+    <link rel="modulepreload" href="../assets/js/layout.js" />
+    <link rel="modulepreload" href="../assets/js/i18n.js" />
+    <link rel="modulepreload" href="../assets/js/sidebar.js" />
+    <link rel="modulepreload" href="../assets/js/theme.js" />
+    <link rel="preload" as="fetch" type="application/json" crossorigin="anonymous" href="../assets/i18n/es.json" />
+    <link rel="preload" as="fetch" type="application/json" crossorigin="anonymous" href="../assets/i18n/en.json" />
     <script>
       (function () {
         var t = localStorage.getItem("portfolio.theme");
@@ -17,57 +25,57 @@
     </script>
   </head>
   <body data-page="case-studies">
-    <main id="content" hidden>
+    <main id="content">
       <div class="content-inner">
         <header class="page-header">
-          <p class="page-header__eyebrow" data-i18n="case.cs1.eyebrow"></p>
-          <h1 data-i18n="case.cs1.title"></h1>
-          <p class="page-header__subtitle" data-i18n="case.cs1.subtitle"></p>
+          <p class="page-header__eyebrow" data-i18n="case.cs1.eyebrow">Caso de estudio 01</p>
+          <h1 data-i18n="case.cs1.title">Precios de combustible en Guatemala</h1>
+          <p class="page-header__subtitle" data-i18n="case.cs1.subtitle">Extracción, pronóstico y recomendación, con trazabilidad de punta a punta.</p>
         </header>
 
         <section class="case-section">
-          <h2 data-i18n="case.cs1.problem.title"></h2>
-          <p data-i18n="case.cs1.problem.body"></p>
+          <h2 data-i18n="case.cs1.problem.title">El problema</h2>
+          <p data-i18n="case.cs1.problem.body">Cuándo conviene llenar el tanque. No cuánto cuesta hoy, que se ve en el rótulo, sino si esperar una semana sale mejor o peor. La respuesta se predice a 1, 2 y 4 semanas a partir de fotografías de tótems de gasolinera.</p>
         </section>
 
         <section class="case-section">
-          <h2 data-i18n="case.cs1.turn.title"></h2>
-          <p data-i18n="case.cs1.turn.body"></p>
+          <h2 data-i18n="case.cs1.turn.title">Lo que cambió el enfoque</h2>
+          <p data-i18n="case.cs1.turn.body">La suposición era que extraer los precios sería mecánico. Al mirar los recortes, 10 de 16 no contenían display, y sobre los que sí, el lector devolvía 4??8 donde el rótulo decía 43.19. La causa parecía perspectiva; rectificar no cambió nada. Los dígitos son cursivos por diseño tipográfico. Corregir la inclinación llevó la lectura de 0 a 4 de 5 dígitos. Pero la lección de fondo fue otra: la extracción nunca va a ser completa, y eso no es un fallo a corregir sino la condición del problema.</p>
         </section>
 
         <section class="case-section">
-          <h2 data-i18n="case.cs1.lineage.title"></h2>
-          <p data-i18n="case.cs1.lineage.body"></p>
+          <h2 data-i18n="case.cs1.lineage.title">Un dato que no se puede rastrear no sirve</h2>
+          <p data-i18n="case.cs1.lineage.body">Cada precio declara de dónde salió: leído de una foto, recuperado del total de una factura, interpolado entre dos lecturas reales, imputado o generado. Esa procedencia viaja hasta el modelo como una entrada más, porque un dato imputado y uno leído no valen lo mismo. Y el encadenamiento hasta la imagen original son claves foráneas, no un campo que alguien mantiene: así no se puede desincronizar. Ante una recomendación mala se puede saber si falló el modelo o si falló la lectura.</p>
         </section>
 
         <section class="case-section">
-          <h2 data-i18n="case.cs1.delivery.title"></h2>
-          <p data-i18n="case.cs1.delivery.body"></p>
+          <h2 data-i18n="case.cs1.delivery.title">Qué se entrega</h2>
+          <p data-i18n="case.cs1.delivery.body">Un paquete instalable y una imagen de contenedor, publicados desde la misma etiqueta y con el mismo número de versión. Quien lo instale puede ejecutar el flujo completo desde una carpeta vacía, sin clonar el repositorio.</p>
           <div class="case-links">
             <a class="link-pill" href="https://test.pypi.org/project/fuel-price-gt/"
-               data-i18n="case.cs1.link.package"></a>
+               data-i18n="case.cs1.link.package">Paquete</a>
             <a class="link-pill" href="https://github.com/JosueSay/ml-engineering-portfolio/pkgs/container/fuel-price-gt"
-               data-i18n="case.cs1.link.image"></a>
+               data-i18n="case.cs1.link.image">Imagen</a>
             <a class="link-pill" href="https://github.com/JosueSay/ml-engineering-portfolio/tree/main/case-studies/cs1"
-               data-i18n="case.cs1.link.code"></a>
+               data-i18n="case.cs1.link.code">Código</a>
             <a class="link-pill" href="https://github.com/JosueSay/ml-engineering-portfolio/tree/main/case-studies/cs1/docs"
-               data-i18n="case.cs1.link.docs"></a>
+               data-i18n="case.cs1.link.docs">Documentación</a>
           </div>
         </section>
 
         <section class="case-section">
-          <h2 data-i18n="case.cs1.stack.title"></h2>
+          <h2 data-i18n="case.cs1.stack.title">Decisiones que sostienen el resto</h2>
           <ul class="case-list">
-            <li data-i18n="case.cs1.stack.a"></li>
-            <li data-i18n="case.cs1.stack.b"></li>
-            <li data-i18n="case.cs1.stack.c"></li>
-            <li data-i18n="case.cs1.stack.d"></li>
+            <li data-i18n="case.cs1.stack.a">Lectura determinista de siete segmentos, sin tarjeta gráfica. Un modelo de visión pesado se probó y se descartó: 1.5 GB de pesos y un repositorio que cambió los pesos bajo la misma rama, de modo que descargarlo dos veces daba modelos distintos con el mismo nombre.</li>
+            <li data-i18n="case.cs1.stack.b">Ninguna imagen entra al control de versiones. Los datos viven fuera y se descargan; el repositorio guarda código y documentación.</li>
+            <li data-i18n="case.cs1.stack.c">La compuerta de calidad falla la corrida, no informa. Un modelo que no gana a la referencia simple no pasa.</li>
+            <li data-i18n="case.cs1.stack.d">Publicar exige aprobación manual. Una versión subida no se puede reemplazar, solo retirar, y lo irreversible es lo que se detiene a mirar.</li>
           </ul>
         </section>
 
         <section class="case-section">
-          <h2 data-i18n="case.cs1.open.title"></h2>
-          <p data-i18n="case.cs1.open.body"></p>
+          <h2 data-i18n="case.cs1.open.title">Lo que sigue abierto</h2>
+          <p data-i18n="case.cs1.open.body">Las mediciones de extracción salen de 16 fotografías y no aguantan una conclusión. Con el histórico completo hay que volver a medir la proporción de lecturas válidas y decidir, según lo que muestre, si hace falta entrenar un detector en vez de seguir afinando reglas. El umbral está fijado de antemano en 70%, para no moverlo después de ver el resultado.</p>
         </section>
       </div>
     </main>

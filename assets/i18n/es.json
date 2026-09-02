@@ -53,5 +53,10 @@
   "case.cs1.stack.c": "La compuerta de calidad falla la corrida, no informa. Un modelo que no gana a la referencia simple no pasa.",
   "case.cs1.stack.d": "Publicar exige aprobación manual. Una versión subida no se puede reemplazar, solo retirar, y lo irreversible es lo que se detiene a mirar.",
   "case.cs1.open.title": "Lo que sigue abierto",
-  "case.cs1.open.body": "Las mediciones de extracción salen de 16 fotografías y no aguantan una conclusión. Con el histórico completo hay que volver a medir la proporción de lecturas válidas y decidir, según lo que muestre, si hace falta entrenar un detector en vez de seguir afinando reglas. El umbral está fijado de antemano en 70%, para no moverlo después de ver el resultado."
+  "case.cs1.open.body": "Las mediciones de extracción salen de 16 fotografías y no aguantan una conclusión. Con el histórico completo hay que volver a medir la proporción de lecturas válidas y decidir, según lo que muestre, si hace falta entrenar un detector en vez de seguir afinando reglas. El umbral está fijado de antemano en 70%, para no moverlo después de ver el resultado.",
+  "workshop.a01.title": "Pipeline con scikit-learn",
+  "workshop.a01.desc": "Extracción, filtrado, manejo de tipos y separación del conjunto, con reducción de dimensionalidad. Empaquetado como librería instalable y con su cuaderno.",
+  "workshop.a03.title": "Calibración de hiperparámetros",
+  "workshop.a03.desc": "Regresión lineal con búsqueda en rejilla, evaluación con métricas estandarizadas y análisis de sobreajuste y de coeficientes. Empaquetado como librería instalable.",
+  "page.workshops.empty": "Los dos talleres están en el repositorio, con su código y sus cuadernos."
 }

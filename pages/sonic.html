@@ -7,6 +7,14 @@
     <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
     <link rel="stylesheet" href="../assets/css/branding.css" />
     <link rel="stylesheet" href="../assets/css/layout.css" />
+
+    <link rel="modulepreload" href="../assets/js/app.js" />
+    <link rel="modulepreload" href="../assets/js/layout.js" />
+    <link rel="modulepreload" href="../assets/js/i18n.js" />
+    <link rel="modulepreload" href="../assets/js/sidebar.js" />
+    <link rel="modulepreload" href="../assets/js/theme.js" />
+    <link rel="preload" as="fetch" type="application/json" crossorigin="anonymous" href="../assets/i18n/es.json" />
+    <link rel="preload" as="fetch" type="application/json" crossorigin="anonymous" href="../assets/i18n/en.json" />
     <!-- Compiled from assets/scss/sonic.scss by the build step -->
     <link rel="stylesheet" href="../assets/css/sonic.css" />
     <script>
@@ -19,12 +27,12 @@
     </script>
   </head>
   <body data-page="sonic">
-    <main id="content" hidden>
+    <main id="content">
       <div class="content-inner">
         <header class="page-header">
-          <p class="page-header__eyebrow" data-i18n="nav.sonic"></p>
-          <h1 data-i18n="page.sonic.title"></h1>
-          <p class="page-header__subtitle" data-i18n="page.sonic.subtitle"></p>
+          <p class="page-header__eyebrow" data-i18n="nav.sonic">Sonic</p>
+          <h1 data-i18n="page.sonic.title">Sonic</h1>
+          <p class="page-header__subtitle" data-i18n="page.sonic.subtitle">Un guiño de pixel-art: Sonic corriendo, hecho solo con box-shadow en SCSS.</p>
         </header>
 
         <!-- Self-contained pixel-art scene; all animation lives in sonic.css -->
