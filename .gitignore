@@ -9,3 +9,38 @@ assets/css/sonic.css
 
 # assembled site (CI artifact)
 _site/
+
+# Entornos virtuales
+.venv/
+venv/
+venv_test/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+
+# --- Credenciales y entorno ---------------------------------------------------
+# La carpeta entera, no un patron de nombre: ignorar por nombre falla en cuanto
+# alguien guarda el archivo tal como lo descargo del proveedor.
+keys/*
+!keys/.gitkeep
+!keys/README.md
+
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+.env
+.envrc
+.env.local
+.env.*
+!.env.example
+!.env.*.example

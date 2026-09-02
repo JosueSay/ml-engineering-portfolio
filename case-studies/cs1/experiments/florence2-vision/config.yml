@@ -1,0 +1,18 @@
+models:
+  path_storage_models: "./models"
+  model_hfa: "microsoft/Florence-2-large"
+  link_hfa: "https://huggingface.co/microsoft/Florence-2-large"
+  revision_hfa: "21a599d414c4d928c9032694c424fb94458e3594"
+
+data:
+  path_storage_data: "./data"
+  path_raw_data: "./data/raw"
+
+logging:
+  path_storage_log: "./logs"
+  level: "INFO"
+
+output:
+  path_storage_output: "./output"
+
+

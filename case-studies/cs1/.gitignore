@@ -1,0 +1,77 @@
+# =============================================================================
+# Exclusiones del caso de estudio CS1
+#
+# Criterio: el repositorio guarda codigo y documentacion. Los datos, los pesos
+# de modelos y las credenciales viven fuera y se obtienen con los scripts de
+# arranque.
+# =============================================================================
+
+# --- Credenciales -------------------------------------------------------------
+# La carpeta entera, no un patron de nombre: ignorar por nombre falla en cuanto
+# alguien guarda el archivo tal como lo descargo del proveedor.
+keys/*
+!keys/.gitkeep
+!keys/README.md
+
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# --- Entorno ------------------------------------------------------------------
+.env
+.envrc
+.env.local
+.env.*
+!.env.example
+!.env.*.example
+
+# --- Datos --------------------------------------------------------------------
+# Ninguna imagen entra al control de versiones, ni siquiera de muestra.
+data/**
+!data/**/
+!data/**/.gitkeep
+
+*.heic
+*.HEIC
+*.jpg
+*.jpeg
+*.png
+!assets/**/*.png
+!assets/**/*.jpg
+
+# --- Modelos ------------------------------------------------------------------
+# Los pesos no se versionan; si el manifiesto.
+models/**
+!models/**/
+!models/**/.gitkeep
+
+# El manifiesto SI deberia versionarse: es texto y deja constancia de con que
+# datos se entreno cada modelo. Hoy no se versiona porque la serie sintetica se
+# genera hasta la fecha actual, asi que la huella del conjunto cambia cada dia
+# y el archivo ensuciaria el historial sin que nada real hubiera cambiado.
+# Se versionara en cuanto los datos sean reales y el conjunto, reproducible.
+models/manifest.json
+
+# --- Artefactos de ejecucion ---------------------------------------------------
+logs/*
+!logs/.gitkeep
+
+output/*
+!output/.gitkeep
+
+reports/
+dist/
+build/
+
+# --- Python -------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.venv-ci/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/

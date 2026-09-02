@@ -1,0 +1,115 @@
+# Composicion del caso de estudio CS1.
+#
+# Nombres: prefijo de proyecto para que no choquen con contenedores de otras
+# aplicaciones en la misma maquina, y nombre tematico consistente para que se
+# recuerde que hace cada uno.
+#
+# Puertos: siempre desde variable, con valor por defecto dentro del rango
+# reservado del proyecto (19000-19099), elegido por debajo de donde el sistema
+# empieza a asignar puertos efimeros y fuera de los puertos habituales de
+# desarrollo.
+#
+# Datos y modelos van en volumen, nunca dentro de la imagen.
+
+name: fuel-price-gt
+
+services:
+  # Construye las capas de datos y entrena. Corre una vez antes de la API y
+  # deja sus artefactos en los volumenes.
+  harvester:
+    container_name: gt-harvester
+    build:
+      context: .
+      target: production
+    command: >
+      sh -c "fuel-price-gt build-data && fuel-price-gt train --fuel ${FUEL:-regular}"
+    volumes:
+      - raw-data:/app/data/raw
+      - interim-data:/app/data/interim
+      - processed-data:/app/data/processed
+      - database:/app/data/db
+      - models:/app/models
+      - reports:/app/reports
+    environment:
+      # La base vive en su propio volumen para poder respaldarla o inspeccionarla
+      # sin arrastrar las fotografias, que pesan mucho mas.
+      DATABASE_URL: sqlite+pysqlite:///data/db/fuel-prices.db
+    networks: [guild]
+    restart: "no"
+
+  api:
+    container_name: gt-muaddib
+    build:
+      context: .
+      target: production
+    depends_on:
+      harvester:
+        condition: service_completed_successfully
+    ports:
+      - "${API_PORT:-19010}:8000"
+    volumes:
+      - processed-data:/app/data/processed
+      - database:/app/data/db
+      - models:/app/models
+      - reports:/app/reports
+    environment:
+      DATABASE_URL: sqlite+pysqlite:///data/db/fuel-prices.db
+    networks: [guild]
+    restart: unless-stopped
+
+  # Explorador de la base: permite recorrer el linaje desde el navegador sin
+  # instalar cliente alguno. El motor embebido es un archivo, asi que lo que
+  # hace falta compartir es el volumen, no un puerto de base de datos.
+  db-browser:
+    container_name: gt-sietch
+    image: python:3.12-slim
+    profiles: ["tools"]
+    command: >
+      sh -c "pip install --no-cache-dir --quiet datasette
+      && datasette serve /data/fuel-prices.db --host 0.0.0.0 --port 8001"
+    ports:
+      - "${DB_BROWSER_PORT:-19030}:8001"
+    volumes:
+      - database:/data:ro
+    networks: [guild]
+    restart: unless-stopped
+
+  # Bajo demanda:  docker compose run --rm cli recommend --fuel regular
+  cli:
+    container_name: gt-thopter
+    build:
+      context: .
+      target: production
+    profiles: ["tools"]
+    entrypoint: ["fuel-price-gt"]
+    volumes:
+      - raw-data:/app/data/raw
+      - interim-data:/app/data/interim
+      - processed-data:/app/data/processed
+      - database:/app/data/db
+      - models:/app/models
+      - reports:/app/reports
+    environment:
+      DATABASE_URL: sqlite+pysqlite:///data/db/fuel-prices.db
+    networks: [guild]
+
+  # Bajo demanda:  docker compose --profile test run --rm tests
+  tests:
+    build:
+      context: .
+      target: test
+    profiles: ["test"]
+    command: pytest -q
+    networks: [guild]
+
+volumes:
+  database:
+  raw-data:
+  interim-data:
+  processed-data:
+  models:
+  reports:
+
+networks:
+  guild:
+    name: gt-guild

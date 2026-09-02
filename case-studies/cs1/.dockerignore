@@ -1,0 +1,40 @@
+# Lo que no debe entrar en el contexto de construccion.
+#
+# Los datos, los modelos y las credenciales entran por volumen o por variable
+# de entorno, nunca horneados en la imagen.
+
+# Credenciales
+keys/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Datos y artefactos
+data/
+models/
+reports/
+logs/
+output/
+
+# Exploracion: no forma parte del camino productivo
+experiments/
+notebooks/
+
+# Entornos y caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Control de versiones y documentacion
+.git/
+.github/
+docs/

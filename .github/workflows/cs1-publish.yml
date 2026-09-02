@@ -1,0 +1,283 @@
+name: CS1 - Publicar el paquete
+
+# Se dispara por etiqueta y no en cada empujon: publicar es una accion con
+# efecto fuera del repositorio y no se deshace. Una version subida al indice no
+# se puede reemplazar, solo retirar, asi que conviene que salga de un acto
+# deliberado.
+#
+# El entorno declarado exige aprobacion manual antes de publicar. Es la ultima
+# oportunidad de mirar que se esta subiendo.
+
+on:
+  push:
+    tags:
+      - "cs1-v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Construir y verificar sin publicar
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: 1. Construir y verificar
+    runs-on: ubuntu-latest
+    # Solo este trabajo clona el repositorio. Los otros dos parten de la
+    # distribucion ya construida, y por eso esa carpeta no existe en ellos: si
+    # el valor por defecto fuera global, cualquier paso que se olvidara de
+    # anular la ruta fallaria sin relacion aparente con lo que hace.
+    defaults:
+      run:
+        working-directory: case-studies/cs1
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar herramientas de construccion
+        run: python -m pip install --upgrade build twine
+
+      - name: Comprobar que la etiqueta coincide con la version del paquete
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          declarada=$(grep -oP '__version__ = "\K[^"]+' src/fuel_price_gt/__init__.py)
+          etiqueta="${GITHUB_REF_NAME#cs1-v}"
+          echo "version del paquete: $declarada"
+          echo "etiqueta:            $etiqueta"
+          if [ "$declarada" != "$etiqueta" ]; then
+            echo "::error::La etiqueta y la version del paquete no coinciden."
+            echo "Publicar asi dejaria en el indice una version que el codigo no declara."
+            exit 1
+          fi
+
+      - name: Construir
+        run: python -m build
+
+      - name: Verificar los metadatos
+        run: python -m twine check dist/*
+
+      - name: Comprobar que no se cuela nada indebido
+        run: |
+          python - <<'EOF'
+          import sys, zipfile, glob
+          rueda = glob.glob("dist/*.whl")[0]
+          with zipfile.ZipFile(rueda) as z:
+              nombres = z.namelist()
+          prohibido = [
+              n for n in nombres
+              if any(x in n.lower() for x in (".env", "keys/", ".heic", ".jpg", ".db", ".joblib"))
+          ]
+          if prohibido:
+              print("::error::La distribucion incluye archivos que no deberia:")
+              for n in prohibido:
+                  print(f"  {n}")
+              sys.exit(1)
+          recursos = [n for n in nombres if "resources/config.yaml" in n]
+          if not recursos:
+              print("::error::Falta la configuracion de referencia dentro del paquete.")
+              print("Sin ella la distribucion instalada no arranca fuera del repositorio.")
+              sys.exit(1)
+          print(f"Distribucion correcta: {len(nombres)} archivos, recursos incluidos")
+          EOF
+
+      - name: Publicar los artefactos de la corrida
+        uses: actions/upload-artifact@v7
+        with:
+          name: distribucion
+          path: case-studies/cs1/dist/
+          retention-days: 14
+
+  smoke:
+    name: 2. Instalar en limpio y ejecutar
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      # Las dos plataformas son el punto: la actividad pedia demostrar que el
+      # paquete corre en maquinas distintas, y esto lo comprueba en cada
+      # publicacion en vez de con una captura de pantalla.
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: distribucion
+          path: dist
+
+      - name: Instalar desde la rueda, sin el repositorio
+        shell: bash
+        run: python -m pip install dist/*.whl
+
+      # Se prueba la instalacion minima antes que la completa, y en ese orden a
+      # proposito: si los extras se instalaran primero, nada distinguiria una
+      # dependencia opcional de una obligatoria y el reparto seria decorativo.
+      - name: Ejecutar lo que la instalacion minima promete
+        shell: bash
+        run: |
+          mkdir -p prueba && cd prueba
+          fuel-price-gt --help
+          fuel-price-gt build-data
+          echo "La instalacion minima construye las capas de datos"
+
+      - name: Comprobar que lo que necesita un extra lo dice y no revienta
+        shell: bash
+        run: |
+          cd prueba
+          salida=$(fuel-price-gt train --fuel regular 2>&1 || true)
+          echo "$salida"
+          if ! echo "$salida" | grep -q "pip install"; then
+            echo "::error::Sin el extra de modelado, train deberia decir que instalar."
+            echo "Un rastro de importacion no dice ni como arreglarlo ni por que falta."
+            exit 1
+          fi
+
+      - name: Instalar el extra de modelado y completar el flujo
+        shell: bash
+        run: |
+          python -m pip install "$(ls dist/*.whl)[modeling]"
+          cd prueba
+          fuel-price-gt train --fuel regular
+          fuel-price-gt recommend --fuel regular
+          echo "El paquete instalado funciona sin clonar el repositorio"
+
+  publish:
+    name: 3. Publicar en el indice de pruebas
+    runs-on: ubuntu-latest
+    needs: smoke
+    if: startsWith(github.ref, 'refs/tags/') && !inputs.dry_run
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/fuel-price-gt/
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: distribucion
+          path: dist
+
+      - name: Publicar
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_API_TOKEN }}
+          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+        run: |
+          python -m pip install --upgrade twine
+          python -m twine upload dist/*
+
+      - name: Dejar constancia
+        run: |
+          {
+            echo "## Publicado"
+            echo
+            echo "\`${GITHUB_REF_NAME}\` en el indice de pruebas."
+            echo
+            echo "Para instalarlo:"
+            echo
+            echo '```bash'
+            echo "pip install -i https://test.pypi.org/simple/ \\"
+            echo "  --extra-index-url https://pypi.org/simple/ fuel-price-gt"
+            echo '```'
+            echo
+            echo "El segundo indice hace falta porque las dependencias viven en"
+            echo "el indice normal, no en el de pruebas."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # La imagen entrega la misma version que el paquete y sale de la misma
+  # etiqueta. Va despues y no en paralelo: si la publicacion del paquete se
+  # rechaza en la aprobacion, una imagen ya publicada anunciaria una version que
+  # no existe en el indice.
+  #
+  # Esta no pide aprobacion propia. La asimetria es deliberada: una version del
+  # registro de contenedores se puede borrar, una del indice de paquetes no. Lo
+  # irreversible es lo que se detiene a mirar.
+  image:
+    name: 4. Publicar la imagen de contenedor
+    runs-on: ubuntu-latest
+    needs: publish
+    if: startsWith(github.ref, 'refs/tags/') && !inputs.dry_run
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Entrar al registro de contenedores
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derivar nombre y etiquetas de la imagen
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/fuel-price-gt
+          # La etiqueta del repositorio lleva prefijo de caso; la de la imagen
+          # es la version a secas, que es lo que espera quien la descarga.
+          tags: |
+            type=match,pattern=cs1-v(.*),group=1
+            type=raw,value=latest
+
+      # Se construye antes de publicar para poder analizarla. Cortar aqui es
+      # distinto de cortar en el pipeline: una imagen publicada con una
+      # vulnerabilidad que tiene arreglo la hereda quien la descargue.
+      - name: Construir para analizar
+        uses: docker/build-push-action@v7
+        with:
+          context: case-studies/cs1
+          target: production
+          load: true
+          tags: fuel-price-gt:candidata
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Rechazar si hay algo grave con arreglo disponible
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: fuel-price-gt:candidata
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          # Sin esto, la compuerta estaria siempre en rojo por vulnerabilidades
+          # que la distribucion aun no ha arreglado, y dejaria de significar
+          # nada. Lo que se exige es que no quede fuera nada que se pueda cerrar.
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Construir y publicar
+        uses: docker/build-push-action@v7
+        with:
+          context: case-studies/cs1
+          target: production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Dejar constancia
+        run: |
+          {
+            echo "## Imagen publicada"
+            echo
+            echo '```bash'
+            echo "docker pull ghcr.io/${{ github.repository_owner }}/fuel-price-gt:${GITHUB_REF_NAME#cs1-v}"
+            echo '```'
+            echo
+            echo "Los datos y los modelos entran por volumen, no dentro de la imagen."
+          } >> "$GITHUB_STEP_SUMMARY"
