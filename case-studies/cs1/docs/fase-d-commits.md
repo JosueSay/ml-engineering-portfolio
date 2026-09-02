@@ -251,6 +251,23 @@ git push origin cs1-v0.3.2
 La etiqueta dispara el flujo. Aprobar el último paso cuando los dos primeros
 estén en verde.
 
+## 8b. El resumen de la corrida
+
+La publicación salió; falló el paso siguiente, el que solo deja constancia.
+
+```bash
+git add .github/workflows/cs1-publish.yml case-studies/cs1/docs/
+git commit -m "fix(ci): acotar la ruta por defecto al trabajo que clona
+
+Solo el primer trabajo clona el repositorio. Los otros dos parten de la
+distribucion ya construida, asi que esa carpeta no existe en ellos y la ruta
+por defecto los apuntaba a un sitio inexistente. Todos los pasos la anulaban
+uno por uno menos el ultimo, que fallaba sin relacion aparente con lo que hace.
+
+Se acota el valor por defecto al trabajo donde vale en vez de anadir otra
+excepcion: asi el proximo paso que se anada no tiene que acordarse de nada."
+```
+
 ## 9. Comprobar lo publicado
 
 ```bash

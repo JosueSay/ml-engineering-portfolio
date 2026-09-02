@@ -707,7 +707,7 @@ otra cosa.
 - [x] Declarar extras opcionales para no arrastrar dependencias pesadas
 - [x] Versión leída de una sola fuente
 - [x] Comprobar que la instalación limpia permite el flujo completo sin clonar
-- [ ] Guardar la credencial del índice de pruebas en `keys/`
+- [x] Guardar la credencial del índice de pruebas en `keys/`
 - [x] Trabajo de publicación disparado por etiqueta
 - [x] Verificación cruzada instalando desde el índice de pruebas en dos sistemas
 - [x] Documentar el procedimiento de publicación en `docs/`
