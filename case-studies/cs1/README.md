@@ -35,16 +35,22 @@ Instalado funciona sin clonar el repositorio, desde cualquier carpeta:
 
 ```bash
 fuel-price-gt build-data          # construye el conjunto de modelado
+```
+
+Eso es lo que trae la instalación mínima: leer fotografías y construir las
+capas de datos. Entrenar y recomendar necesitan el extra de modelado, porque
+para leer un modelo hace falta la misma biblioteca con la que se escribió:
+
+```bash
+pip install "fuel-price-gt[modeling]"
 fuel-price-gt train --fuel regular
 fuel-price-gt recommend --fuel regular
 ```
 
-Lo mínimo instala la lectura de fotografías y la construcción de las capas de
-datos. El resto va en extras, para no arrastrar dependencias que no se van a
-usar:
+Pedirlos sin el extra no revienta: dice qué instalar. Los demás extras siguen
+el mismo criterio, no arrastrar lo que no se va a usar:
 
 ```bash
-pip install "fuel-price-gt[modeling]"  # entrenamiento
 pip install "fuel-price-gt[serving]"   # servicio web
 pip install "fuel-price-gt[gdrive]"    # carpeta privada de Drive
 pip install "fuel-price-gt[all]"       # todo
