@@ -145,6 +145,38 @@ Ese último paso pide aprobación a propósito: publicar tiene efecto fuera del
 repositorio y **no se deshace**. Una versión subida no se puede reemplazar,
 solo retirar.
 
+### Publicar una versión posterior
+
+Una versión subida **no se puede reemplazar**. Si se vuelve a etiquetar la
+misma, el flujo pasa la comprobación de versión, construye, instala en las dos
+plataformas, espera aprobación y falla al final:
+
+```
+400 Bad Request: File already exists.
+```
+
+Mucho trabajo para un error al final. Cada publicación necesita un número
+nuevo, y ese número se sube antes de etiquetar:
+
+```bash
+# 1. Subir la version
+#    src/fuel_price_gt/__init__.py -> __version__ = "0.3.3"
+
+# 2. Las tres comprobaciones locales
+make gates && make publish-check && make docker-smoke
+
+# 3. Commit, empujar la rama, y despues la etiqueta
+git commit -am "chore(cs1): version 0.3.3"
+git push origin <rama>
+git tag -a cs1-v0.3.3 -m "CS1: <que cambia>"
+git push origin cs1-v0.3.3
+```
+
+El orden importa. Etiquetar antes de que el commit exista deja la etiqueta
+apuntando al commit anterior, que declara la versión anterior, y la
+comprobación la rechaza. Es un fallo barato —corta en segundos, antes de
+construir— pero obliga a mover la etiqueta.
+
 ### Sin publicar
 
 Para probar el flujo entero sin subir nada, lanzarlo a mano desde la interfaz
@@ -177,12 +209,38 @@ donde no está.
 
 ## Qué comprobar después
 
+Lo que el flujo comprueba es la rueda que acaba de construir. Que el índice
+sirva esa misma rueda es otra cosa, y se comprueba instalando desde él:
+
 ```bash
 python -m venv /tmp/prueba && source /tmp/prueba/bin/activate
 pip install -i https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ fuel-price-gt
-cd /tmp && fuel-price-gt build-data
+cd /tmp
+fuel-price-gt build-data                          # instalacion minima
+pip install -i https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple/ "fuel-price-gt[modeling]"
+fuel-price-gt train --fuel regular
+fuel-price-gt recommend --fuel regular
+deactivate
 ```
 
 Si eso funciona desde una carpeta vacía, la publicación sirve. Si falla
 buscando configuración, algo quedó fuera de la distribución.
+
+Resultado de `0.3.2`: `build-data` dio 212 filas, `train` un error medio de
+3.22 y `recommend` su decisión. Dejó `data/`, `models/` y `reports/` en la
+carpeta, y nada más.
+
+## Qué hacer si algo sale mal
+
+| Síntoma | Causa | Qué hacer |
+|---|---|---|
+| Corta en segundos con `La etiqueta y la version no coinciden` | La etiqueta apunta a un commit que declara otra versión | Mover la etiqueta al commit correcto con `git tag -f` y `git push --force` |
+| `File already exists` al subir | Esa versión ya está en el índice | Subir el número de versión y etiquetar de nuevo |
+| El trabajo 2 falla en una sola plataforma | Algo específico de ese sistema, casi siempre codificación o rutas | Mirar el registro de esa plataforma; no vale reproducirlo en la otra |
+| El trabajo 3 no encuentra dónde correr | Falta el entorno `testpypi` | Crearlo en la configuración del repositorio |
+| El trabajo 3 queda esperando | Está pidiendo la aprobación | Revisar y aprobar en la corrida |
+
+Nada de esto deja el índice en un estado a medias: la publicación es el último
+paso y solo ocurre si todo lo anterior pasó.
