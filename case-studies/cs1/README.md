@@ -4,7 +4,7 @@ Caso de estudio de extracción y pronóstico de precios de combustible a partir
 de fotografías de tótems de gasolinera.
 
 El plan de trabajo, las decisiones tomadas y lo que falta están en
-[docs/work-plan.md](docs/work-plan.md).
+[docs/work-plan.md](https://github.com/JosueSay/ml-engineering-portfolio/blob/main/case-studies/cs1/docs/work-plan.md).
 
 ## Qué hace
 
@@ -20,6 +20,38 @@ La lectura de dígitos es determinista y no necesita tarjeta gráfica: compara l
 forma de cada dígito contra plantillas de siete segmentos y se queda con el
 mejor solapamiento. Si el motor alterno de reconocimiento de texto está
 instalado, se usa como segunda opinión y gana el de mayor confianza.
+
+## Instalación
+
+```bash
+pip install -i https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple/ fuel-price-gt
+```
+
+El segundo índice hace falta porque las dependencias viven en el índice normal,
+no en el de pruebas.
+
+Instalado funciona sin clonar el repositorio, desde cualquier carpeta:
+
+```bash
+fuel-price-gt build-data          # construye el conjunto de modelado
+fuel-price-gt train --fuel regular
+fuel-price-gt recommend --fuel regular
+```
+
+Lo mínimo instala la lectura de fotografías y la construcción de las capas de
+datos. El resto va en extras, para no arrastrar dependencias que no se van a
+usar:
+
+```bash
+pip install "fuel-price-gt[modeling]"  # entrenamiento
+pip install "fuel-price-gt[serving]"   # servicio web
+pip install "fuel-price-gt[gdrive]"    # carpeta privada de Drive
+pip install "fuel-price-gt[all]"       # todo
+```
+
+Para trabajar sobre el código, en cambio, se clona el repositorio y se sigue la
+puesta en marcha de abajo.
 
 ## Puesta en marcha
 

@@ -12,10 +12,15 @@ está el detalle.
 | [02_environment.md](02_environment.md) | Referencia de variables de entorno y credenciales |
 | [03_commands.md](03_commands.md) | Referencia de comandos y scripts |
 | [04_structure.md](04_structure.md) | Qué hay en cada carpeta y por qué |
-| [07_image_source.md](07_image_source.md) | Conectar Google Drive paso a paso |
-| [06_data_model.md](06_data_model.md) | Modelo de datos, linaje y tratamiento de faltantes |
 | [05_operations.md](05_operations.md) | Tareas que requieren una persona: credenciales, cuentas y publicación |
+| [06_data_model.md](06_data_model.md) | Modelo de datos, linaje y tratamiento de faltantes |
+| [07_image_source.md](07_image_source.md) | Conectar Google Drive paso a paso |
+| [08_publishing.md](08_publishing.md) | Construir, verificar y publicar el paquete |
 | [work-plan.md](work-plan.md) | Diagnóstico, decisiones tomadas y pendientes |
+
+Las divisiones de commits de cada fase quedan como registro de cómo se
+entregó: [fase A](fase-a-commits.md), [fase B](fase-b-commits.md),
+[fase D](fase-d-commits.md).
 
 Además, [keys/README.md](../keys/README.md) documenta qué credencial hace falta
 para qué, cómo se obtiene y con qué permisos mínimos; y

@@ -144,6 +144,22 @@ las pruebas:
 4. Que no se haya versionado ninguna imagen.
 5. Que `.env` no se haya desincronizado de su plantilla.
 
+## Paquete
+
+| Comando | Qué hace |
+|---|---|
+| `make build` | Construye la rueda y el paquete de fuentes, y valida sus metadatos |
+| `make publish-check` | Construye y además revisa qué quedó dentro de la distribución |
+
+`publish-check` comprueba las dos direcciones. Que no se cuele lo que no debe
+—`.env`, `keys/`, fotografías, la base de datos, modelos entrenados— y que sí
+esté la configuración de referencia, porque sin ella el paquete instalado
+arranca buscando un archivo que en esa máquina no existe.
+
+Publicar no tiene objetivo en el `Makefile` a propósito: lo dispara una
+etiqueta y lo ejecuta la integración continua, con aprobación manual. El
+procedimiento completo está en [08_publishing.md](08_publishing.md).
+
 ## Limpieza
 
 | Comando | Qué borra | Qué **no** toca |
