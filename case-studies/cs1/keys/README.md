@@ -31,9 +31,24 @@ Ninguno es obligatorio. Si falta uno, la parte del sistema que lo necesita cae
 a su alternativa local en vez de fallar; así la integración continua sigue
 funcionando en ramas sin acceso a credenciales.
 
+### `gdrive-api.key`
+
+Clave de API para leer una carpeta de Drive **compartida por enlace**. Es la vía
+corta: se crea en un paso y no necesita cuenta de servicio.
+
+- Cómo se obtiene: en la consola de Google Cloud, habilitar la Drive API y crear
+  una credencial de tipo clave de API.
+- Permiso mínimo: restringirla a la Drive API. Una clave sin restringir sirve
+  para cualquier interfaz del proyecto, y eso amplía el daño si se filtra.
+- Variable que la referencia: `GDRIVE_API_KEY_FILE`.
+- Requiere que la carpeta esté accesible por enlace. Si el material no debería
+  serlo, usar la cuenta de servicio en su lugar.
+
 ### `google-drive-service-account.json`
 
-Cuenta de servicio para leer la carpeta compartida de fotografías.
+Cuenta de servicio para leer una carpeta de Drive **privada**. Es la vía larga:
+más pasos de configuración, a cambio de que la carpeta no quede accesible por
+enlace y de que quede constancia de quién tiene acceso.
 
 - Cómo se obtiene: en la consola de Google Cloud, crear un proyecto, habilitar
   la API de Drive, crear una cuenta de servicio y generar una clave en formato
