@@ -28,7 +28,7 @@ HORIZON ?= 1
 HOUR ?= 18
 IMAGE ?= fuel-price-gt:ci
 
-.PHONY: help verify env-init env-check keys-init keys-status venv install install-dev \
+.PHONY: help verify ingest env-init env-check keys-init keys-status venv install install-dev \
         lint test format gates extract transform train evaluate recommend pipeline \
         models-status db-init db-browser \
         up down logs ps docker-build docker-smoke clean clean-logs clean-vendor clean-trained
@@ -44,7 +44,7 @@ help: ## Muestra esta ayuda
 	$(call ayuda,verify|venv|install|install-dev|env-init|env-check|keys-init|keys-status)
 	@echo ""
 	@echo "  --- Pipeline de datos   (FUEL=regular|super|diesel|vpower) ---"
-	$(call ayuda,extract|transform|train|evaluate|recommend|pipeline)
+	$(call ayuda,ingest|extract|transform|train|evaluate|recommend|pipeline)
 	@echo ""
 	@echo "  --- Base de datos ---"
 	$(call ayuda,db-init|db-browser)
@@ -95,6 +95,9 @@ keys-status: ## Informa que credenciales faltan, sin crear nada
 # linea de comandos, no por un script envoltorio: una capa que solo reenvia
 # argumentos es una capa que hay que mantener sin que aporte nada.
 
+ingest: ## Trae las fotografias de la fuente configurada. LIMIT=10 para probar
+	@$(PY) scripts/10_ingest_images.py $(if $(LIMIT),--limit $(LIMIT),)
+
 extract: ## Lee los precios de las fotografias (Bronze)
 	@$(PY) scripts/12_extract_prices.py
 
@@ -110,7 +113,7 @@ evaluate: ## Compuerta de calidad sobre el modelo entrenado
 recommend: ## Recomendacion de carga
 	@$(PY) -m fuel_price_gt.cli recommend --fuel $(FUEL) --horizon $(HORIZON) --hour $(HOUR)
 
-pipeline: extract transform train evaluate recommend ## Encadena todas las etapas
+pipeline: ingest extract transform train evaluate recommend ## Encadena todas las etapas
 
 # --- Base de datos -----------------------------------------------------------------------
 

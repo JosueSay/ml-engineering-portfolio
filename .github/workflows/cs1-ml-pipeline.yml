@@ -128,9 +128,9 @@ jobs:
               echo "se omiten en esta corrida. La calidad de codigo y la imagen de"
               echo "contenedor si se verifican."
               echo
-              echo "Hacen falta dos cosas: el secreto"
-              echo '`GDRIVE_SERVICE_ACCOUNT_JSON` y el paso de ingesta'
-              echo '`scripts/10_ingest_images.py`, que llega en la fase C.'
+              echo "Para habilitarlas hay que declarar el secreto"
+              echo '`GDRIVE_SERVICE_ACCOUNT_JSON` y el identificador de carpeta'
+              echo 'en `GDRIVE_FOLDER_ID`. El paso de ingesta ya existe.'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -155,8 +155,10 @@ jobs:
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
 
       - name: Descargar las fotografias de la fuente configurada
-        if: hashFiles('case-studies/cs1/scripts/10_ingest_images.py') != ''
         run: python scripts/10_ingest_images.py
+        env:
+          IMAGE_SOURCE: gdrive
+          GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_FOLDER_ID }}
 
       - name: Extraer precios de las fotografias
         run: python scripts/12_extract_prices.py
