@@ -1,30 +1,99 @@
 [build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
 
 [project]
 name = "fuel-price-gt"
-version = "0.1.0"
-description = "Extracción, pronóstico y recomendación de precios de combustible en Guatemala"
+dynamic = ["version"]
+authors = [
+  { name = "Josue Say", email = "josuesay770@gmail.com" },
+]
+description = "Extraccion, pronostico y recomendacion de precios de combustible en Guatemala"
+readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+keywords = ["mlops", "ocr", "series-temporales", "pipeline-de-datos", "guatemala"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Image Recognition",
+]
+
+# Lo minimo para leer una fotografia y construir las capas de datos. Lo que
+# solo hace falta para una parte concreta va en los extras: quien instale esto
+# para leer el precio de su propia foto no deberia bajarse el motor de
+# entrenamiento ni el servidor web.
 dependencies = [
-  "fastapi>=0.110", "joblib>=1.3", "numpy>=1.26", "opencv-python-headless>=4.9",
-  "pandas>=2.1", "pillow>=10", "pillow-heif>=0.16", "PyYAML>=6", "requests>=2.31",
-  "scikit-learn>=1.4", "SQLAlchemy>=2.0", "uvicorn>=0.27", "xgboost>=2.0",
+  "joblib>=1.3",
+  "numpy>=1.26",
+  "opencv-python-headless>=4.9",
+  "pandas>=2.1",
+  "pillow>=10",
+  "pillow-heif>=0.16",
+  "PyYAML>=6",
+  "requests>=2.31",
+  "scikit-learn>=1.4",
+  "SQLAlchemy>=2.0",
 ]
 
 [project.optional-dependencies]
-dev = ["httpx>=0.27", "pytest>=8", "ruff>=0.6"]
-# Solo hace falta para traer fotografias de Drive. Se deja fuera de la
-# instalacion normal para no arrastrar el cliente de Google a quien solo quiere
-# leer una imagen suya.
+# Entrenamiento y evaluacion de modelos.
+modeling = ["xgboost>=2.0"]
+# Servicio web de pronostico.
+serving = ["fastapi>=0.110", "uvicorn>=0.27"]
+# Traer fotografias de una carpeta privada de Drive. Las otras dos vias de
+# ingesta no necesitan nada: el manifiesto y la clave de API usan el cliente
+# HTTP que ya viene.
 gdrive = ["google-api-python-client>=2.100", "google-auth>=2.23"]
+# Todo lo anterior, para quien quiera el flujo completo.
+all = [
+  "fuel-price-gt[modeling]",
+  "fuel-price-gt[serving]",
+  "fuel-price-gt[gdrive]",
+]
+dev = [
+  "fuel-price-gt[all]",
+  "httpx>=0.27",
+  "pytest>=8",
+  "ruff>=0.6",
+]
 
 [project.scripts]
 fuel-price-gt = "fuel_price_gt.cli:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[project.urls]
+Homepage = "https://github.com/JosueSay/ml-engineering-portfolio"
+Documentation = "https://github.com/JosueSay/ml-engineering-portfolio/tree/main/case-studies/cs1/docs"
+Repository = "https://github.com/JosueSay/ml-engineering-portfolio"
+Issues = "https://github.com/JosueSay/ml-engineering-portfolio/issues"
+
+# La version se lee del propio paquete y no se repite aqui: dos numeros que
+# tienen que coincidir acaban por no hacerlo.
+[tool.hatch.version]
+path = "src/fuel_price_gt/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fuel_price_gt"]
+
+[tool.hatch.build.targets.sdist]
+# El paquete de fuentes lleva lo necesario para reconstruir y verificar, y nada
+# mas: ni datos, ni credenciales, ni artefactos de ejecucion.
+include = [
+  "/src",
+  "/tests",
+  "/scripts",
+  "/config",
+  "/docs",
+  "/README.md",
+  "/Makefile",
+  "/.env.example",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
