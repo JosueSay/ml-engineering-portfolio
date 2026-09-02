@@ -15,6 +15,11 @@ from ..modeling.training import cargar_modelo
 
 @dataclass
 class Recomendacion:
+    """Consejo de carga con el razonamiento que lo sostiene.
+
+    Se devuelve el porqué junto al qué: una recomendación sin justificación
+    no es accionable para quien decide si llena el tanque hoy o espera.
+    """
     recargar_ahora: bool
     decision: str
     motivo: str
@@ -100,4 +105,5 @@ def recomendar_recarga(
 
 
 def recomendacion_como_dict(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    """La recomendación como diccionario, para serializarla en la API."""
     return asdict(recomendar_recarga(*args, **kwargs))

@@ -1,4 +1,6 @@
-"""Preprocesamiento OpenCV: localizar el visor LCD dentro de un panel y
+"""Preparación de la imagen del panel antes de leer los dígitos.
+
+Preprocesamiento OpenCV: localizar el visor LCD dentro de un panel y
 dejarlo listo (binarizado, contraste realzado) para el OCR de dígitos.
 
 Corresponde a la etapa "Preprocesamiento de imagen con OpenCV (contraste,
@@ -15,13 +17,22 @@ import numpy as np
 
 @dataclass
 class RecorteLCD:
+    """Visor aislado del resto del panel.
+
+    `encontrado_automaticamente` distingue si el visor se localizó por sus
+    características o si se cayó al recorte calibrado. Sin ese dato no se
+    puede separar un fallo de localización de un fallo de lectura al analizar
+    los rechazos.
+    """
     imagen_gris_binaria: np.ndarray
     imagen_recorte_original: np.ndarray
     encontrado_automaticamente: bool
 
 
 def localizar_visor_lcd(panel_rgb: np.ndarray) -> RecorteLCD:
-    """Dentro del recorte (generoso) de un panel de precio, ubica el
+    """Aísla el visor dentro del recorte del panel.
+
+    Dentro del recorte (generoso) de un panel de precio, ubica el
     rectángulo retroiluminado del visor LCD (blanco/azulado, alto brillo,
     bajo-moderada saturación) mediante un umbral HSV + contornos.
 
@@ -65,10 +76,13 @@ def localizar_visor_lcd(panel_rgb: np.ndarray) -> RecorteLCD:
 
 
 def _recortar_al_interior_del_visor(recorte_rgb: np.ndarray) -> np.ndarray:
-    """Segunda pasada: dentro del recorte (que puede incluir el bisel negro
+    """Descarta el bisel y deja solo el área iluminada del visor.
+
+    Segunda pasada: dentro del recorte (que puede incluir el bisel negro
     del visor por el margen añadido), ubica de nuevo la región retroiluminada
     y recorta exactamente a su caja, sin margen — así el bisel oscuro no
-    contamina la segmentación de caracteres."""
+    contamina la segmentación de caracteres.
+    """
     h, w = recorte_rgb.shape[:2]
     if h < 4 or w < 4:
         return recorte_rgb
@@ -108,14 +122,17 @@ def _binarizar_para_ocr(recorte_rgb: np.ndarray) -> np.ndarray:
 
 
 def _quitar_manchas_que_tocan_el_borde(binaria: np.ndarray) -> np.ndarray:
-    """El recorte del visor rara vez queda perfectamente rectangular (el
+    """Limpia los restos de bisel en las esquinas del recorte.
+
+    El recorte del visor rara vez queda perfectamente rectangular (el
     tótem se fotografía con cierta inclinación), así que quedan triángulos
     de bisel/fondo oscuro en las esquinas. En vez de perseguir ese borde
     irregular, se ubica el componente BLANCO más grande (el fondo
     retroiluminado del visor), se calcula su envolvente convexa, y todo lo
     que quede fuera de esa envolvente se fuerza a blanco. Los dígitos (negros)
     quedan intactos porque son "huecos" dentro del componente blanco, no
-    tocan el borde de la envolvente."""
+    tocan el borde de la envolvente.
+    """
     fondo = (binaria > 128).astype(np.uint8)
     n, etiquetas, stats, _ = cv2.connectedComponentsWithStats(fondo, connectivity=4)
     if n <= 1:

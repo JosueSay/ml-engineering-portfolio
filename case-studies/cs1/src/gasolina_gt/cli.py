@@ -18,6 +18,12 @@ def _gold() -> object:
 
 
 def main() -> None:
+    """Punto de entrada de la línea de comandos.
+
+    Cada subcomando es una etapa del pipeline y se puede ejecutar por
+    separado: encadenarlas todas en un solo comando obligaría a repetir
+    trabajo ya hecho cada vez que falla la última.
+    """
     parser = argparse.ArgumentParser(prog="gasolina-gt", description="Predicción de precios de combustible en Guatemala")
     sub = parser.add_subparsers(dest="comando", required=True)
     sub.add_parser("build-data", help="Ejecuta Bronze → Silver → Gold")
