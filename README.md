@@ -127,5 +127,19 @@ el mas simple: una tarjeta por entrada, enlazada a su carpeta.
 - **Lo que se oculta al contraer la barra sale del flujo.** Las etiquetas de
   seccion usan `display: none`, no `opacity: 0`: no tienen icono que dejar en su
   sitio, y ocultarlas sin sacarlas dejaba dos huecos de 38 px entre los iconos.
+- **La barra nace plegada si asi quedo guardada, no se pliega despues.**
+  `layout.js` consulta el estado antes de meter el armazon en el documento.
+  Aplicarlo despues lo pintaba desplegado y lo plegaba a la vista, con su
+  animacion, en cada navegacion. Si se mueve esa consulta detras del montaje,
+  vuelve el efecto.
+- **El contenido, antes de que exista el armazon, ya ocupa su caja final.**
+  `layout.js` es un modulo y por tanto diferido: el navegador pinta antes de
+  ejecutarlo. Si lo que se pinta en ese momento no coincide con la posicion
+  definitiva, el contenido salta al montarse el armazon. Las reglas de
+  `#content:not(.content)` reproducen esa caja a proposito; cambiar el ancho de
+  la barra o el alto de la topbar obliga a revisarlas.
+- **La rejilla de tarjetas usa `auto-fit`, no `auto-fill`.** Con `auto-fill` el
+  navegador crea tantas columnas como quepan y deja vacias las que sobran, asi
+  que dos tarjetas en un area ancha se quedan estrechas con el hueco al lado.
 - **`100dvh`, no `100vh`.** En movil la barra de direcciones aparece y
   desaparece, y `vh` no la cuenta.

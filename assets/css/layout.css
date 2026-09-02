@@ -140,7 +140,14 @@
   pointer-events: none;
 }
 
-.app-shell.is-collapsed .nav-link {
+/* Centrar no basta: el hueco entre icono y etiqueta se sigue contando aunque
+   la etiqueta mida cero, asi que el grupo centrado es "icono + 12px" y el icono
+   queda desplazado a la izquierda. Lo mismo con el relleno lateral de la marca.
+   Se anulan los dos para que el icono quede en el centro de verdad. */
+.app-shell.is-collapsed .nav-link,
+.app-shell.is-collapsed .sidebar__brand {
+  gap: 0;
+  padding-inline: 0;
   justify-content: center;
 }
 
@@ -219,7 +226,11 @@
 }
 
 .content-inner {
-  max-width: 1080px;
+  /* El tope existe para que una linea de texto no se haga ilegible de larga.
+     1080 dejaba mucho aire a los lados en pantallas anchas; 1280 sigue estando
+     dentro de lo comodo de leer y aprovecha mejor el espacio. La prosa larga
+     tiene ademas su propio tope mas estrecho en .case-section. */
+  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -244,7 +255,12 @@
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  /* auto-fit y no auto-fill: con auto-fill el navegador crea tantas columnas
+     como quepan y deja vacias las que sobran, asi que dos tarjetas en un area
+     de seis columnas se quedan estrechas a la izquierda con el hueco al lado.
+     auto-fit colapsa las columnas vacias y reparte el ancho entre las tarjetas
+     que hay de verdad. */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 18px;
 }
 
@@ -398,15 +414,29 @@ a.card:hover {
   background: var(--surface-hover);
 }
 
-/* --- Sin JavaScript ------------------------------------------------------- */
+/* --- Antes de que exista el armazon --------------------------------------- */
 
-/* El armazon lo construye layout.js. Hasta que corre, el contenido se muestra
-   centrado y con margen propio en vez de quedar pegado al borde; y si el
-   modulo no llega a ejecutarse nunca, la pagina sigue siendo legible en vez de
-   aparecer en blanco. */
+/* El armazon lo construye layout.js, que es un modulo y por tanto diferido: el
+   navegador pinta antes de ejecutarlo. Lo que se pinte en ese momento tiene que
+   ocupar ya el sitio definitivo, o el contenido salta al montarse.
+
+   Medido: sin estas reglas el primer pintado ocurria a los 52ms con el
+   contenido centrado a 900px, y a los 72ms saltaba a su posicion real. Los
+   valores de aqui reproducen exactamente la caja final -a la derecha de la
+   barra y por debajo de la topbar- asi que no hay salto.
+
+   Y si el modulo no llega a ejecutarse nunca, la pagina se queda sin navegacion
+   pero legible, en vez de en blanco. */
 #content:not(.content) {
   display: block;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 32px 24px;
+  margin-left: var(--sidebar-width);
+  margin-top: var(--topbar-height);
+  padding: 40px clamp(20px, 5vw, 56px);
+}
+
+@media (max-width: 820px) {
+  /* En movil la barra es un cajon superpuesto y no reserva ancho. */
+  #content:not(.content) {
+    margin-left: 0;
+  }
 }

@@ -7,6 +7,7 @@
  */
 
 import { SUPPORTED } from "./i18n.js";
+import { shouldStartCollapsed } from "./sidebar.js";
 
 /* Minimal inline icon set (stroke = currentColor). */
 const icons = {
@@ -53,8 +54,11 @@ function navMarkup(activeId) {
       return `<div class="sidebar__section-label" data-i18n="${item.section}"></div>`;
     }
     const active = item.id === activeId ? " is-active" : "";
+    // is-active es solo color; aria-current es lo que anuncia un lector de
+    // pantalla al llegar al enlace de la pagina en la que ya se esta.
+    const current = item.id === activeId ? ' aria-current="page"' : "";
     return `
-      <a class="nav-link${active}" href="${prefix}${item.href}"
+      <a class="nav-link${active}" href="${prefix}${item.href}"${current}
          data-i18n-attr="title:${item.i18n}">
         <span class="nav-link__icon">${svg(item.icon, "")}</span>
         <span class="nav-link__label" data-i18n="${item.i18n}"></span>
@@ -79,7 +83,10 @@ export function buildShell() {
   const activeId = document.body.getAttribute("data-page") || "home";
 
   const shell = document.createElement("div");
-  shell.className = "app-shell";
+  // El estado plegado se decide aqui, antes de que el armazon entre en el
+  // documento. Aplicarlo despues lo pintaba desplegado y luego lo plegaba a la
+  // vista: al navegar se veia expandir y contraer en cada pagina.
+  shell.className = shouldStartCollapsed() ? "app-shell is-collapsed" : "app-shell";
   shell.innerHTML = `
     <aside class="sidebar">
       <a class="sidebar__brand" href="${prefix}index.html">
@@ -111,11 +118,11 @@ export function buildShell() {
     <div class="sidebar__backdrop"></div>
   `;
 
-  // Move the page content into the shell, then attach the shell to the body.
+  // El contenido se sirve visible y con sus textos escritos: aqui solo se
+  // reubica dentro del armazon, en la misma caja que ya ocupaba.
   const host = shell.querySelector(".content-host");
   host.replaceWith(content);
   content.classList.add("content");
-  content.removeAttribute("hidden");
   document.body.prepend(shell);
 
   return { shell };

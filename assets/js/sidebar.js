@@ -12,11 +12,19 @@ function isMobile() {
   return window.matchMedia(MOBILE_QUERY).matches;
 }
 
+/**
+ * ¿Debe nacer plegada la barra?
+ *
+ * Lo consulta layout.js al crear el armazón, antes de meterlo en el documento.
+ * Restaurar el estado después de montarlo hacía que la barra se pintara
+ * desplegada y se plegara a la vista, con su animación: al navegar entre
+ * páginas se veía expandir y contraer en vez de quedarse como estaba.
+ */
+export function shouldStartCollapsed() {
+  return !isMobile() && localStorage.getItem(STORAGE_KEY) === "true";
+}
+
 export function initSidebar(shell) {
-  // Restore persisted collapsed state on desktop.
-  if (!isMobile() && localStorage.getItem(STORAGE_KEY) === "true") {
-    shell.classList.add("is-collapsed");
-  }
 
   const toggle = () => {
     if (isMobile()) {
@@ -40,6 +48,19 @@ export function initSidebar(shell) {
     link.addEventListener("click", () => {
       if (isMobile()) closeMobile();
     });
+  });
+
+  // El punto de corte se puede cruzar después de cargar, girando el dispositivo
+  // o redimensionando. Sin esto, `is-mobile-open` se quedaba puesta al pasar a
+  // escritorio, donde ya no significa nada, y el estado plegado guardado no se
+  // recuperaba al volver.
+  window.matchMedia(MOBILE_QUERY).addEventListener("change", (e) => {
+    if (e.matches) {
+      shell.classList.remove("is-collapsed");
+    } else {
+      closeMobile();
+      shell.classList.toggle("is-collapsed", shouldStartCollapsed());
+    }
   });
 
   return { toggle, closeMobile };
