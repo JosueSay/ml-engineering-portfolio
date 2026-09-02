@@ -13,7 +13,11 @@ FROM python:3.12-slim AS base
 
 # libGL y libglib son dependencias de sistema de la biblioteca de vision.
 # tesseract-ocr es el motor alterno de lectura.
+# El upgrade no es rutina: la imagen base se reconstruye cada cierto tiempo y
+# entre reconstrucciones acumula paquetes con actualizacion de seguridad ya
+# publicada por la distribucion. Sin esta linea se publican con ella.
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         tesseract-ocr \
         libgl1 \
