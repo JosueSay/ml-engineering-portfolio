@@ -27,8 +27,13 @@ services:
       - raw-data:/app/data/raw
       - interim-data:/app/data/interim
       - processed-data:/app/data/processed
+      - database:/app/data/db
       - models:/app/models
       - reports:/app/reports
+    environment:
+      # La base vive en su propio volumen para poder respaldarla o inspeccionarla
+      # sin arrastrar las fotografias, que pesan mucho mas.
+      DATABASE_URL: sqlite+pysqlite:///data/db/fuel-prices.db
     networks: [guild]
     restart: "no"
 
@@ -44,8 +49,28 @@ services:
       - "${API_PORT:-19010}:8000"
     volumes:
       - processed-data:/app/data/processed
+      - database:/app/data/db
       - models:/app/models
       - reports:/app/reports
+    environment:
+      DATABASE_URL: sqlite+pysqlite:///data/db/fuel-prices.db
+    networks: [guild]
+    restart: unless-stopped
+
+  # Explorador de la base: permite recorrer el linaje desde el navegador sin
+  # instalar cliente alguno. El motor embebido es un archivo, asi que lo que
+  # hace falta compartir es el volumen, no un puerto de base de datos.
+  db-browser:
+    container_name: gt-sietch
+    image: python:3.12-slim
+    profiles: ["tools"]
+    command: >
+      sh -c "pip install --no-cache-dir --quiet datasette
+      && datasette serve /data/fuel-prices.db --host 0.0.0.0 --port 8001"
+    ports:
+      - "${DB_BROWSER_PORT:-19030}:8001"
+    volumes:
+      - database:/data:ro
     networks: [guild]
     restart: unless-stopped
 
@@ -61,8 +86,11 @@ services:
       - raw-data:/app/data/raw
       - interim-data:/app/data/interim
       - processed-data:/app/data/processed
+      - database:/app/data/db
       - models:/app/models
       - reports:/app/reports
+    environment:
+      DATABASE_URL: sqlite+pysqlite:///data/db/fuel-prices.db
     networks: [guild]
 
   # Bajo demanda:  docker compose --profile test run --rm tests
@@ -75,6 +103,7 @@ services:
     networks: [guild]
 
 volumes:
+  database:
   raw-data:
   interim-data:
   processed-data:

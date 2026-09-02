@@ -30,7 +30,7 @@ IMAGE ?= fuel-price-gt:ci
 
 .PHONY: help verify env-init env-check keys-init keys-status venv install install-dev \
         lint test format gates extract transform train evaluate recommend pipeline \
-        models-status \
+        models-status db-init db-browser \
         up down logs ps docker-build docker-smoke clean clean-logs clean-vendor clean-trained
 
 define ayuda
@@ -45,6 +45,9 @@ help: ## Muestra esta ayuda
 	@echo ""
 	@echo "  --- Pipeline de datos   (FUEL=regular|super|diesel|vpower) ---"
 	$(call ayuda,extract|transform|train|evaluate|recommend|pipeline)
+	@echo ""
+	@echo "  --- Base de datos ---"
+	$(call ayuda,db-init|db-browser)
 	@echo ""
 	@echo "  --- Modelos ---"
 	$(call ayuda,models-status|clean-vendor|clean-trained)
@@ -108,6 +111,15 @@ recommend: ## Recomendacion de carga
 	@$(PY) -m fuel_price_gt.cli recommend --fuel $(FUEL) --horizon $(HORIZON) --hour $(HOUR)
 
 pipeline: extract transform train evaluate recommend ## Encadena todas las etapas
+
+# --- Base de datos -----------------------------------------------------------------------
+
+db-init: ## Crea el esquema si falta y muestra cuantas filas hay en cada tabla
+	@$(PY) scripts/20_db_init.py
+
+db-browser: ## Levanta el explorador web de la base para recorrer el linaje
+	@docker compose --profile tools up -d db-browser
+	@echo "  explorador en http://localhost:$${DB_BROWSER_PORT:-19030}"
 
 # --- Modelos ---------------------------------------------------------------------------
 
