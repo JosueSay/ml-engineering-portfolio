@@ -59,7 +59,12 @@ def build_features(series: pd.DataFrame, config: dict) -> pd.DataFrame:
         "day_of_week", "month", "is_weekend", "week_of_year",
         "lag_1", "lag_2", "lag_3", "lag_4",
         "rolling_mean_3", "rolling_std_3", "recent_trend",
-    ] + [c for c in result.columns if c.startswith("target_")]
+    ]
+    # La procedencia del valor viaja con la fila hasta el final. Si se perdiera
+    # aqui, el conjunto de modelado no podria distinguir una medida de una
+    # estimacion, que es justo lo que hay que poder distinguir.
+    columnas_orden += [c for c in ("method", "brand") if c in result.columns]
+    columnas_orden += [c for c in result.columns if c.startswith("target_")]
     return result[columnas_orden]
 
 
