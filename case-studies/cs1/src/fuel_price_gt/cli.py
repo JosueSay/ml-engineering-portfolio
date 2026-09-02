@@ -2,15 +2,34 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import logging
 from dataclasses import asdict
 
 from .data.pipeline import build_gold, build_silver, load_gold_if_exists
 from .db import create_schema
-from .evaluation import evaluate_artifact, save_report
-from .modeling import train_all_horizons
-from .serving import recommend_refuel
+
+# Entrenar y recomendar necesitan el extra de modelado, y por eso no se importan
+# aqui arriba: una importacion de modulo se ejecuta siempre, tambien al pedir la
+# ayuda. Con ella arriba, una instalacion minima no podia ni ejecutar --help.
+
+
+def _exigir_extra(extra: str, modulo: str) -> None:
+    """Corta con un mensaje accionable si falta un extra opcional.
+
+    El fallo por defecto sería un rastro de importación terminado en
+    `ModuleNotFoundError`, que dice qué módulo falta pero no cómo instalarlo ni
+    por qué no venía de serie.
+    """
+    if importlib.util.find_spec(modulo) is not None:
+        return
+    raise SystemExit(
+        f"Este comando necesita el extra '{extra}', que no esta instalado.\n"
+        f"  pip install \"fuel-price-gt[{extra}]\"\n"
+        "La instalacion minima trae solo la lectura de fotografias y la "
+        "construccion de las capas de datos."
+    )
 
 
 def _gold() -> object:
@@ -49,11 +68,20 @@ def main() -> None:
         print(json.dumps({"silver_rows": len(silver), "gold_rows": len(gold), "gold_sources": gold["source"].value_counts().to_dict()}, ensure_ascii=False))
         return
     if args.command == "train":
+        _exigir_extra("modeling", "xgboost")
+        from .evaluation import evaluate_artifact, save_report
+        from .modeling import train_all_horizons
+
         results = train_all_horizons(_gold(), args.fuel)
         evaluations = [evaluate_artifact(artifact) for artifact, _ in results]
         path = save_report(evaluations)
         print(json.dumps({"models": [asdict(meta) for _, meta in results], "evaluation": [asdict(x) for x in evaluations], "report": str(path)}, ensure_ascii=False, indent=2))
         return
+    # Recomendar carga un modelo entrenado, y para leerlo hace falta la misma
+    # biblioteca con la que se escribio.
+    _exigir_extra("modeling", "xgboost")
+    from .serving import recommend_refuel
+
     print(json.dumps(asdict(recommend_refuel(_gold(), args.fuel, args.horizon, args.hour)), ensure_ascii=False, indent=2))
 
 

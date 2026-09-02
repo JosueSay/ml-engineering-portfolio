@@ -116,13 +116,39 @@ jobs:
         working-directory: .
         run: python -m pip install dist/*.whl
 
-      - name: Ejecutar el flujo completo desde una carpeta cualquiera
+      # Se prueba la instalacion minima antes que la completa, y en ese orden a
+      # proposito: si los extras se instalaran primero, nada distinguiria una
+      # dependencia opcional de una obligatoria y el reparto seria decorativo.
+      - name: Ejecutar lo que la instalacion minima promete
         shell: bash
         working-directory: .
         run: |
           mkdir -p prueba && cd prueba
           fuel-price-gt --help
           fuel-price-gt build-data
+          echo "La instalacion minima construye las capas de datos"
+
+      - name: Comprobar que lo que necesita un extra lo dice y no revienta
+        shell: bash
+        working-directory: .
+        run: |
+          cd prueba
+          salida=$(fuel-price-gt train --fuel regular 2>&1 || true)
+          echo "$salida"
+          if ! echo "$salida" | grep -q "pip install"; then
+            echo "::error::Sin el extra de modelado, train deberia decir que instalar."
+            echo "Un rastro de importacion no dice ni como arreglarlo ni por que falta."
+            exit 1
+          fi
+
+      - name: Instalar el extra de modelado y completar el flujo
+        shell: bash
+        working-directory: .
+        run: |
+          python -m pip install "$(ls dist/*.whl)[modeling]"
+          cd prueba
+          fuel-price-gt train --fuel regular
+          fuel-price-gt recommend --fuel regular
           echo "El paquete instalado funciona sin clonar el repositorio"
 
   publish:

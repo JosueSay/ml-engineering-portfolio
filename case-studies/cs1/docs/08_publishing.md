@@ -14,7 +14,8 @@ Comprobado en instalación limpia:
 ```bash
 pip install fuel-price-gt
 cd ~/cualquier-carpeta
-fuel-price-gt build-data      # construye el conjunto de modelado
+fuel-price-gt build-data                 # con la instalacion minima
+pip install "fuel-price-gt[modeling]"
 fuel-price-gt train --fuel regular
 fuel-price-gt recommend --fuel regular
 ```
@@ -46,6 +47,15 @@ pip install "fuel-price-gt[all]"       # todo
 
 Las otras dos vías de ingesta —manifiesto y clave de API— no necesitan extra:
 usan el cliente HTTP que ya viene.
+
+Repartir dependencias tiene un coste que se paga la primera vez: una
+importación de módulo se ejecuta siempre, también al pedir la ayuda, así que
+basta importar arriba algo que vive en un extra para que la instalación mínima
+no arranque. Lo que un extra provee se importa dentro del comando que lo usa, y
+si falta, el comando dice qué instalar en vez de terminar en un rastro de
+importación. El flujo lo comprueba en cada publicación: primero la instalación
+mínima, después el extra, en ese orden. Al revés no distinguiría una
+dependencia opcional de una obligatoria.
 
 ## Las etiquetas
 
@@ -105,7 +115,9 @@ El flujo hace tres cosas en orden, y solo sigue si la anterior pasó:
 
 2. **Instalar en limpio y ejecutar**, en Linux y en Windows. Es lo que la
    actividad pedía demostrar —que corre en máquinas distintas— comprobado en
-   cada publicación en vez de con una captura de pantalla.
+   cada publicación en vez de con una captura de pantalla. Primero la
+   instalación mínima, luego que lo que necesita un extra lo diga, y por último
+   el flujo completo con el extra puesto.
 
 3. **Publicar**, tras aprobación manual en el entorno `testpypi`.
 

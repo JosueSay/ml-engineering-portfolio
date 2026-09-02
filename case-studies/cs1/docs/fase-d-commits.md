@@ -144,6 +144,36 @@ Primera version publicable. Las dos anteriores marcaron el cierre de las fases
 A y B sin salir del repositorio."
 ```
 
+## 7b. El reparto de extras, arreglado
+
+La etiqueta `cs1-v0.3.0` disparó el flujo y falló en el paso 2, antes de
+publicar. Nada llegó al índice.
+
+```bash
+git add case-studies/cs1/src/fuel_price_gt/cli.py \
+        case-studies/cs1/src/fuel_price_gt/__init__.py \
+        case-studies/cs1/README.md \
+        case-studies/cs1/docs/ \
+        .github/workflows/cs1-publish.yml
+git commit -m "fix(cs1): que la instalacion minima arranque sin los extras
+
+Sacar xgboost a un extra dejo el paquete sin poder ejecutar ni --help: la
+interfaz importaba el modulo de entrenamiento arriba, y una importacion de
+modulo se ejecuta siempre, tambien al pedir la ayuda.
+
+Lo que provee un extra se importa ahora dentro del comando que lo usa. Sin el
+extra puesto, train y recommend dicen que instalar en vez de terminar en un
+rastro de importacion que no explica por que falta algo que nadie quito.
+
+El fallo se colo porque la comprobacion en entorno limpio se hizo antes de
+partir las dependencias, con xgboost todavia entre las obligatorias. El flujo
+pasa a probar las dos instalaciones y en orden: primero la minima, despues el
+extra. Al reves no distinguiria una dependencia opcional de una obligatoria y
+el reparto seria decorativo.
+
+Version 0.3.1: 0.3.0 quedo etiquetada y no publicable."
+```
+
 ## 8. Publicar
 
 Antes de etiquetar hay que tener puesto lo que la publicación necesita, y eso
@@ -166,8 +196,8 @@ plataformas, y se detiene antes de publicar.
 ```bash
 git push origin fuel-case-study
 
-git tag -a cs1-v0.3.0 -m "CS1: paquete publicable en el indice de pruebas"
-git push origin cs1-v0.3.0
+git tag -a cs1-v0.3.1 -m "CS1: paquete publicable en el indice de pruebas"
+git push origin cs1-v0.3.1
 ```
 
 La etiqueta dispara el flujo. Aprobar el último paso cuando los dos primeros
@@ -180,6 +210,8 @@ python3 -m venv /tmp/prueba && source /tmp/prueba/bin/activate
 pip install -i https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ fuel-price-gt
 cd /tmp && fuel-price-gt build-data
+pip install "fuel-price-gt[modeling]"
+fuel-price-gt train --fuel regular
 deactivate
 ```
 
