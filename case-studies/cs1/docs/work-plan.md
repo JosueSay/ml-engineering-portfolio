@@ -735,7 +735,10 @@ sus vulnerabilidades pasan a ser de quien lo publicó.
 - [x] Cerrar las vulnerabilidades con arreglo disponible en la construcción de la imagen
 - [ ] Activar el análisis de código
 - [ ] Hacer pública la imagen del registro de contenedores
-- [ ] Fusionar a `main`: la configuración de dependencias solo se lee de la rama por defecto
+- [x] Fusionar a `main`: la configuración de dependencias solo se lee de la rama por defecto
+- [x] Purgar las fotografías del historial y cerrar el punto ciego de la puerta
+- [x] Dejar el informe de vulnerabilidades en lo accionable
+- [x] Quitar el manifiesto del experimento descartado, conservando el registro
 
 ## 7. Orden recomendado
 

@@ -34,7 +34,18 @@ ninguna.
 
 ### Qué queda fuera y por qué
 
-Los dos ejercicios de `workshop/` no se actualizan. Son entregas cerradas, sin
+Los experimentos descartados no declaran manifiesto. `florence2-vision` tenía
+un `requirements.txt` con versiones fijas, y eso generaba 24 avisos de
+vulnerabilidad permanentes —de `torch` y `transformers`, las dos bibliotecas
+que ese mismo experimento explica por qué no quedaron— sobre algo que nadie va
+a instalar. Las 24 eran el total del repositorio: el paquete publicado no
+aportaba ninguna.
+
+Lo que se quería conservar era el registro de con qué se probó, y eso vive
+ahora en `experiments/README.md`. Un `requirements.txt` no es un registro: es
+una declaración de dependencias vivas, y las herramientas lo tratan como tal.
+
+Los dos ejercicios de `workshop/` tampoco se actualizan. Son entregas cerradas, sin
 flujo que las verifique, y una propuesta semanal sobre ellas sería ruido. La
 regla es que lo que no se comprueba no se actualiza solo: una propuesta de
 cambio que nadie sabe si rompe algo acaba fusionándose por costumbre, que es
@@ -82,6 +93,19 @@ sino del `Dockerfile`: la imagen base se reconstruye cada cierto tiempo y entre
 reconstrucciones acumula actualizaciones de seguridad de la distribución ya
 disponibles. Un `apt-get upgrade` en la construcción cerró las treinta. Las 38
 restantes no tienen arreglo publicado.
+
+### Qué se informa, y por qué no todo
+
+El primer informe subió 299 avisos: 159 de gravedad baja, 94 media, 34 alta,
+5 crítica. Ninguno accionable, porque los accionables ya se habían cerrado en
+la construcción. A ese volumen la pestaña de seguridad deja de mirarse, y un
+análisis que nadie mira no es un análisis.
+
+Ahora se informa con **los mismos filtros que usa la compuerta de
+publicación**: grave y con arreglo disponible. Así lo que aparece en la pestaña
+de seguridad es exactamente lo que impediría publicar. Lo que la distribución
+aún no ha arreglado sigue visible en el registro del trabajo, que es donde
+corresponde consultarlo.
 
 ### Dónde corta y dónde solo informa
 

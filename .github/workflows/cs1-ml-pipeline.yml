@@ -319,11 +319,19 @@ jobs:
       # la distribucion sin arreglo publicado: cortar el pipeline por algo que
       # nadie puede arreglar entrena a ignorar el rojo. Lo accionable se corta
       # en el flujo de publicacion, que es donde importa.
+      #
+      # Los mismos filtros que la compuerta de publicacion, y por eso: asi lo
+      # que aparece en la pestana de seguridad es exactamente lo que impediria
+      # publicar. Sin filtrar subia 299 avisos, 159 de ellos de gravedad baja y
+      # ninguno accionable; a ese volumen la pestana deja de mirarse y el
+      # analisis no sirve para nada.
       - name: Analizar vulnerabilidades de la imagen
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: fuel-price-gt:ci
           scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
           format: sarif
           output: trivy.sarif
           exit-code: "0"

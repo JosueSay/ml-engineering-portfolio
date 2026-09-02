@@ -7,6 +7,10 @@
 #
 # Por eso quedan fuera los dos ejercicios de workshop/: son entregas cerradas,
 # sin flujo que las verifique, y una propuesta semanal sobre ellas seria ruido.
+#
+# Los experimentos descartados tampoco declaran manifiesto: las versiones con
+# las que se probaron quedan escritas en su registro, que es lo que se queria
+# conservar, sin que una herramienta las lea como dependencias vivas.
 
 version: 2
 

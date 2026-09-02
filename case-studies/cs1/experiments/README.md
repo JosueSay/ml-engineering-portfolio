@@ -57,3 +57,26 @@ python experiments/florence2-vision/download_models.py
 Es idempotente: si los pesos ya están en la caché, no vuelve a descargarlos.
 Su configuración es propia y no se mezcla con la del pipeline, que vive en
 `config/config.yaml`.
+
+Las versiones con las que se probó, para poder reproducirlo:
+
+```
+numpy==2.5.1
+PyYAML==6.0.3
+torch==2.9.1
+transformers==4.57.6
+pillow==11.3.0
+pillow-heif==1.5.0
+einops==0.8.2
+timm==1.0.28
+```
+
+Están aquí y no en un `requirements.txt` a propósito. Un archivo de ese nombre
+lo leen las herramientas como un conjunto de dependencias vivas: cuando existía,
+generaba 24 avisos de vulnerabilidad permanentes —de `torch` y `transformers`,
+justo las dos que este experimento explica por qué no quedaron— sobre algo que
+nadie va a instalar. Esos avisos competían por atención con los que sí
+importarían.
+
+Lo que se quería conservar era el registro de con qué se probó, y eso es
+exactamente lo que hay arriba. Para ejecutarlo, se instalan a mano.
