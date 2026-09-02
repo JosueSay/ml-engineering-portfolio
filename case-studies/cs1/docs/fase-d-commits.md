@@ -196,6 +196,32 @@ paquete.
 Version 0.3.2."
 ```
 
+## 7d. La imagen de contenedor
+
+Tercer sitio donde el reparto de extras dejó algo sin instalar. El flujo
+principal llevaba fallando desde el commit 2 sin que se mirara.
+
+```bash
+git add case-studies/cs1/Dockerfile \
+        case-studies/cs1/src/fuel_price_gt/serving/api.py \
+        case-studies/cs1/docs/
+git commit -m "fix(cs1): instalar en la imagen los extras que el servicio usa
+
+La imagen instalaba lo minimo y arrancaba uvicorn, que ya no venia con ello:
+el contenedor moria con executable file not found. Necesita los dos extras,
+porque sirve una recomendacion y para leer un modelo hace falta la misma
+biblioteca con la que se escribio.
+
+De paso, dos numeros que tenian que coincidir y no lo hacian. La version que
+declaraba el servicio estaba escrita a mano y se habia quedado en 0.1.0; ahora
+se toma del paquete. Y la imagen declaraba API_PORT sin que nada dentro lo
+leyera: el puerto de dentro es fijo y el parametrizable es el del anfitrion,
+que decide quien levanta el servicio.
+
+Comprobado en local: la imagen construye, el contenedor responde en /health y
+declara la version correcta."
+```
+
 ## 8. Publicar
 
 Antes de etiquetar hay que tener puesto lo que la publicación necesita, y eso
