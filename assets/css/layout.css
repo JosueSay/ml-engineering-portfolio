@@ -304,3 +304,66 @@ a.card:hover {
     z-index: 30;
   }
 }
+
+/* --- Caso de estudio ------------------------------------------------------ */
+
+/* El listado usa la misma tarjeta que el inicio; solo anade el rotulo de
+   encima, que situa el caso sin gastar el titulo en decir "caso de estudio". */
+.card__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.case-section {
+  margin-top: 34px;
+  max-width: 68ch;
+}
+
+.case-section h2 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.case-section p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.case-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.case-list li + li {
+  margin-top: 10px;
+}
+
+.case-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.link-pill {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 0.88rem;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.link-pill:hover {
+  text-decoration: none;
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
