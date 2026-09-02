@@ -20,6 +20,7 @@ está el detalle.
 | [10_supply_chain.md](10_supply_chain.md) | Dependencias al día, imagen publicada y qué activar en GitHub |
 | [11_lifecycle.md](11_lifecycle.md) | Qué se quería resolver, qué había en los datos y qué hubo que hacerles |
 | [12_flow.md](12_flow.md) | El flujo completo en diagramas: el dato, su rastro y la entrega |
+| [13_deliveries.md](13_deliveries.md) | Qué marca cada etiqueta y qué salió de ella |
 | [work-plan.md](work-plan.md) | Diagnóstico, decisiones tomadas y pendientes |
 
 Las divisiones de commits de cada fase quedan como registro de cómo se

@@ -7,4 +7,4 @@ regresión sobre una serie temporal.
 
 # Fuente unica de la version: el empaquetado la lee de aqui, asi que no hay
 # dos numeros que puedan dejar de coincidir.
-__version__ = "0.3.4"
+__version__ = "0.3.5"

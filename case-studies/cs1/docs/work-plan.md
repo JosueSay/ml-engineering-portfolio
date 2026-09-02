@@ -718,8 +718,8 @@ otra cosa.
 
 - [x] Documentar las tres primeras fases del ciclo de vida en `docs/`
 - [x] Diagrama del flujo completo
-- [ ] Publicar el caso en la página de casos de estudio
-- [ ] Etiquetas por entrega
+- [x] Publicar el caso en la página de casos de estudio
+- [x] Etiquetas por entrega
 
 ### 6.6 Fase F — Mantenimiento y cadena de suministro
 
