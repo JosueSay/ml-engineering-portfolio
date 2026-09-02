@@ -716,8 +716,8 @@ otra cosa.
 
 ### 6.5 Fase E — Cierre
 
-- [ ] Documentar las tres primeras fases del ciclo de vida en `docs/`
-- [ ] Diagrama del flujo completo
+- [x] Documentar las tres primeras fases del ciclo de vida en `docs/`
+- [x] Diagrama del flujo completo
 - [ ] Publicar el caso en la página de casos de estudio
 - [ ] Etiquetas por entrega
 

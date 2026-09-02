@@ -1,5 +1,16 @@
 # CS1 — Precios de combustible en Guatemala
 
+[![Pipeline](https://github.com/JosueSay/ml-engineering-portfolio/actions/workflows/cs1-ml-pipeline.yml/badge.svg?branch=main)](https://github.com/JosueSay/ml-engineering-portfolio/actions/workflows/cs1-ml-pipeline.yml)
+[![Publicación](https://github.com/JosueSay/ml-engineering-portfolio/actions/workflows/cs1-publish.yml/badge.svg)](https://github.com/JosueSay/ml-engineering-portfolio/actions/workflows/cs1-publish.yml)
+[![TestPyPI](https://img.shields.io/pypi/v/fuel-price-gt?pypiBaseUrl=https%3A%2F%2Ftest.pypi.org&label=TestPyPI)](https://test.pypi.org/project/fuel-price-gt/)
+[![Imagen](https://img.shields.io/badge/ghcr.io-fuel--price--gt-blue?logo=docker&logoColor=white)](https://github.com/JosueSay/ml-engineering-portfolio/pkgs/container/fuel-price-gt)
+[![Python](https://img.shields.io/pypi/pyversions/fuel-price-gt?pypiBaseUrl=https%3A%2F%2Ftest.pypi.org)](https://test.pypi.org/project/fuel-price-gt/)
+[![Licencia](https://img.shields.io/badge/licencia-MIT-blue)](https://github.com/JosueSay/ml-engineering-portfolio/blob/main/LICENSE)
+
+Las dos primeras dicen si el sistema está en pie ahora mismo, no si lo estuvo
+alguna vez: una entrega que solo se puede comprobar abriendo el historial de
+corridas no está comprobada.
+
 Caso de estudio de extracción y pronóstico de precios de combustible a partir
 de fotografías de tótems de gasolinera.
 

@@ -18,6 +18,8 @@ está el detalle.
 | [08_publishing.md](08_publishing.md) | Construir, verificar y publicar el paquete |
 | [09_ci.md](09_ci.md) | Qué comprueba cada flujo de integración continua y cómo leer un fallo |
 | [10_supply_chain.md](10_supply_chain.md) | Dependencias al día, imagen publicada y qué activar en GitHub |
+| [11_lifecycle.md](11_lifecycle.md) | Qué se quería resolver, qué había en los datos y qué hubo que hacerles |
+| [12_flow.md](12_flow.md) | El flujo completo en diagramas: el dato, su rastro y la entrega |
 | [work-plan.md](work-plan.md) | Diagnóstico, decisiones tomadas y pendientes |
 
 Las divisiones de commits de cada fase quedan como registro de cómo se
@@ -32,6 +34,8 @@ quedó, con el motivo del descarte.
 ## Por dónde empezar
 
 - **Primera vez en el proyecto**: [01_setup.md](01_setup.md).
+- **Entendiendo qué resuelve el caso**: [11_lifecycle.md](11_lifecycle.md), y
+  [12_flow.md](12_flow.md) para verlo de un vistazo.
 - **Buscando un comando**: [03_commands.md](03_commands.md), o `make help`.
 - **Añadiendo un valor de configuración**: [02_environment.md](02_environment.md)
   explica los tres niveles y cómo decidir en cuál va.
