@@ -29,6 +29,12 @@ _HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; gasolina-gt-bot/1.0)"}
 
 @dataclass
 class PrecioReferencia:
+    """Precio publicado por una fuente externa, con su procedencia.
+
+    Saber si el dato vino de la consulta en vivo o del respaldo local es
+    parte del dato: una comparación contra un valor de respaldo antiguo no
+    tiene el mismo peso que una contra el precio del día.
+    """
     combustible: str
     precio_gtq_por_galon: float
     precio_gtq_por_litro: float
@@ -92,6 +98,12 @@ def _obtener_offline(combustible: str, cfg: dict) -> PrecioReferencia:
 
 
 def obtener_precio_referencia(combustible: str = "gasolina", config: dict | None = None) -> PrecioReferencia:
+    """Precio de referencia externo, con respaldo local si no hay red.
+
+    Nunca falla por un problema de conexión: cae al respaldo y lo declara.
+    Que el pipeline entero se caiga porque una fuente externa no responde
+    sería un acoplamiento innecesario.
+    """
     """Punto de entrada único. `combustible` es "gasolina" (proxy de Regular)
     o "diesel". Intenta scrapear en vivo; si falla por cualquier motivo de
     red, cae de forma transparente al fixture offline."""

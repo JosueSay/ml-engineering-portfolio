@@ -26,6 +26,11 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class LecturaCombustible:
+    """Un precio leído, o el motivo por el que no se pudo leer.
+
+    Las lecturas inválidas se conservan con su motivo en vez de descartarse:
+    saber cuántas fallaron y por qué es lo que permite mejorar la extracción.
+    """
     tipo_combustible: str
     precio_gtq_por_galon: float | None
     confianza: float
@@ -37,6 +42,10 @@ class LecturaCombustible:
 
 @dataclass
 class RegistroExtraccion:
+    """Todo lo obtenido de una fotografía, válido o no.
+
+    Es la unidad de la capa cruda: fidelidad al origen, sin corregir nada.
+    """
     archivo: str
     capturada_en: str | None
     caras_difuminadas: int
@@ -44,6 +53,13 @@ class RegistroExtraccion:
 
 
 class ExtractorPrecios:
+    """Encadena las etapas de extracción y valida lo que sale.
+
+    Implementa la interfaz que pide el negocio: recibe una imagen y devuelve
+    pares de tipo de combustible y precio. Ante la duda escribe nulo con su
+    motivo en vez de inventar un valor; un precio inventado contamina la
+    serie y nadie se entera.
+    """
     def __init__(self, config: dict | None = None):
         self.cfg = config or load_config()
         self.calibracion = CalibracionPaneles()
@@ -53,6 +69,7 @@ class ExtractorPrecios:
         self.confianza_minima = float(ext_cfg["confianza_minima"])
 
     def extraer_de_imagen(self, imagen: ImagenCargada) -> RegistroExtraccion:
+        """Procesa una fotografía y devuelve sus cuatro lecturas."""
         privacidad = aplicar_filtro_privacidad(imagen.arreglo)
         arr = privacidad.imagen
         nombre = imagen.ruta.name
@@ -102,6 +119,11 @@ class ExtractorPrecios:
         return True, None
 
     def procesar_directorio(self, directorio: Path | str | None = None) -> list[RegistroExtraccion]:
+        """Procesa todas las fotografías de un directorio.
+
+        Una imagen que no se puede abrir se registra y se salta: un archivo
+        corrupto no debe detener el procesamiento de los demás.
+        """
         directorio = Path(directorio) if directorio else resolve_path(self.cfg["paths"]["datos_raw"])
         registros = []
         for ruta in listar_imagenes(directorio):
@@ -114,6 +136,11 @@ class ExtractorPrecios:
         return registros
 
     def guardar_bronze(self, registros: list[RegistroExtraccion]) -> Path:
+        """Escribe la capa cruda, un archivo por corrida.
+
+        No se sobreescribe la anterior: cada corrida queda como evidencia de
+        qué leyó esa versión del código sobre ese conjunto de fotografías.
+        """
         bronze_dir = resolve_path(self.cfg["paths"]["bronze"])
         bronze_dir.mkdir(parents=True, exist_ok=True)
         salida = bronze_dir / f"extraccion_{datetime.now():%Y%m%dT%H%M%S}.json"

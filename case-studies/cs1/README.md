@@ -1,182 +1,214 @@
-# CS1 — Fuel case study
+# CS1 — Precios de combustible en Guatemala
 
-Caso de estudio de precios de combustible en Guatemala. La carpeta contiene dos
-partes complementarias:
+Caso de estudio de extracción y pronóstico de precios de combustible a partir
+de fotografías de tótems de gasolinera.
 
-- `gasolina_gt`: pipeline MLOps completo de extracción OCR, capas
-  Bronze/Silver/Gold, entrenamiento temporal, evaluación, recomendación, API y
-  empaquetado Docker.
-- Los experimentos iniciales con Florence-2 como modelo de caja negra y el
-  conversor HEIC a JPG.
+El plan de trabajo, las decisiones tomadas y lo que falta están en
+[docs/work-plan.md](docs/work-plan.md).
 
-La reproducibilidad de Florence-2 depende de fijar la revision exacta del
-modelo, no solo su nombre: el repo de Hugging Face no publica tags y sus pesos
-ya cambiaron una vez sobre la misma rama `main`.
+## Qué hace
 
-## Pipeline MLOps Gasolina GT
+De cada fotografía se extraen los cuatro precios del panel (diésel, regular,
+súper, V-Power), se llevan a una base histórica trazable y sobre ella se
+predice el precio a 1, 2 y 4 semanas con una señal de tendencia y una
+recomendación de carga.
 
-Instalar el paquete y sus herramientas de desarrollo desde esta carpeta:
+Dos mitades que no se mezclan: la extracción es visión, la estimación es
+regresión sobre una serie temporal.
 
-```bash
-python -m pip install -e ".[dev]"
-```
+La lectura de dígitos es determinista y no necesita tarjeta gráfica: compara la
+forma de cada dígito contra plantillas de siete segmentos y se queda con el
+mejor solapamiento. Si el motor alterno de reconocimiento de texto está
+instalado, se usa como segunda opinión y gana el de mayor confianza.
 
-Ejecutar sus validaciones y etapas:
+## Puesta en marcha
 
-```bash
-python -m ruff check src tests scripts
-python -m pytest -q
-python scripts/stage_extract.py
-python -m gasolina_gt.cli build-data
-python -m gasolina_gt.cli train --combustible regular
-python scripts/quality_gate.py
-python -m gasolina_gt.cli recommend --combustible regular --horizonte 1 --hora 18
-```
-
-En Linux o GitHub Actions también se puede ejecutar `make pipeline`. El
-workflow `.github/workflows/cs1-ml-pipeline.yml` separa calidad, extracción,
-transformación, entrenamiento, evaluación y smoke test Docker en jobs con
-artefactos trazables.
-
-## Requisitos
-
-- Python 3.11+
-- ~4 GB libres en disco (1.5 GB de pesos + torch y sus dependencias)
-- Conexion a internet para la primera corrida
-
-## Instalacion
-
-Todos los comandos se corren **desde `case-studies/cs1/`**, no desde la raiz del
-repo. Eso importa: los modulos importan `core.config`, y `core/` solo esta en el
-path si el directorio de trabajo es `cs1`.
+Todos los comandos se ejecutan **desde `case-studies/cs1/`**.
 
 ```bash
-python -m venv .venv
+make verify        # comprueba interprete, dependencias y estructura
+make venv          # crea el entorno virtual
+make install-dev   # instala el paquete y las herramientas de desarrollo
+make env-init      # crea .env desde la plantilla versionada
+make keys-status   # informa que credenciales faltan, sin crear nada
 ```
 
-Activar el entorno:
+`make verify` es el primero por una razón: el fallo más común no es un error de
+código sino un intérprete equivocado. El proyecto necesita Python 3.11 o
+superior, y `python3` puede apuntar a una versión anterior del sistema.
 
-```powershell
-# Windows (PowerShell)
-.\.venv\Scripts\Activate.ps1
-```
+`make help` lista todos los comandos disponibles, agrupados por etapa.
+
+## Ejecución
 
 ```bash
-# Linux / macOS
-source .venv/bin/activate
+make extract       # lee los precios de las fotografias (Bronze)
+make transform     # construye Silver y Gold
+make train         # entrena y evalua los horizontes configurados
+make evaluate      # compuerta de calidad
+make recommend     # recomendacion de carga
+make pipeline      # encadena todo lo anterior
 ```
 
-Instalar dependencias:
+El combustible y el horizonte se pasan por variable:
 
 ```bash
-python -m pip install -r requirements.txt
+make train FUEL=super
+make recommend FUEL=diesel HORIZON=2 HOUR=18
 ```
 
-> `requirements.txt` debe estar en **UTF-8**. Si lo regeneras en PowerShell 5.1,
-> `pip freeze > requirements.txt` lo escribe en UTF-16 y `pip install` falla con
-> `Invalid requirement: 'n\x00u\x00m\x00p\x00y\x00...'`. Usa:
->
-> ```powershell
-> python -m pip freeze | Set-Content -Encoding utf8 requirements.txt
-> ```
+La lógica vive en `scripts/` y en la interfaz de línea de comandos del paquete;
+el `Makefile` es solo el atajo. El mismo comando corre sin `make`, y la
+integración continua llama a los scripts directamente.
 
-## Uso
+## Configuración
 
-### 1. Descargar el modelo
+Tres niveles, y cada valor cae en exactamente uno.
+
+| Nivel | Dónde | Qué | Versionado |
+|---|---|---|---|
+| 1 | `config/config.yaml` | Parámetros de negocio y de modelo | Sí |
+| 2 | `.env` | Lo que cambia por máquina o entorno, nunca sensible | No, solo `.env.example` |
+| 3 | `keys/` | Credenciales reales, en archivos | No, solo su documentación |
+
+Para decidir dónde va un valor nuevo, en este orden:
+
+1. ¿Es igual en todas las máquinas y define cómo se comporta el sistema? A
+   `config/config.yaml`.
+2. ¿Cambia por máquina o entorno, pero se puede publicar sin riesgo? A `.env`.
+3. ¿Da acceso a algo? A `keys/`, como archivo.
+
+De ahí la regla que sostiene el tercer nivel: **`.env` nunca contiene el valor
+de una credencial, solo la ruta al archivo que la guarda**. Las variables
+sensibles terminan en `_FILE` y se leen con `read_secret`. Así una credencial
+no aparece en un volcado de entorno, ni en un registro de arranque, ni en una
+captura de pantalla de la terminal.
+
+Qué credencial hace falta para qué, cómo se obtiene y con qué permisos mínimos:
+[keys/README.md](keys/README.md).
+
+### Puertos
+
+Se parametrizan siempre y salen del rango reservado del proyecto, **19000 a
+19099**, elegido por debajo de donde el sistema empieza a asignar puertos
+efímeros por su cuenta y fuera de los puertos habituales de desarrollo.
+
+| Puerto | Servicio | Variable |
+|---|---|---|
+| 19010 | API de pronóstico | `API_PORT` |
+| 19020 | Base de datos, si se usa un motor servidor | `DB_PORT` |
+| 19030 | Explorador de la base de datos | `DB_BROWSER_PORT` |
+| 19040, 19041 | Almacenamiento de objetos | `OBJECT_STORE_PORT`, `OBJECT_STORE_CONSOLE_PORT` |
+
+## Datos
+
+**Ninguna imagen entra al control de versiones.** El repositorio guarda código
+y documentación; las fotografías viven en el almacenamiento externo y se
+descargan.
+
+```
+data/
+├── raw/         Originales tal como llegan. Nunca se editan.
+├── interim/     Recortes de la franja de precios.
+└── processed/
+    ├── bronze/  Lectura cruda por imagen, con las invalidas y su motivo
+    ├── silver/  Tabla limpia de precio por fecha y combustible
+    └── gold/    Conjunto con variables de modelado
+```
+
+Los originales no se modifican nunca: cada transformación produce un archivo
+nuevo en otra carpeta. El recorte no es solo un ahorro de cómputo, es la
+evidencia de qué se leyó; ante una lectura sospechosa se puede mirar
+exactamente la porción de píxeles que la generó.
+
+## Modelos
+
+```
+models/
+├── vendor/    Pesos de terceros. Desechables, se vuelven a bajar.
+└── trained/   Artefactos propios, uno por corrida de entrenamiento.
+```
+
+Están separados porque tienen ciclos de vida opuestos, y por eso hay dos
+objetivos de limpieza distintos: `make clean-vendor` y `make clean-trained`.
+Ningún peso entra al repositorio.
+
+## Contenedores
 
 ```bash
-python download_models.py
+make up            # levanta el stack
+make ps            # estado
+make logs          # sigue los registros
+make down          # detiene conservando los volumenes
+make docker-smoke  # construye y verifica que la API responda
 ```
 
-Script suelto, no modulo: vive en la raiz de `cs1`, asi que Python ya pone ese
-directorio en `sys.path` y `from core.config import ...` resuelve.
+Los datos y los modelos entran por volumen, no dentro de la imagen: meterlos
+obligaría a reconstruir por cada foto nueva y haría crecer la imagen sin
+control con el histórico completo.
 
-Baja ~1.5 GB a `models/` y cachea el modelo bajo la revision fijada en
-`config.yml`. Es idempotente: si el cache ya esta, no vuelve a descargar.
-
-Corre `trust_remote_code=True`, o sea que ejecuta el `modeling_florence2.py` del
-repo de Microsoft. Fijar el SHA acota exactamente que codigo se ejecuta.
-
-### 2. Convertir imagenes HEIC a JPG
+## Calidad
 
 ```bash
-python -m imageConvert.convert --input <dir> --output <dir> [--delete]
+make gates   # linter, pruebas y revision de secretos
+make lint
+make test
+make format  # reescribe archivos
 ```
 
-Este si es **modulo** (`python -m`), no script. Si lo corres como
-`python imageConvert/convert.py`, Python pone `imageConvert/` en `sys.path` en
-vez de `cs1/`, y cualquier import de `core.` deja de resolver. `python -m` corre
-desde `cs1/`, que es lo que se quiere.
-
-- `--input` y `--output` son requeridos: no hay rutas por defecto.
-- `--delete` borra el `.heic` original **solo** si la conversion fue exitosa.
-- El manifiesto de cada corrida queda en `imageConvert/output/manifest.json`.
-
-## Configuracion
-
-Todo parametro vive en `config.yml`; no hay rutas absolutas en el codigo. Las
-rutas del yml son relativas a `cs1/` y `core/config.py` las ancla a la raiz del
-proyecto con `Path(__file__).resolve().parent.parent`, no al directorio actual.
-
-| Clave | Que controla |
-|---|---|
-| `models.path_storage_models` | Cache de pesos de Hugging Face |
-| `models.model_hfa` | Model id en el Hub |
-| `models.revision_hfa` | **SHA del commit**. Ver nota abajo |
-| `data.path_raw_data` | Imagenes de entrada sin procesar |
-| `logging.path_storage_log` | Destino de los `.jsonl` de corrida |
-| `logging.level` | Nivel de log |
-| `output.path_storage_output` | Artefactos de salida |
-
-### Sobre `revision_hfa`
-
-`microsoft/Florence-2-large` no publica tags ni releases: solo la rama `main`.
-El commit `00d2f157` (2024-12-08) **cambio los pesos** al modelo de contexto 4k,
-asi que "el modelo" no es una cosa fija. Por eso se fija el SHA completo y no
-`main`. Si lo cambias, los resultados dejan de ser comparables con los anteriores.
-
-`download_models.py` falla ruidosamente si la revision no esta declarada, en vez
-de caer silenciosamente a `main`.
-
-### Nota sobre `attn_implementation`
-
-Se pide `eager` a proposito. El codigo remoto de Florence-2 declara
-`_supports_sdpa` como una property que lee `self.language_model`, pero
-transformers 4.57 consulta ese flag dentro de `PreTrainedModel.__init__`, antes
-de que `language_model` exista. El costo es no usar SDPA en inferencia.
-
-La alternativa es `florence-community/Florence-2-large` (rev `4271c66b`), que usa
-el soporte nativo de transformers, no ejecuta codigo remoto y si despacha SDPA.
+`make gates` es lo que hay que pasar antes de confirmar cambios. Además del
+linter y las pruebas comprueba tres cosas que ninguna de las dos ve: que no se
+haya versionado una credencial, que no se haya versionado una imagen, y que
+`.env` no se haya desincronizado de su plantilla.
 
 ## Estructura
 
 ```
 cs1/
-├── config.yml              # Toda la parametrizacion
-├── download_models.py      # Entry point: cachea el modelo (script)
-├── core/
-│   ├── config.py           # Carga config.yml, ancla rutas a la raiz
-│   ├── logging_setup.py    # Consola legible + JSONL por corrida
-│   └── jsonio.py           # json.dump tolerante a tipos de numpy
-├── imageConvert/           # Entry point: HEIC -> JPG (modulo, python -m)
-├── models/                 # Cache de pesos (ignorado por git)
-├── data/raw/               # Entrada (ignorado por git)
-├── logs/                   # JSONL por corrida (ignorado por git)
-└── output/                 # Artefactos (ignorado por git)
+├── config/
+│   ├── config.yaml           Parametros de negocio y de modelo
+│   └── panelCalibration.json Regiones de panel calibradas
+├── src/gasolina_gt/
+│   ├── extraction/           Carga, privacidad, calibracion, lectura de digitos
+│   ├── data/                 Capas Bronze, Silver y Gold, y variables
+│   ├── augmentation/         Aumento de imagenes y de series
+│   ├── modeling/             Entrenamiento con validacion temporal
+│   ├── evaluation/           Metricas y compuerta de calidad
+│   ├── scraping/             Precio de referencia externo
+│   └── serving/              API y recomendacion
+├── scripts/                  Logica de arranque, credenciales y etapas
+├── experiments/              Lo explorado y descartado, fuera del camino productivo
+├── data/                     Ignorado por git
+├── models/                   Ignorado por git
+├── keys/                     Ignorado por git, salvo su documentacion
+└── docs/work-plan.md         Plan, decisiones y pendientes
 ```
+
+## Experimentos
+
+`experiments/` guarda lo que se probó y no quedó, con el motivo del descarte.
+Nada de ahí se instala con el paquete, se ejecuta en la integración continua ni
+entra en la imagen. Ver [experiments/README.md](experiments/README.md).
 
 ## Problemas comunes
 
-**`KeyError: falta la revision de ... en config.yml`**
-Falta `models.revision_hfa`, o el model id del yml no coincide con la llave del
-diccionario `REVISIONS`.
+**`ImportError` al importar, o pruebas que fallan al recolectar**
 
-**`ModuleNotFoundError: No module named 'core'`**
-Estas corriendo desde el directorio equivocado. Todos los comandos van desde
-`case-studies/cs1/`.
+El intérprete es anterior a 3.11. `make verify` lo dice y señala dónde hay uno
+válido.
 
-**`Invalid requirement: 'n\x00u\x00m\x00p\x00y\x00...'`**
-`requirements.txt` quedo en UTF-16. Ver la nota en Instalacion.
+**`FileNotFoundError` buscando `config/config.yaml`**
 
-**Warning de symlinks de `huggingface_hub` en Windows**
-Es esperado sin Developer Mode. Funciona igual, solo usa mas disco.
+Se está ejecutando desde el directorio equivocado. Todos los comandos van desde
+`case-studies/cs1/`. Si hace falta ejecutar desde otro sitio, se declara la
+raíz con `FUEL_PRICE_GT_ROOT`.
+
+**El pipeline no encuentra fotografías**
+
+`data/raw` está vacía, que es el estado normal de un clon nuevo: las imágenes
+no se versionan. Hay que poblarla desde el almacenamiento externo.
+
+**Aviso de enlaces simbólicos al descargar modelos en Windows**
+
+Es esperado sin el modo de desarrollador activado. Funciona igual, solo usa más
+disco.

@@ -19,6 +19,13 @@ import numpy as np
 
 @dataclass
 class ResultadoPrivacidad:
+    """Imagen ya tratada, con cuántas caras se difuminaron.
+
+    `filtro_disponible` en falso significa que la instalación de la
+    biblioteca de visión no traía el detector, no que la fotografía no
+    tuviera caras. La diferencia importa para saber si una corrida cumplió
+    de verdad el requisito de privacidad.
+    """
     imagen: np.ndarray
     caras_difuminadas: int
     filtro_disponible: bool
@@ -43,6 +50,13 @@ _DETECTOR = _cargar_detector_caras()
 
 
 def aplicar_filtro_privacidad(imagen_rgb: np.ndarray) -> ResultadoPrivacidad:
+    """Difumina las caras que aparezcan de fondo antes de procesar.
+
+    El requisito es no almacenar rostros de personas ajenas al negocio que
+    aparezcan por casualidad en la fotografía de la gasolinera. Se aplica
+    antes que nada para que ninguna etapa posterior llegue a ver la imagen
+    sin tratar.
+    """
     if _DETECTOR is None:
         return ResultadoPrivacidad(imagen_rgb, 0, filtro_disponible=False)
 
