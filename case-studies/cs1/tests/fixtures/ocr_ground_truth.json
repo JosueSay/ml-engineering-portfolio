@@ -1,0 +1,55 @@
+{
+  "_description": "Verdad conocida para medir el reconocimiento de digitos. Los valores se anotaron a mano leyendo los recortes de data/interim ampliados, y hay que revisarlos antes de darlos por buenos. Sin un conjunto asi, 'mejorar el OCR' no es una afirmacion medible.",
+  "_how_to_regenerate": "Los recortes salen de 'make extract' y se nombran por los primeros 16 caracteres de la huella de la imagen mas la region. Si cambia la calibracion, cambian los recortes y hay que volver a anotar.",
+  "readings": [
+    {
+      "crop": "dc70442c6ea015e7_diesel.png",
+      "expected": 43.19,
+      "digits_complete": true,
+      "note": "el mas legible del conjunto: digitos completos y bien contrastados"
+    },
+    {
+      "crop": "8db7c5a904471021_super.png",
+      "expected": 39.59,
+      "digits_complete": true,
+      "note": "completo, con ligera inclinacion"
+    },
+    {
+      "crop": "8db7c5a904471021_vpower.png",
+      "expected": 40.09,
+      "digits_complete": true,
+      "note": "completo; el motor actual lo lee como 4609, perdiendo el punto decimal"
+    },
+    {
+      "crop": "dc70442c6ea015e7_regular.png",
+      "expected": 41.09,
+      "digits_complete": false,
+      "note": "el primer digito queda cortado por el borde izquierdo del recorte"
+    },
+    {
+      "crop": "dc70442c6ea015e7_super.png",
+      "expected": 42.09,
+      "digits_complete": false,
+      "note": "primer digito cortado"
+    },
+    {
+      "crop": "dc70442c6ea015e7_vpower.png",
+      "expected": 42.59,
+      "digits_complete": false,
+      "note": "primer digito cortado"
+    }
+  ],
+  "no_display": [
+    "2be395b68a00b9e2_regular.png",
+    "2be395b68a00b9e2_super.png",
+    "2be395b68a00b9e2_vpower.png",
+    "8db7c5a904471021_regular.png",
+    "ef3209b169134946_regular.png",
+    "ef3209b169134946_super.png",
+    "ef3209b169134946_vpower.png",
+    "f72ce18bf5b7cb26_regular.png",
+    "f72ce18bf5b7cb26_super.png",
+    "f72ce18bf5b7cb26_vpower.png"
+  ],
+  "_no_display_note": "Recortes que no contienen ningun visor: la calibracion apunta a la carcasa, al bisel o a otra parte del dispensador. Aqui no hay nada que leer, y ningun reconocedor puede arreglarlo. Sirven como casos negativos: un motor que 'lea' algo en estos esta inventando."
+}

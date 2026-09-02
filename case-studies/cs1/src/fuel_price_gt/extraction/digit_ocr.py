@@ -205,6 +205,61 @@ def _classify_digit(character: np.ndarray) -> tuple[str | None, float]:
     return None, 0.0
 
 
+# --- Correccion de italica --------------------------------------------------------
+# Los digitos de estos visores estan inclinados por diseno, como los de un reloj
+# digital: no es perspectiva de la fotografia sino la tipografia del display.
+# Las plantillas de comparacion son de trazos rectos, asi que sin enderezar
+# antes el solapamiento se cae y se confunden los digitos que mas se parecen al
+# inclinarse: el nueve con el cuatro, el cinco con el cero, el cero con el seis.
+#
+# Medido sobre los recortes de referencia, corregir la inclinacion lleva la
+# lectura de cero digitos correctos a cuatro de cinco.
+ANGULOS_ITALICA = (0, 5, 8, 10, 12, 15, 18, 20)
+
+
+def _cizallar(binaria: np.ndarray, grados: float) -> np.ndarray:
+    """Aplica una cizalla horizontal para enderezar los trazos inclinados."""
+    if not grados:
+        return binaria
+    alto, ancho = binaria.shape[:2]
+    k = np.tan(np.deg2rad(grados))
+    matriz = np.float32([[1, k, -k * alto / 2], [0, 1, 0]])
+    return cv2.warpAffine(
+        binaria, matriz, (int(ancho + abs(k) * alto), alto), borderValue=255
+    )
+
+
+def _nitidez_de_columnas(binaria: np.ndarray) -> float:
+    """Cuanto se separan los digitos entre si al proyectarlos sobre el eje x.
+
+    Un texto enderezado deja columnas de tinta bien definidas y huecos limpios
+    entre caracteres; uno inclinado las emborrona unas sobre otras. La varianza
+    de esa proyeccion sirve de criterio sin necesidad de saber que dice el
+    visor, que es lo que permite estimar el angulo en cualquier fotografia.
+    """
+    tinta = (binaria < 128).astype(np.float32)
+    if tinta.size == 0:
+        return 0.0
+    columnas = tinta.sum(axis=0)
+    return float(columnas.var())
+
+
+def enderezar_italica(binaria: np.ndarray) -> tuple[np.ndarray, float]:
+    """Estima la inclinacion propia del display y la corrige.
+
+    Devuelve la imagen enderezada y el angulo aplicado. Se prueba un abanico de
+    angulos y se elige el que mejor separa las columnas, en vez de fijar uno:
+    distintos modelos de dispensador usan tipografias con distinta inclinacion.
+    """
+    mejor_angulo, mejor_nitidez, mejor_imagen = 0.0, _nitidez_de_columnas(binaria), binaria
+    for grados in ANGULOS_ITALICA[1:]:
+        candidata = _cizallar(binaria, grados)
+        nitidez = _nitidez_de_columnas(candidata)
+        if nitidez > mejor_nitidez:
+            mejor_angulo, mejor_nitidez, mejor_imagen = grados, nitidez, candidata
+    return mejor_imagen, mejor_angulo
+
+
 class SevenSegmentReader:
     """Motor de OCR de 7 segmentos, sin dependencias externas."""
 
@@ -218,6 +273,7 @@ class SevenSegmentReader:
         que no es un precio sigue sin ser un precio.
         """
         binary = _deskew(binary)
+        binary, _ = enderezar_italica(binary)
         characters = _segment_characters(binary)
         if not characters:
             return OcrReading("", None, 0.0, self.name)
@@ -239,6 +295,17 @@ class SevenSegmentReader:
 
         value = _text_to_value(text)
         confidence = float(np.mean(confidences)) if confidences else 0.0
+
+        if value is None:
+            # El separador es lo que mas falla. Si los digitos estan completos,
+            # se recoloca por posicion antes de dar la lectura por perdida.
+            recolocado, cambio = colocar_punto_por_posicion(text)
+            if cambio:
+                deducido = _text_to_value(recolocado)
+                if deducido is not None:
+                    # Se penaliza la confianza: el punto se dedujo, no se leyo.
+                    return OcrReading(recolocado, deducido, confidence * 0.85, self.name)
+
         if value is None:
             confidence = 0.0
         return OcrReading(text, value, confidence, self.name)
@@ -294,6 +361,33 @@ def _text_to_value(text: str) -> float | None:
     except ValueError:
         return None
     return value
+
+
+# --- Colocacion del separador decimal ---------------------------------------------
+# Un precio de combustible en quetzales por galon siempre lleva dos decimales.
+# Esa regularidad del dominio permite recolocar el punto por posicion en vez de
+# depender de que el reconocedor distinga una mancha de pocos pixeles, que es
+# donde mas falla: se ha visto leer 4609 donde dice 40.09, con confianza
+# suficiente para casi pasar la validacion.
+#
+# Solo se aplica cuando el numero de digitos es el esperado. Si no lo es, el
+# problema no es el punto sino la lectura, y colocarlo daria un precio con
+# aspecto correcto y valor inventado.
+DIGITOS_ESPERADOS = 4
+DECIMALES = 2
+
+
+def colocar_punto_por_posicion(texto: str) -> tuple[str, bool]:
+    """Reconstruye el separador decimal a partir del numero de digitos.
+
+    Devuelve el texto resultante y si hizo falta recolocarlo. Un texto que ya
+    trae el punto en su sitio se deja intacto.
+    """
+    digitos = [c for c in texto if c.isdigit()]
+    if len(digitos) != DIGITOS_ESPERADOS:
+        return texto, False
+    esperado = "".join(digitos[:-DECIMALES]) + "." + "".join(digitos[-DECIMALES:])
+    return (esperado, True) if texto != esperado else (texto, False)
 
 
 def read_price(binary: np.ndarray, usar_tesseract_si_disponible: bool = True) -> OcrReading:
