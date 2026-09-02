@@ -329,7 +329,7 @@ jobs:
           exit-code: "0"
 
       - name: Publicar el resultado en la pestana de seguridad
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy.sarif
           category: contenedor
