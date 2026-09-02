@@ -5,7 +5,10 @@ documentación; el índice está en [README.md](README.md).
 
 ## Estado
 
-Publicado: <https://test.pypi.org/project/fuel-price-gt/0.3.2/>
+Publicado en dos sitios, desde la misma etiqueta y con el mismo número:
+
+- Paquete: <https://test.pypi.org/project/fuel-price-gt/>
+- Imagen: `ghcr.io/josuesay/fuel-price-gt`
 
 Comprobado instalando desde el índice en un entorno limpio, desde una carpeta
 vacía: `build-data` da 212 filas, `train` da un error medio de 3.22 y
@@ -109,6 +112,9 @@ make publish-check   # construye y revisa que quedo dentro
 make docker-smoke    # la imagen construye y la API responde
 ```
 
+Los tres, no dos. La imagen instala extras distintos de los que instala una
+comprobación en entorno virtual, y ese desajuste ya rompió una publicación.
+
 `docker-smoke` no es opcional aquí: la imagen instala extras distintos de los
 que instala una comprobación en entorno virtual, y ese desajuste ya rompió una
 publicación.
@@ -139,7 +145,13 @@ El flujo hace tres cosas en orden, y solo sigue si la anterior pasó:
    instalación mínima, luego que lo que necesita un extra lo diga, y por último
    el flujo completo con el extra puesto.
 
-3. **Publicar**, tras aprobación manual en el entorno `testpypi`.
+3. **Publicar el paquete**, tras aprobación manual en el entorno `testpypi`.
+
+4. **Publicar la imagen**, después del paquete y no en paralelo: si la
+   publicación se rechaza en la aprobación, una imagen ya publicada anunciaría
+   una versión que no existe en el índice. Antes de subirla se analiza, y corta
+   si hay algo grave con arreglo disponible. El detalle está en
+   [10_supply_chain.md](10_supply_chain.md).
 
 Ese último paso pide aprobación a propósito: publicar tiene efecto fuera del
 repositorio y **no se deshace**. Una versión subida no se puede reemplazar,

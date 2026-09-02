@@ -56,7 +56,7 @@ peor que una versión vieja.
 Sale de la misma etiqueta que el paquete, con el mismo número de versión:
 
 ```bash
-docker pull ghcr.io/josuesay/fuel-price-gt:0.3.3
+docker pull ghcr.io/josuesay/fuel-price-gt:0.3.4
 ```
 
 Va **después** de publicar el paquete y no en paralelo. Si la publicación se
@@ -73,7 +73,7 @@ Los datos y los modelos no van dentro. Entran por volumen:
 docker run -p 19010:8000 \
   -v "$PWD/data:/app/data" \
   -v "$PWD/models:/app/models" \
-  ghcr.io/josuesay/fuel-price-gt:0.3.3
+  ghcr.io/josuesay/fuel-price-gt:0.3.4
 ```
 
 ## Análisis de vulnerabilidades de la imagen
@@ -187,6 +187,19 @@ Una actualización automática no se fusiona por venir de una máquina.
 3. Si toca la imagen base, que `make docker-smoke` siga pasando en local, y
    mirar si el análisis de la imagen mejoró o empeoró.
 
-Lo que la integración continua no cubre en una propuesta de cambio: el trabajo
-del contenedor se salta en propuestas hacia `main`, así que ese tercer punto es
-manual. Está en [09_ci.md](09_ci.md).
+### El hueco que hay que conocer
+
+En una propuesta de cambio, **el trabajo del contenedor se salta**. Eso deja sin
+comprobar todo lo que solo ocurre ahí: la construcción de la imagen, el análisis
+de vulnerabilidades y la subida del informe. Y el flujo de publicación no corre
+en absoluto, porque solo lo dispara una etiqueta.
+
+Consecuencia concreta: una propuesta que suba la acción de subir informes o las
+del registro de contenedores **pasa en verde sin que nada las haya ejecutado**.
+Son justo las que su propia comprobación no cubre.
+
+Por eso una actualización de acciones no se da por buena al fusionarla, sino al
+ver la corrida siguiente sobre `main` —que sí ejecuta el trabajo del
+contenedor— y, para las del registro, en la publicación siguiente.
+
+Está descrito en [09_ci.md](09_ci.md).

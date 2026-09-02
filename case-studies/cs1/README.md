@@ -56,6 +56,20 @@ pip install "fuel-price-gt[gdrive]"    # carpeta privada de Drive
 pip install "fuel-price-gt[all]"       # todo
 ```
 
+### Como contenedor
+
+La misma versión, con el servicio web ya montado:
+
+```bash
+docker run -p 19010:8000 \
+  -v "$PWD/data:/app/data" \
+  -v "$PWD/models:/app/models" \
+  ghcr.io/josuesay/fuel-price-gt:0.3.4
+```
+
+Los datos y los modelos entran por volumen, no dentro de la imagen: meterlos
+obligaría a reconstruir por cada fotografía nueva.
+
 Para trabajar sobre el código, en cambio, se clona el repositorio y se sigue la
 puesta en marcha de abajo.
 
