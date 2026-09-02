@@ -30,7 +30,7 @@ IMAGE ?= fuel-price-gt:ci
 
 .PHONY: help verify ingest env-init env-check keys-init keys-status venv install install-dev \
         lint test format gates extract transform train evaluate recommend pipeline \
-        models-status db-init db-browser \
+        models-status db-init db-browser build publish-check \
         up down logs ps docker-build docker-smoke clean clean-logs clean-vendor clean-trained
 
 define ayuda
@@ -54,6 +54,9 @@ help: ## Muestra esta ayuda
 	@echo ""
 	@echo "  --- Contenedores ---"
 	$(call ayuda,up|down|logs|ps|docker-build|docker-smoke)
+	@echo ""
+	@echo "  --- Paquete ---"
+	$(call ayuda,build|publish-check)
 	@echo ""
 	@echo "  --- Calidad ---"
 	$(call ayuda,gates|lint|test|format)
@@ -156,6 +159,17 @@ docker-smoke: docker-build ## Construye y verifica que la API responda
 	    sleep 2; \
 	  done; \
 	  echo "  la API no respondio a tiempo"; docker logs fuel-price-gt-smoke; exit 1'
+
+# --- Paquete ---------------------------------------------------------------------------
+
+build: ## Construye la distribucion y verifica sus metadatos
+	@$(PY) -m pip install --quiet --upgrade build twine
+	@rm -rf dist
+	@$(PY) -m build
+	@$(PY) -m twine check dist/*
+
+publish-check: build ## Comprueba que la distribucion no lleva nada indebido
+	@$(PY) -c "import zipfile, glob, sys; 	  n = zipfile.ZipFile(glob.glob('dist/*.whl')[0]).namelist(); 	  malo = [x for x in n if any(p in x.lower() for p in ('.env','keys/','.heic','.jpg','.db','.joblib'))]; 	  falta = not [x for x in n if 'resources/config.yaml' in x]; 	  sys.exit(print('  archivos indebidos:', malo) or 1) if malo else None; 	  sys.exit(print('  falta la configuracion de referencia')  or 1) if falta else None; 	  print(f'  distribucion correcta: {len(n)} archivos')"
 
 # --- Calidad ---------------------------------------------------------------------------
 
