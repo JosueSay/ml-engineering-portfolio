@@ -121,6 +121,39 @@ def _silver_desde_base() -> pd.DataFrame:
     )
 
 
+def resolve_cutoff(
+    df_silver: pd.DataFrame, config: dict, end_date: date | None = None
+) -> date:
+    """Decide hasta qué fecha llega la serie, en orden de preferencia.
+
+    1. Lo que pida quien llama, si lo pide.
+    2. La fecha declarada en la configuración.
+    3. La última observación real, cuando hay datos.
+    4. El día de hoy, avisando.
+
+    El último caso es el único que rompe la reproducibilidad: dos corridas en
+    días distintos generarían conjuntos distintos sin que nada haya cambiado.
+    Por eso avisa en vez de hacerlo en silencio.
+    """
+    if end_date is not None:
+        return end_date
+
+    declarada = config.get("modeling", {}).get("data_cutoff")
+    if declarada:
+        return declarada if isinstance(declarada, date) else date.fromisoformat(str(declarada))
+
+    if not df_silver.empty:
+        return max(df_silver["date"])
+
+    hoy = date.today()
+    logger.warning(
+        "Sin datos ni fecha de corte declarada: la serie llega hasta hoy (%s). "
+        "El conjunto no sera reproducible; declarar modeling.data_cutoff para fijarlo",
+        hoy,
+    )
+    return hoy
+
+
 def build_gold(
     df_silver: pd.DataFrame | None = None,
     config: dict | None = None,
@@ -143,7 +176,7 @@ def build_gold(
     cfg = config or load_config()
     df_silver = df_silver if df_silver is not None else _silver_desde_base()
 
-    end_date = end_date or date.today()
+    end_date = resolve_cutoff(df_silver, cfg, end_date)
     if not df_silver.empty:
         start_date = min(df_silver["date"]) - timedelta(weeks=8)
     else:

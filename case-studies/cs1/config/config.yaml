@@ -45,6 +45,13 @@ business:
   unit: "galon"
 
 modeling:
+  # Fecha hasta la que llega la serie. Vacio significa deducirla de los datos, y
+  # solo si tampoco hay datos se recurre al dia de hoy, avisando.
+  #
+  # Existe porque un conjunto que se genera "hasta hoy" cambia solo por el paso
+  # del tiempo: dos corridas en dias distintos entrenan sobre datos distintos, y
+  # entonces ni el modelo ni sus metricas son reproducibles.
+  data_cutoff:
   min_training_rows: 12   # por debajo de esto no hay serie que aprender
   synthetic_history_weeks: 52    # ventana a generar cuando no hay ancla real
   min_training_margin_weeks: 6   # colchon sobre la ventana de prueba
