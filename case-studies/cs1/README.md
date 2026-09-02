@@ -168,7 +168,7 @@ cs1/
 ├── config/
 │   ├── config.yaml           Parametros de negocio y de modelo
 │   └── panelCalibration.json Regiones de panel calibradas
-├── src/gasolina_gt/
+├── src/fuel_price_gt/
 │   ├── extraction/           Carga, privacidad, calibracion, lectura de digitos
 │   ├── data/                 Capas Bronze, Silver y Gold, y variables
 │   ├── augmentation/         Aumento de imagenes y de series

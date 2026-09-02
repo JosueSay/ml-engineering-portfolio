@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from gasolina_gt.serving.api import app
+from fuel_price_gt.serving.api import app
 
 
 def test_health_endpoint() -> None:

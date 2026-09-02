@@ -9,8 +9,8 @@ import json
 import logging
 import sys
 
-from gasolina_gt.config import load_config
-from gasolina_gt.extraction.extractor import ExtractorPrecios
+from fuel_price_gt.config import load_config
+from fuel_price_gt.extraction.extractor import PriceExtractor
 
 
 def main() -> int:
@@ -22,24 +22,24 @@ def main() -> int:
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     cfg = load_config()
-    extractor = ExtractorPrecios(cfg)
+    extractor = PriceExtractor(cfg)
 
-    registros = extractor.procesar_directorio()
-    if not registros:
+    records = extractor.process_directory()
+    if not records:
         print("ERROR: no se pudo cargar ninguna imagen de datos/", file=sys.stderr)
         return 1
 
-    ruta = extractor.guardar_bronze(registros)
-    lecturas = [lectura for r in registros for lectura in r.lecturas]
-    validas = [lectura for lectura in lecturas if lectura.valido]
+    path = extractor.save_bronze(records)
+    readings = [reading for r in records for reading in r.readings]
+    validas = [reading for reading in readings if reading.is_valid]
 
     print(
         json.dumps(
             {
-                "imagenes_procesadas": len(registros),
-                "lecturas_totales": len(lecturas),
-                "lecturas_validas": len(validas),
-                "bronze": str(ruta),
+                "images_processed": len(records),
+                "total_readings": len(readings),
+                "valid_readings": len(validas),
+                "bronze": str(path),
             },
             ensure_ascii=False,
             indent=2,

@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from unittest.mock import Mock
 
-from gasolina_gt.config import load_config
-from gasolina_gt.scraping.price_scraper import obtener_precio_referencia
+from fuel_price_gt.config import load_config
+from fuel_price_gt.scraping.price_scraper import get_reference_price
 
 
-def test_scraper_usa_fixture_si_falla_red(monkeypatch) -> None:
-    import gasolina_gt.scraping.price_scraper as modulo
+def test_scraper_falls_back_to_fixture_without_network(monkeypatch) -> None:
+    import fuel_price_gt.scraping.price_scraper as modulo
 
     monkeypatch.setattr(modulo.requests, "get", Mock(side_effect=OSError("sin red")))
-    resultado = obtener_precio_referencia("gasolina", load_config())
-    assert resultado.es_offline_fixture is True
-    assert resultado.precio_gtq_por_galon > 0
+    result = get_reference_price("gasoline", load_config())
+    assert result.is_offline_fixture is True
+    assert result.price_gtq_per_gallon > 0

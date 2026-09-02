@@ -8,7 +8,7 @@ el índice está en [README.md](README.md).
 ```
 cs1/
 ├── config/               Parametros versionados
-├── src/gasolina_gt/      El paquete: la logica del caso
+├── src/fuel_price_gt/      El paquete: la logica del caso
 ├── scripts/              Orquestacion: arranque, credenciales y etapas
 ├── tests/                Pruebas unitarias y de integracion
 ├── experiments/          Lo explorado y descartado, fuera del camino productivo
@@ -27,7 +27,7 @@ cs1/
 ## El paquete
 
 ```
-src/gasolina_gt/
+src/fuel_price_gt/
 ├── config.py             Acceso a los tres niveles de configuracion
 ├── cli.py                Interfaz de linea de comandos
 ├── extraction/           De una fotografia a pares (combustible, precio)

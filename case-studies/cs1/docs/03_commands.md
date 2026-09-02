@@ -58,10 +58,10 @@ make gates
 | Comando | Equivalente sin make | Qué hace |
 |---|---|---|
 | `make extract` | `python scripts/12_extract_prices.py` | Lee los precios de las fotografías (Bronze) |
-| `make transform` | `python -m gasolina_gt.cli build-data` | Construye Silver y Gold |
-| `make train` | `python -m gasolina_gt.cli train --combustible regular` | Entrena y evalúa los horizontes configurados |
+| `make transform` | `python -m fuel_price_gt.cli build-data` | Construye Silver y Gold |
+| `make train` | `python -m fuel_price_gt.cli train --fuel regular` | Entrena y evalúa los horizontes configurados |
 | `make evaluate` | `python scripts/15_quality_gate.py` | Compuerta de calidad sobre el modelo entrenado |
-| `make recommend` | `python -m gasolina_gt.cli recommend ...` | Recomendación de carga |
+| `make recommend` | `python -m fuel_price_gt.cli recommend ...` | Recomendación de carga |
 | `make pipeline` | los cinco anteriores en orden | Encadena todas las etapas |
 
 Las etapas del pipeline son parte del paquete y se invocan por su interfaz de

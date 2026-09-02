@@ -22,7 +22,7 @@ services:
       context: .
       target: production
     command: >
-      sh -c "gasolina-gt build-data && gasolina-gt train --combustible ${FUEL:-regular}"
+      sh -c "fuel-price-gt build-data && fuel-price-gt train --fuel ${FUEL:-regular}"
     volumes:
       - raw-data:/app/data/raw
       - interim-data:/app/data/interim
@@ -49,14 +49,14 @@ services:
     networks: [guild]
     restart: unless-stopped
 
-  # Bajo demanda:  docker compose run --rm cli recommend --combustible regular
+  # Bajo demanda:  docker compose run --rm cli recommend --fuel regular
   cli:
     container_name: gt-thopter
     build:
       context: .
       target: production
     profiles: ["tools"]
-    entrypoint: ["gasolina-gt"]
+    entrypoint: ["fuel-price-gt"]
     volumes:
       - raw-data:/app/data/raw
       - interim-data:/app/data/interim

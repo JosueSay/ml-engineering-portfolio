@@ -1,5 +1,5 @@
 name: Setup entorno Python de CS1
-description: Instala Python, restaura la cache de pip e instala gasolina-gt en modo editable.
+description: Instala Python, restaura la cache de pip e instala fuel-price-gt en modo editable.
 
 inputs:
   python-version:

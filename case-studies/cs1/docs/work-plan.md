@@ -6,6 +6,8 @@ decisiones ya tomadas y el backlog pendiente.
 
 - Fecha de la última revisión: 1 de septiembre de 2026
 - Rama: `fuel-case-study`, se mantiene tal cual
+- Estado: fase A completa. Los primeros 12 commits están etiquetados como
+  `cs1-v0.1.0`; la refactorización de nomenclatura va aparte
 
 ## 1. El caso en una página
 
@@ -297,6 +299,23 @@ trabajo pasó a colgar de la calidad de código en vez de la evaluación.
 Cuando exista el adaptador de la fase C, ese mismo trabajo descargará las
 imágenes en vez de limitarse a comprobar si están.
 
+### 4.16 La extracción no lee ninguna de las fotografías piloto
+
+Detectado al verificar el pipeline completo. De las cinco fotografías salen
+veinte lecturas y **ninguna válida**: quince fallan en el reconocimiento de
+dígitos, cuatro caen fuera del encuadre calibrado y una no llega a la confianza
+mínima por poco.
+
+Comprobado contra el código anterior a la refactorización, con el mismo
+resultado exacto: no es una regresión, es el estado real del extractor.
+
+La consecuencia práctica es que el conjunto de modelado es **cien por cien
+sintético**. La compuerta de calidad ya lo detecta y pasa a modo informativo en
+vez de bloquear, y la recomendación lo advierte. Pero significa que la mitad de
+visión del caso todavía no funciona sobre datos reales, y que el trabajo de la
+fase C sobre la calibración y la detección del visor no es una mejora opcional
+sino lo que hace falta para que el caso tenga datos propios.
+
 ## 5. Decisiones tomadas
 
 ### 5.1 Base de datos
@@ -410,14 +429,14 @@ nombres del linter activada para verificar que no queden restos.
 |---|---|
 | `datos/` | Se elimina; las imágenes salen del repositorio |
 | `datos_procesados/` | `data/processed/` |
-| `imageConvert/` | `image_convert/` |
+| `image_convert/` | `image_convert/` |
 | `config.yml` en la raíz del caso | Se fusiona en `config/config.yaml` |
 | `workshop/actividad_1` | `workshop/activity-01-sklearn-pipeline` |
-| `workshop/actividad_3` | `workshop/activity-03-hyperparameter-tuning` |
+| `workshop/activity-03-hyperparameter-tuning` | `workshop/activity-03-hyperparameter-tuning` |
 | Identificadores del código | Inglés |
-| Paquete `gasolina-gt` | `fuel-price-gt` |
-| Módulo `gasolina_gt` | `fuel_price_gt` |
-| Comando `gasolina-gt` | `fuel-price-gt` |
+| Paquete `fuel-price-gt` | `fuel-price-gt` |
+| Módulo `fuel_price_gt` | `fuel_price_gt` |
+| Comando `fuel-price-gt` | `fuel-price-gt` |
 
 El paquete también se traduce, para no dejar el proyecto a medias: sería
 incoherente publicar una distribución con nombre en español cuando todo el
@@ -560,7 +579,7 @@ otra cosa.
 - [x] Hacer que la integración continua llame a los scripts y no al `Makefile`
 - [x] Documentar todo el código y exigirlo en el linter
 - [x] Documentar entorno, comandos y estructura en `docs/`
-- [ ] Refactorización completa de nomenclatura, en su propio cambio
+- [x] Refactorización completa de nomenclatura, en su propio cambio
 
 ### 6.2 Fase B — Persistencia, recorte y linaje
 

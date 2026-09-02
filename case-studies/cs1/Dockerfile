@@ -58,7 +58,7 @@ EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=5 \
     CMD curl -sf http://localhost:8000/health || exit 1
 
-CMD ["uvicorn", "gasolina_gt.serving.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "fuel_price_gt.serving.api:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 FROM production AS test

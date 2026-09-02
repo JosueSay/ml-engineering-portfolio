@@ -12,6 +12,7 @@ está el detalle.
 | [02_environment.md](02_environment.md) | Referencia de variables de entorno y credenciales |
 | [03_commands.md](03_commands.md) | Referencia de comandos y scripts |
 | [04_structure.md](04_structure.md) | Qué hay en cada carpeta y por qué |
+| [05_operations.md](05_operations.md) | Tareas que requieren una persona: credenciales, cuentas y publicación |
 | [work-plan.md](work-plan.md) | Diagnóstico, decisiones tomadas y pendientes |
 
 Además, [keys/README.md](../keys/README.md) documenta qué credencial hace falta

@@ -215,15 +215,15 @@ existe en el repositorio.
 | Proyectos | Vacía | Nada todavía |
 | Laboratorios | Vacía | Los ejercicios y tareas del curso |
 | Casos de Estudio | Vacía | `case-studies/cs1`, el caso de la gasolina |
-| Talleres | Vacía | `workshop/actividad_1` y `workshop/actividad_3` |
+| Talleres | Vacía | `workshop/activity-01-sklearn-pipeline` y `workshop/activity-03-hyperparameter-tuning` |
 | Sonic | Publicada | — |
 
 ### 7.1 Talleres
 
-- `workshop/actividad_1/pipeline_sklearn`: pipeline de sklearn con extracción,
+- `workshop/activity-01-sklearn-pipeline/pipeline_sklearn`: pipeline de sklearn con extracción,
   filtrado, manejo de tipos y separación del conjunto, empaquetado y con su
   cuaderno.
-- `workshop/actividad_3`: pipeline de regresión lineal con calibración de
+- `workshop/activity-03-hyperparameter-tuning`: pipeline de regresión lineal con calibración de
   hiperparámetros, empaquetado como biblioteca instalable.
 
 ### 7.2 Laboratorios

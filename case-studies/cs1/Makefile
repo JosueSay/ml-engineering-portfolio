@@ -26,7 +26,7 @@ PY ?= $(DEFAULT_PY)
 FUEL ?= regular
 HORIZON ?= 1
 HOUR ?= 18
-IMAGE ?= gasolina-gt:ci
+IMAGE ?= fuel-price-gt:ci
 
 .PHONY: help verify env-init env-check keys-init keys-status venv install install-dev \
         lint test format gates extract transform train evaluate recommend pipeline \
@@ -96,16 +96,16 @@ extract: ## Lee los precios de las fotografias (Bronze)
 	@$(PY) scripts/12_extract_prices.py
 
 transform: ## Construye Silver y Gold
-	@$(PY) -m gasolina_gt.cli build-data
+	@$(PY) -m fuel_price_gt.cli build-data
 
 train: ## Entrena y evalua los horizontes configurados
-	@$(PY) -m gasolina_gt.cli train --combustible $(FUEL)
+	@$(PY) -m fuel_price_gt.cli train --fuel $(FUEL)
 
 evaluate: ## Compuerta de calidad sobre el modelo entrenado
 	@$(PY) scripts/15_quality_gate.py
 
 recommend: ## Recomendacion de carga
-	@$(PY) -m gasolina_gt.cli recommend --combustible $(FUEL) --horizonte $(HORIZON) --hora $(HOUR)
+	@$(PY) -m fuel_price_gt.cli recommend --fuel $(FUEL) --horizon $(HORIZON) --hour $(HOUR)
 
 pipeline: extract transform train evaluate recommend ## Encadena todas las etapas
 
@@ -134,13 +134,13 @@ docker-build: ## Construye la imagen de produccion
 docker-smoke: docker-build ## Construye y verifica que la API responda
 	@bash -c 'set -e; \
 	  port=$${API_PORT:-19010}; \
-	  docker run -d --rm --name gasolina-gt-smoke -p $$port:8000 $(IMAGE) >/dev/null; \
-	  trap "docker stop gasolina-gt-smoke >/dev/null 2>&1 || true" EXIT; \
+	  docker run -d --rm --name fuel-price-gt-smoke -p $$port:8000 $(IMAGE) >/dev/null; \
+	  trap "docker stop fuel-price-gt-smoke >/dev/null 2>&1 || true" EXIT; \
 	  for _ in $$(seq 1 30); do \
 	    curl -sf http://localhost:$$port/health >/dev/null && { echo "  API respondiendo en $$port"; exit 0; }; \
 	    sleep 2; \
 	  done; \
-	  echo "  la API no respondio a tiempo"; docker logs gasolina-gt-smoke; exit 1'
+	  echo "  la API no respondio a tiempo"; docker logs fuel-price-gt-smoke; exit 1'
 
 # --- Calidad ---------------------------------------------------------------------------
 
