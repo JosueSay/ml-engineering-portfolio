@@ -64,12 +64,23 @@ fi
 
 # --- Ninguna imagen en el repositorio ----------------------------------------------
 titulo "Datos fuera del control de versiones"
-imagenes=$(git ls-files | grep -iE '\.(heic|jpg|jpeg|png|tif|tiff)$' | grep -v '^assets/' || true)
-if [ -z "$imagenes" ]; then
-    ok "ninguna imagen versionada"
+# La excepcion de assets/ es para el sitio web, y antes era la carpeta entera:
+# cabia cualquier cosa mientras estuviera dentro. Por ahi entraron cinco
+# fotografias de camara que llegaron a ser el 84% del peso del repositorio.
+#
+# Ahora la excepcion se limita a lo que un navegador puede mostrar y a un
+# tamano de recurso web. Un formato de camara no pasa por estar en assets/.
+imagenes=$(git ls-files | grep -iE '\.(heic|heif|tif|tiff|raw|dng|cr2|nef)$' || true)
+web=$(git ls-files | grep -iE '\.(jpg|jpeg|png|gif|webp|avif)$' | grep -v '^assets/' || true)
+grandes=$(git ls-files -z | grep -zaiE '^assets/.*\.(jpg|jpeg|png|gif|webp|avif|svg)$' \
+    | xargs -0 -r du -k 2>/dev/null | awk '$1 > 500 {printf "%s (%d KiB) ", $2, $1}')
+
+if [ -z "$imagenes" ] && [ -z "$web" ] && [ -z "$grandes" ]; then
+    ok "ninguna imagen versionada fuera de lo permitido"
 else
-    falla "hay imagenes versionadas:"
-    printf '          %s\n' $imagenes
+    [ -n "$imagenes" ] && { falla "formatos de camara versionados:"; printf '          %s\n' $imagenes; }
+    [ -n "$web" ]      && { falla "imagenes fuera de assets/:";      printf '          %s\n' $web; }
+    [ -n "$grandes" ]  && { falla "recursos web por encima de 500 KiB:"; printf '          %s\n' $grandes; }
 fi
 
 # --- Plantilla de entorno sincronizada ----------------------------------------------
