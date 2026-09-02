@@ -32,7 +32,8 @@ mkdir -p "$KEYS_DIR"
 
 # Cada entrada: nombre de archivo | variable de entorno de origen | para que sirve
 CREDENCIALES=(
-    "google-drive-service-account.json|GDRIVE_SERVICE_ACCOUNT_JSON|leer la carpeta compartida de fotografias"
+    "gdrive-api.key|GDRIVE_API_KEY|leer una carpeta de Drive compartida por enlace"
+    "google-drive-service-account.json|GDRIVE_SERVICE_ACCOUNT_JSON|leer una carpeta de Drive privada"
     "object-store.env|OBJECT_STORE_CREDENTIALS|acceso al almacenamiento de objetos"
     "testpypi-api.key|TESTPYPI_API_TOKEN|publicar la distribucion en el indice de pruebas"
     "huggingface.key|HF_TOKEN|descargar un modelo de acceso restringido"
