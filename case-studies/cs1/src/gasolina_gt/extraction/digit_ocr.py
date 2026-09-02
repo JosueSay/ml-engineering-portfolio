@@ -42,6 +42,11 @@ _PATRONES: dict[tuple[int, ...], str] = {
 
 @dataclass
 class LecturaOCR:
+    """Resultado de leer un visor: texto, valor, confianza y qué motor lo leyó.
+
+    El texto crudo se conserva junto al valor porque explica los rechazos:
+    un `3?.95` dice que falló un dígito concreto, no la lectura entera.
+    """
     texto: str
     valor: float | None
     confianza: float
@@ -49,10 +54,13 @@ class LecturaOCR:
 
 
 def _enderezar(binaria: np.ndarray) -> np.ndarray:
-    """Corrige la ligera inclinación con la que suele quedar el visor (el
+    """Endereza el visor antes de segmentar.
+
+    Corrige la ligera inclinación con la que suele quedar el visor (el
     tótem rara vez se fotografía perfectamente de frente). Sin esto, la
     segmentación por proyección de columnas mezcla dígitos vecinos porque
-    su tinta ya no cae en rangos de columna separados."""
+    su tinta ya no cae en rangos de columna separados.
+    """
     tinta = (binaria < 128).astype(np.uint8)
     ys, xs = np.where(tinta > 0)
     if len(xs) < 20:
@@ -64,16 +72,19 @@ def _enderezar(binaria: np.ndarray) -> np.ndarray:
     if abs(angulo) < 0.5 or abs(angulo) > 20:
         return binaria
     centro = (binaria.shape[1] / 2, binaria.shape[0] / 2)
-    M = cv2.getRotationMatrix2D(centro, angulo, 1.0)
+    matriz = cv2.getRotationMatrix2D(centro, angulo, 1.0)
     return cv2.warpAffine(
-        binaria, M, (binaria.shape[1], binaria.shape[0]),
+        binaria, matriz, (binaria.shape[1], binaria.shape[0]),
         borderValue=255, flags=cv2.INTER_NEAREST,
     )
 
 
 def _segmentar_caracteres(binaria: np.ndarray) -> list[np.ndarray]:
-    """Separa la imagen binaria (fondo blanco=255, tinta negra=0) en
-    sub-imágenes por carácter, usando la proyección vertical de tinta."""
+    """Parte la imagen en un recorte por carácter.
+
+    Separa la imagen binaria (fondo blanco=255, tinta negra=0) en
+    sub-imágenes por carácter, usando la proyección vertical de tinta.
+    """
     if binaria.size == 0:
         return []
     tinta = (binaria < 128).astype(np.uint8)
@@ -104,9 +115,12 @@ def _segmentar_caracteres(binaria: np.ndarray) -> list[np.ndarray]:
 
 
 def _recortar_a_tinta(caracter: np.ndarray) -> np.ndarray:
-    """Recorta el carácter a la caja delimitadora real de sus píxeles de
+    """Ajusta el recorte del carácter a su tinta.
+
+    Recorta el carácter a la caja delimitadora real de sus píxeles de
     tinta (filas y columnas), quitando el margen blanco sobrante que deja
-    la segmentación por columnas (que solo acota en X, no en Y)."""
+    la segmentación por columnas (que solo acota en X, no en Y).
+    """
     tinta = caracter < 128
     filas = np.where(tinta.any(axis=1))[0]
     cols = np.where(tinta.any(axis=0))[0]
@@ -159,11 +173,14 @@ def _plantillas() -> dict[str, np.ndarray]:
 
 
 def _clasificar_digito(caracter: np.ndarray) -> tuple[str | None, float]:
-    """Clasifica un carácter comparando su forma (por solapamiento tipo IoU)
+    """Decide qué dígito es un carácter, y con cuánta confianza.
+
+    Clasifica un carácter comparando su forma (por solapamiento tipo IoU)
     contra plantillas de 7 segmentos dibujadas para cada dígito 0-9. Es más
     robusto que umbrales de densidad por zona fija, porque compara la forma
     completa en vez de decidir "encendido/apagado" segmento por segmento con
-    un único punto de corte."""
+    un único punto de corte.
+    """
     caracter = _recortar_a_tinta(caracter)
     h, w = caracter.shape[:2]
     if h < 4 or w < 2:
@@ -194,6 +211,12 @@ class LectorSieteSegmentos:
     nombre = "siete_segmentos"
 
     def leer(self, binaria: np.ndarray) -> LecturaOCR:
+        """Lee el visor completo dígito a dígito.
+
+        La confianza es el promedio de la de cada carácter, y se anula por
+        completo si el texto no forma un número: media confianza sobre algo
+        que no es un precio sigue sin ser un precio.
+        """
         binaria = _enderezar(binaria)
         caracteres = _segmentar_caracteres(binaria)
         if not caracteres:
@@ -222,25 +245,34 @@ class LectorSieteSegmentos:
 
 
 class LectorTesseract:
-    """Motor alterno usando el binario `tesseract` (si está instalado, p.ej.
+    """Motor alterno de lectura, disponible solo si está instalado.
+
+    Motor alterno usando el binario `tesseract` (si está instalado, p.ej.
     dentro del contenedor Docker). Ver Dockerfile: apt-get install tesseract-ocr.
     """
 
     nombre = "tesseract"
 
+
     def __init__(self) -> None:
-        self.disponible = shutil.which("tesseract") is not None
+        self.ruta_binario = shutil.which("tesseract")
+        self.disponible = self.ruta_binario is not None
 
     def leer(self, binaria: np.ndarray) -> LecturaOCR:
+        """Lee el visor con el motor externo, si está instalado.
+
+        Devuelve una lectura vacía cuando no lo está, en vez de fallar: es
+        una segunda opinión opcional, no un requisito.
+        """
         if not self.disponible:
             return LecturaOCR("", None, 0.0, self.nombre)
         with tempfile.TemporaryDirectory() as tmp:
             img_path = Path(tmp) / "crop.png"
             cv2.imwrite(str(img_path), binaria)
             try:
-                salida = subprocess.run(
+                salida = subprocess.run(  # noqa: S603  # argumentos propios, sin entrada externa
                     [
-                        "tesseract", str(img_path), "stdout",
+                        self.ruta_binario, str(img_path), "stdout",
                         "--psm", "7",
                         "-c", "tessedit_char_whitelist=0123456789.",
                     ],
@@ -265,8 +297,11 @@ def _texto_a_valor(texto: str) -> float | None:
 
 
 def leer_precio(binaria: np.ndarray, usar_tesseract_si_disponible: bool = True) -> LecturaOCR:
-    """Punto de entrada único: intenta 7-segmentos y, si está disponible,
-    compara con tesseract, quedándose con la lectura de mayor confianza."""
+    """Lee un precio del visor con el mejor motor disponible.
+
+    Punto de entrada único: intenta 7-segmentos y, si está disponible,
+    compara con tesseract, quedándose con la lectura de mayor confianza.
+    """
     lector_7seg = LectorSieteSegmentos()
     mejor = lector_7seg.leer(binaria)
 

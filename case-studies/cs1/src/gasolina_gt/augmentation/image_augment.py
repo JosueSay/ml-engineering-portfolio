@@ -17,8 +17,8 @@ import numpy as np
 
 def _rotar(img: np.ndarray, grados: float) -> np.ndarray:
     h, w = img.shape[:2]
-    M = cv2.getRotationMatrix2D((w / 2, h / 2), grados, 1.0)
-    return cv2.warpAffine(img, M, (w, h), borderMode=cv2.BORDER_REPLICATE)
+    matriz = cv2.getRotationMatrix2D((w / 2, h / 2), grados, 1.0)
+    return cv2.warpAffine(img, matriz, (w, h), borderMode=cv2.BORDER_REPLICATE)
 
 
 def _brillo_contraste(img: np.ndarray, brillo: float, contraste: float) -> np.ndarray:
@@ -35,14 +35,17 @@ def _jitter_perspectiva(img: np.ndarray, max_px: int, rng: np.random.Generator) 
     h, w = img.shape[:2]
     src = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
     dst = src + rng.uniform(-max_px, max_px, src.shape).astype(np.float32)
-    M = cv2.getPerspectiveTransform(src, dst)
-    return cv2.warpPerspective(img, M, (w, h), borderMode=cv2.BORDER_REPLICATE)
+    matriz = cv2.getPerspectiveTransform(src, dst)
+    return cv2.warpPerspective(img, matriz, (w, h), borderMode=cv2.BORDER_REPLICATE)
 
 
 def generar_variantes(imagen_rgb: np.ndarray, n: int, config: dict, semilla: int = 0) -> list[np.ndarray]:
-    """Genera `n` variantes aumentadas de una imagen (recorte de panel o
+    """Genera variantes de una imagen para ampliar el conjunto.
+
+    Genera `n` variantes aumentadas de una imagen (recorte de panel o
     imagen completa), combinando rotación, brillo/contraste, ruido y
-    perspectiva según los rangos definidos en config/config.yaml."""
+    perspectiva según los rangos definidos en config/config.yaml.
+    """
     aug_cfg = config["augmentation"]
     rng = np.random.default_rng(semilla)
     variantes = []
