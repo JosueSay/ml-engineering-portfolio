@@ -731,7 +731,7 @@ sus vulnerabilidades pasan a ser de quien lo publicó.
 - [x] Publicar la imagen de contenedor en el registro, desde la misma etiqueta
 - [x] Analizar vulnerabilidades de la imagen, informando en el pipeline y cortando al publicar
 - [x] Cerrar las vulnerabilidades con arreglo disponible en la construcción de la imagen
-- [ ] Hacer pública la imagen del registro de contenedores
+- [x] Hacer pública la imagen del registro de contenedores
 - [x] Fusionar a `main`: la configuración de dependencias solo se lee de la rama por defecto
 - [x] Purgar las fotografías del historial y cerrar el punto ciego de la puerta
 - [x] Dejar el informe de vulnerabilidades en lo accionable

@@ -164,7 +164,8 @@ En Settings, Advanced Security:
 | Code scanning | Recibe el resultado del análisis de la imagen | El análisis corre y su resultado no se ve en ningún sitio |
 
 Y en el registro de contenedores, hacer pública la imagen la primera vez: nace
-privada, y una imagen que nadie puede descargar no sirve de entregable.
+privada, y una imagen que nadie puede descargar no sirve de entregable. Ya
+hecho; comprobado descargándola sin credenciales.
 
 ### La condición que se olvida
 
