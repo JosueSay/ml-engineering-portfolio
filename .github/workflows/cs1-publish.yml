@@ -22,14 +22,17 @@ on:
 permissions:
   contents: read
 
-defaults:
-  run:
-    working-directory: case-studies/cs1
-
 jobs:
   build:
     name: 1. Construir y verificar
     runs-on: ubuntu-latest
+    # Solo este trabajo clona el repositorio. Los otros dos parten de la
+    # distribucion ya construida, y por eso esa carpeta no existe en ellos: si
+    # el valor por defecto fuera global, cualquier paso que se olvidara de
+    # anular la ruta fallaria sin relacion aparente con lo que hace.
+    defaults:
+      run:
+        working-directory: case-studies/cs1
     steps:
       - uses: actions/checkout@v7
 
@@ -113,7 +116,6 @@ jobs:
 
       - name: Instalar desde la rueda, sin el repositorio
         shell: bash
-        working-directory: .
         run: python -m pip install dist/*.whl
 
       # Se prueba la instalacion minima antes que la completa, y en ese orden a
@@ -121,7 +123,6 @@ jobs:
       # dependencia opcional de una obligatoria y el reparto seria decorativo.
       - name: Ejecutar lo que la instalacion minima promete
         shell: bash
-        working-directory: .
         run: |
           mkdir -p prueba && cd prueba
           fuel-price-gt --help
@@ -130,7 +131,6 @@ jobs:
 
       - name: Comprobar que lo que necesita un extra lo dice y no revienta
         shell: bash
-        working-directory: .
         run: |
           cd prueba
           salida=$(fuel-price-gt train --fuel regular 2>&1 || true)
@@ -143,7 +143,6 @@ jobs:
 
       - name: Instalar el extra de modelado y completar el flujo
         shell: bash
-        working-directory: .
         run: |
           python -m pip install "$(ls dist/*.whl)[modeling]"
           cd prueba
@@ -170,7 +169,6 @@ jobs:
           path: dist
 
       - name: Publicar
-        working-directory: .
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_API_TOKEN }}

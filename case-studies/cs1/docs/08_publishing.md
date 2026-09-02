@@ -3,6 +3,15 @@
 Cómo se construye, se verifica y se publica la distribución. Parte de la
 documentación; el índice está en [README.md](README.md).
 
+## Estado
+
+Publicado: <https://test.pypi.org/project/fuel-price-gt/0.3.2/>
+
+Comprobado instalando desde el índice en un entorno limpio, desde una carpeta
+vacía: `build-data` da 212 filas, `train` da un error medio de 3.22 y
+`recommend` devuelve su decisión. Sin el extra de modelado, `train` dice qué
+instalar.
+
 ## Qué se publica y para qué
 
 El criterio que se fijó: **quien instale el paquete debe poder usarlo sin
