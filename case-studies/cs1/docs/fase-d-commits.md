@@ -174,6 +174,28 @@ el reparto seria decorativo.
 Version 0.3.1: 0.3.0 quedo etiquetada y no publicable."
 ```
 
+## 7c. La consola de Windows
+
+Con el extra arreglado, Linux pasó y Windows no.
+
+```bash
+git add case-studies/cs1/src/fuel_price_gt/cli.py \
+        case-studies/cs1/src/fuel_price_gt/__init__.py \
+        case-studies/cs1/docs/
+git commit -m "fix(cs1): imprimir en UTF-8 sin depender de la consola
+
+La consola de Windows trae cp1252 y no sabe escribir ni una tilde ni una
+flecha. Todo lo que este programa imprime esta en espanol -la ayuda, y la razon
+que acompana a cada recomendacion- asi que pedir --help terminaba en un error
+de codificacion.
+
+Se reconfigura la salida en el propio programa y no con una variable de
+entorno: eso arreglaria la maquina donde se declara, no la de quien instale el
+paquete.
+
+Version 0.3.2."
+```
+
 ## 8. Publicar
 
 Antes de etiquetar hay que tener puesto lo que la publicación necesita, y eso
@@ -196,8 +218,8 @@ plataformas, y se detiene antes de publicar.
 ```bash
 git push origin fuel-case-study
 
-git tag -a cs1-v0.3.1 -m "CS1: paquete publicable en el indice de pruebas"
-git push origin cs1-v0.3.1
+git tag -a cs1-v0.3.2 -m "CS1: paquete publicable en el indice de pruebas"
+git push origin cs1-v0.3.2
 ```
 
 La etiqueta dispara el flujo. Aprobar el último paso cuando los dos primeros
