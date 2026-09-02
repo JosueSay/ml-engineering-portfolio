@@ -114,16 +114,21 @@ cd case-studies/cs1 && make keys-status
 
 ### Conectarla en la integración continua
 
-Allí no hay archivos, hay secretos. El contenido va en base64 para que un JSON
-de varias líneas sobreviva al paso por el entorno:
+**Esperar a la fase C.** La credencial por sí sola no sirve: hace falta además
+el paso que la usa para descargar, y ese llega con el adaptador. El flujo lo
+comprueba y sigue omitiendo las etapas mientras falte, precisamente para no
+lanzar una extracción sobre una carpeta vacía.
+
+Cuando el adaptador exista, el contenido va en base64 para que un JSON de
+varias líneas sobreviva al paso por el entorno:
 
 ```bash
 base64 -w0 case-studies/cs1/keys/google-drive-service-account.json | \
   gh secret set GDRIVE_SERVICE_ACCOUNT_JSON
 ```
 
-A partir de ahí el trabajo que decide la fuente de datos encontrará la
-credencial y las etapas dejarán de omitirse.
+A partir de ahí el trabajo que decide la fuente de datos encontrará las dos
+cosas y las etapas dejarán de omitirse.
 
 ## 4. TestPyPI
 
@@ -176,6 +181,33 @@ correspondiente es `OBJECT_STORE_CREDENTIALS`.
 | E — Cierre | Nada |
 
 La fase B se puede arrancar ya.
+
+## Cuándo se ejecutan los siete trabajos
+
+Hoy el flujo termina en verde con tres trabajos ejecutados y cuatro omitidos.
+Para que se ejecuten los siete hacen falta dos cosas a la vez, y las dos llegan
+en la fase C:
+
+1. El paso de ingesta, `scripts/10_ingest_images.py`, que descarga las
+   fotografías de la fuente configurada.
+2. La credencial del apartado 3, para que tenga de dónde descargarlas.
+
+Con una sola de las dos el flujo sigue omitiendo las etapas de datos, y lo dice
+en el resumen. Es deliberado: con la credencial pero sin el paso de descarga, la
+extracción correría sobre una carpeta vacía y fallaría.
+
+Conviene distinguir dos cosas que suenan igual:
+
+- **Siete trabajos ejecutados**: se consigue en cuanto haya ingesta y
+  credencial. El flujo pasará en verde.
+- **Siete trabajos sobre datos reales**: necesita además que la extracción
+  produzca lecturas válidas, que hoy no ocurre con ninguna de las cinco
+  fotografías piloto. Es el problema 4.16 del plan de trabajo, y se aborda
+  también en la fase C con la detección automática del visor.
+
+Mientras tanto el conjunto de modelado es sintético, la compuerta de calidad lo
+detecta y se declara informativa en vez de bloquear, y la recomendación lo
+advierte.
 
 ## Comprobación rápida
 
