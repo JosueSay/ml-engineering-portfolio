@@ -9,7 +9,7 @@
 #    segunda opinion cuando esta disponible, y antes lo daba por hecho dentro
 #    del contenedor sin que nada lo instalara.
 
-FROM python:3.12-slim AS base
+FROM python:3.14-slim AS base
 
 # libGL y libglib son dependencias de sistema de la biblioteca de vision.
 # tesseract-ocr es el motor alterno de lectura.
