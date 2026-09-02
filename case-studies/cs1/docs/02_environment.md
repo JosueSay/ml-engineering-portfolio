@@ -172,7 +172,7 @@ secretos del repositorio  ->  scripts/02_keys_init.sh  ->  keys/  ->  código
 ## Uso desde el código
 
 ```python
-from gasolina_gt.config import env, env_int, read_secret, secret_path
+from fuel_price_gt.config import env, env_int, read_secret, secret_path
 
 modo = env("APP_ENV", "local")           # variable no sensible
 puerto = env_int("API_PORT", 19010)      # variable numérica

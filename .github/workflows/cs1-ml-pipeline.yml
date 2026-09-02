@@ -25,12 +25,12 @@ on:
     - cron: "0 6 * * 1"
   workflow_dispatch:
     inputs:
-      combustible:
+      fuel:
         description: Combustible a entrenar
         type: choice
         options: [regular, super, diesel, vpower]
         default: regular
-      horizonte:
+      horizon:
         description: Horizonte de prediccion en semanas
         type: choice
         options: ["1", "2", "4"]
@@ -45,9 +45,9 @@ concurrency:
 
 env:
   PYTHON_VERSION: "3.12"
-  COMBUSTIBLE: ${{ inputs.combustible || 'regular' }}
-  HORIZONTE: ${{ inputs.horizonte || '1' }}
-  RETENCION_DIAS: 14
+  FUEL: ${{ inputs.fuel || 'regular' }}
+  HORIZON: ${{ inputs.horizon || '1' }}
+  RETENTION_DAYS: 14
 
 defaults:
   run:
@@ -57,7 +57,7 @@ jobs:
   # ---------------------------------------------------------------------------
   # Siempre corre: no depende de que haya datos.
   # ---------------------------------------------------------------------------
-  calidad-codigo:
+  code-quality:
     name: 1. Calidad de codigo
     runs-on: ubuntu-latest
     steps:
@@ -74,10 +74,10 @@ jobs:
   # Decide si hay de donde sacar fotografias. Es el unico sitio donde se toma
   # esa decision; el resto de trabajos la consultan.
   # ---------------------------------------------------------------------------
-  fuente-datos:
+  data-source:
     name: 2. Fuente de datos
     runs-on: ubuntu-latest
-    needs: calidad-codigo
+    needs: code-quality
     outputs:
       hay_datos: ${{ steps.decidir.outputs.hay_datos }}
       motivo: ${{ steps.decidir.outputs.motivo }}
@@ -131,11 +131,11 @@ jobs:
   # ---------------------------------------------------------------------------
   # Etapas que necesitan fotografias.
   # ---------------------------------------------------------------------------
-  extraccion:
+  extraction:
     name: 3. Extraccion (Bronze)
     runs-on: ubuntu-latest
-    needs: fuente-datos
-    if: needs.fuente-datos.outputs.hay_datos == 'true'
+    needs: data-source
+    if: needs.data-source.outputs.hay_datos == 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -156,12 +156,12 @@ jobs:
         with:
           name: bronze
           path: case-studies/cs1/data/processed/bronze/
-          retention-days: ${{ env.RETENCION_DIAS }}
+          retention-days: ${{ env.RETENTION_DAYS }}
 
-  limpieza:
+  transform:
     name: 4. Limpieza y features (Silver / Gold)
     runs-on: ubuntu-latest
-    needs: extraccion
+    needs: extraction
     steps:
       - uses: actions/checkout@v4
 
@@ -170,22 +170,22 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Construir Silver y Gold
-        run: python -m gasolina_gt.cli build-data
+        run: python -m fuel_price_gt.cli build-data
 
       - name: Verificar que el conjunto de modelado existe
-        run: test -s data/processed/gold/dataset_modelado.csv
+        run: test -s data/processed/gold/modeling_dataset.csv
 
       - name: Publicar datos procesados
         uses: actions/upload-artifact@v4
         with:
-          name: datos-procesados
+          name: processed-data
           path: case-studies/cs1/data/processed/
-          retention-days: ${{ env.RETENCION_DIAS }}
+          retention-days: ${{ env.RETENTION_DAYS }}
 
-  entrenamiento:
+  training:
     name: 5. Entrenamiento
     runs-on: ubuntu-latest
-    needs: limpieza
+    needs: transform
     steps:
       - uses: actions/checkout@v4
 
@@ -196,25 +196,25 @@ jobs:
       - name: Descargar datos procesados
         uses: actions/download-artifact@v4
         with:
-          name: datos-procesados
+          name: processed-data
           path: case-studies/cs1/data/processed/
 
       - name: Entrenar modelos
-        run: python -m gasolina_gt.cli train --combustible ${{ env.COMBUSTIBLE }}
+        run: python -m fuel_price_gt.cli train --fuel ${{ env.FUEL }}
 
       - name: Publicar modelos y reporte
         uses: actions/upload-artifact@v4
         with:
-          name: modelos-y-reportes
+          name: models-and-reports
           path: |
             case-studies/cs1/models/trained/
             case-studies/cs1/reports/
-          retention-days: ${{ env.RETENCION_DIAS }}
+          retention-days: ${{ env.RETENTION_DAYS }}
 
-  evaluacion:
+  evaluation:
     name: 6. Evaluacion y compuerta de calidad
     runs-on: ubuntu-latest
-    needs: entrenamiento
+    needs: training
     steps:
       - uses: actions/checkout@v4
 
@@ -225,26 +225,26 @@ jobs:
       - name: Descargar datos procesados
         uses: actions/download-artifact@v4
         with:
-          name: datos-procesados
+          name: processed-data
           path: case-studies/cs1/data/processed/
 
       - name: Descargar modelos y reporte
         uses: actions/download-artifact@v4
         with:
-          name: modelos-y-reportes
+          name: models-and-reports
           path: case-studies/cs1/
 
       - name: Compuerta de calidad
         run: python scripts/15_quality_gate.py
 
       - name: Inferencia de humo
-        run: python -m gasolina_gt.cli recommend --combustible ${{ env.COMBUSTIBLE }} --horizonte ${{ env.HORIZONTE }}
+        run: python -m fuel_price_gt.cli recommend --fuel ${{ env.FUEL }} --horizon ${{ env.HORIZON }}
 
       - name: Resumen de metricas
         if: always()
         run: |
           {
-            echo "## Evaluacion del modelo (${{ env.COMBUSTIBLE }})"
+            echo "## Evaluacion del modelo (${{ env.FUEL }})"
             echo
             if [ -f reports/evaluacion_modelos.csv ]; then
               head -1 reports/evaluacion_modelos.csv | sed 's/^/| /; s/,/ | /g; s/$/ |/'
@@ -260,10 +260,10 @@ jobs:
   # comprueba que el servicio levanta y responde. Por eso cuelga de la calidad
   # de codigo y no de la evaluacion, y asi se verifica en toda corrida.
   # ---------------------------------------------------------------------------
-  empaquetado:
+  packaging:
     name: 7. Imagen de contenedor y prueba de humo de la API
     runs-on: ubuntu-latest
-    needs: calidad-codigo
+    needs: code-quality
     if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v4

@@ -100,7 +100,7 @@ dependencias de este experimento y no del paquete. Viaja con el."
 
 ```bash
 git add case-studies/cs1/.env.example case-studies/cs1/keys \
-        case-studies/cs1/src/gasolina_gt/config.py
+        case-studies/cs1/src/fuel_price_gt/config.py
 git commit -m "feat(cs1): gestionar entorno y credenciales en tres niveles
 
 Los parametros de negocio van a config/config.yaml, lo que cambia por maquina
@@ -137,11 +137,11 @@ un mensaje que no dice nada sobre la causa."
 
 ```bash
 git add case-studies/cs1/config/config.yaml \
-        case-studies/cs1/src/gasolina_gt/data/pipeline.py \
-        case-studies/cs1/src/gasolina_gt/data/features.py \
-        case-studies/cs1/src/gasolina_gt/evaluation/metrics.py \
-        case-studies/cs1/src/gasolina_gt/modeling/training.py \
-        case-studies/cs1/src/gasolina_gt/extraction/calibration.py \
+        case-studies/cs1/src/fuel_price_gt/data/pipeline.py \
+        case-studies/cs1/src/fuel_price_gt/data/features.py \
+        case-studies/cs1/src/fuel_price_gt/evaluation/metrics.py \
+        case-studies/cs1/src/fuel_price_gt/modeling/training.py \
+        case-studies/cs1/src/fuel_price_gt/extraction/calibration.py \
         case-studies/cs1/tests/integration/test_training_evaluation.py
 git commit -m "refactor(cs1): llevar valores quemados a configuracion y registrar los modelos entrenados
 
@@ -199,9 +199,9 @@ modelo entrenado y debe verificarse en toda corrida."
 
 ```bash
 git add case-studies/cs1/pyproject.toml \
-        case-studies/cs1/src/gasolina_gt/augmentation/image_augment.py \
-        case-studies/cs1/src/gasolina_gt/extraction/digit_ocr.py \
-        case-studies/cs1/src/gasolina_gt/extraction/heic_loader.py
+        case-studies/cs1/src/fuel_price_gt/augmentation/image_augment.py \
+        case-studies/cs1/src/fuel_price_gt/extraction/digit_ocr.py \
+        case-studies/cs1/src/fuel_price_gt/extraction/heic_loader.py
 git commit -m "style(cs1): exigir seguridad, nomenclatura y documentacion en el linter
 
 Faltaban las comprobaciones que detectan credenciales embebidas y usos
@@ -235,7 +235,7 @@ describia una estructura que ya no existia."
 ## 12. Dependencias del taller
 
 ```bash
-git add -A workshop/actividad_3
+git add -A workshop/activity-03-hyperparameter-tuning
 git commit -m "chore(workshop): unificar la declaracion de dependencias en pyproject
 
 El requirements.txt de la actividad 3 solo repetia lo que ya declaraba su
@@ -278,4 +278,46 @@ Si se quiere marcar la entrega, según el estándar de versionado:
 
 ```bash
 git tag -a cs1-v0.1.0 -m "CS1: higiene, estructura y estandares"
+```
+
+## 14. Refactorización de nomenclatura
+
+Va sola, separada de cualquier funcionalidad, que era la condición con la que
+se decidió hacerla.
+
+```bash
+git add -A
+git commit -m "refactor!: traducir la nomenclatura a ingles en todo el proyecto
+
+Identificadores, nombres de archivo y carpetas en ingles; comentarios y
+documentacion siguen en espanol.
+
+Se hizo tokenizando cada archivo en vez de con un reemplazo de texto: asi solo
+cambian los tokens de nombre y la prosa en espanol queda intacta. Un reemplazo
+ciego habria convertido 'el valor' en 'el value'.
+
+Alcance:
+
+- Distribucion gasolina-gt a fuel-price-gt, modulo gasolina_gt a fuel_price_gt
+  y comando de consola con el mismo nombre.
+- 14 clases, unas 70 funciones y 60 campos.
+- Columnas del conjunto de datos, claves de configuracion, claves del artefacto
+  de modelo y del manifiesto, y valores de enumeracion.
+- Argumentos de la linea de comandos, variables y trabajos del flujo de
+  integracion continua, y nombres de artefacto.
+- Carpetas del taller y modulo de conversion de imagenes.
+
+Verificado de punta a punta: extraccion, transformacion, entrenamiento,
+compuerta de calidad, inferencia y manifiesto.
+
+BREAKING CHANGE: cambia el nombre de la distribucion, el comando de consola,
+los argumentos de la linea de comandos, las claves de config/config.yaml y las
+columnas de las capas de datos. Los conjuntos generados con la version anterior
+no son compatibles y hay que reconstruirlos con 'make pipeline'."
+```
+
+Y para mover la etiqueta al estado final de la fase:
+
+```bash
+git tag -f -a cs1-v0.1.0 -m "CS1: higiene, estructura y estandares"
 ```
