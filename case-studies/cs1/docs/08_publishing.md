@@ -113,9 +113,13 @@ El flujo hace tres cosas en orden, y solo sigue si la anterior pasó:
    configuración de referencia **sí** esté dentro, porque sin ella el paquete
    instalado no arranca.
 
-2. **Instalar en limpio y ejecutar**, en Linux y en Windows. Es lo que la
-   actividad pedía demostrar —que corre en máquinas distintas— comprobado en
-   cada publicación en vez de con una captura de pantalla. Primero la
+2. **Instalar en limpio y ejecutar**, en Linux y en Windows. Las dos
+   plataformas encontraron cosas distintas: Linux, que la instalación mínima no
+   arrancaba sin el extra; Windows, que su consola trae cp1252 y no sabe
+   escribir una tilde ni una flecha, y todo lo que este programa imprime está
+   en español. Ninguna de las dos se ve desarrollando en una sola máquina. Es lo que la
+   Es lo que la actividad pedía demostrar —que corre en máquinas distintas—
+   comprobado en cada publicación en vez de con una captura de pantalla. Primero la
    instalación mínima, luego que lo que necesita un extra lo diga, y por último
    el flujo completo con el extra puesto.
 

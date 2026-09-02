@@ -5,6 +5,7 @@ import argparse
 import importlib.util
 import json
 import logging
+import sys
 from dataclasses import asdict
 
 from .data.pipeline import build_gold, build_silver, load_gold_if_exists
@@ -32,6 +33,23 @@ def _exigir_extra(extra: str, modulo: str) -> None:
     )
 
 
+def _salida_en_utf8() -> None:
+    """Fuerza UTF-8 en la salida, independientemente de la consola.
+
+    En Windows la consola trae cp1252, que no sabe escribir ni una tilde ni una
+    flecha. Todo lo que este programa imprime está en español —la ayuda, y la
+    razón que acompaña a cada recomendación— así que sin esto termina en un
+    error de codificación en vez de imprimir.
+
+    No basta con declarar la variable de entorno correspondiente: eso arregla
+    la máquina donde se declara, no la de quien instale el paquete.
+    """
+    for flujo in (sys.stdout, sys.stderr):
+        reconfigurar = getattr(flujo, "reconfigure", None)
+        if reconfigurar is not None:
+            reconfigurar(encoding="utf-8")
+
+
 def _gold() -> object:
     gold = load_gold_if_exists()
     return gold if gold is not None else build_gold()
@@ -44,6 +62,7 @@ def main() -> None:
     separado: encadenarlas todas en un solo comando obligaría a repetir
     trabajo ya hecho cada vez que falla la última.
     """
+    _salida_en_utf8()
     parser = argparse.ArgumentParser(prog="fuel-price-gt", description="Predicción de precios de combustible en Guatemala")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("build-data", help="Ejecuta Bronze → Silver → Gold")
