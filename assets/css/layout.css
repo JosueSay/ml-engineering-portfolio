@@ -317,6 +317,38 @@ a.card:hover {
   color: var(--text-muted);
 }
 
+/* Un caso ya declarado pero todavia sin pagina se lista igual: el portafolio
+   dice lo que falta en vez de ocultarlo. Va como <article>, no como enlace,
+   para que no haya nada que se pueda pulsar hacia una pagina inexistente, y el
+   borde punteado lo separa de las tarjetas que si llevan a algun lado. */
+.card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.card__head .card__eyebrow {
+  margin-bottom: 0;
+}
+
+.card__badge {
+  flex: none;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
+.card--pending {
+  border-style: dashed;
+  box-shadow: none;
+}
+
 .case-section {
   margin-top: 34px;
   max-width: 68ch;

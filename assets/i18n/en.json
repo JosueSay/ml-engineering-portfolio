@@ -53,5 +53,9 @@
   "case.cs1.stack.c": "The quality gate fails the run, it does not report. A model that cannot beat the naive baseline does not pass.",
   "case.cs1.stack.d": "Publishing requires manual approval. A released version cannot be replaced, only withdrawn, and what is irreversible is what you stop to look at.",
   "case.cs1.open.title": "What is still open",
-  "case.cs1.open.body": "The extraction figures come from 16 photographs and will not carry a conclusion. With the full history, the share of valid readings has to be measured again, and that measurement decides whether a trained detector is needed instead of more rule tuning. The threshold is fixed in advance at 70%, so it cannot be moved after seeing the result."
+  "case.cs1.open.body": "The extraction figures come from 16 photographs and will not carry a conclusion. With the full history, the share of valid readings has to be measured again, and that measurement decides whether a trained detector is needed instead of more rule tuning. The threshold is fixed in advance at 70%, so it cannot be moved after seeing the result.",
+  "case.status.pending": "Pending",
+  "case.cs2.eyebrow": "Case study 02",
+  "case.cs2.title": "Club BI points system",
+  "case.cs2.desc": "Diagnosing a bank's rewards system with nobody left who designed it: reconstructing the data architecture from the outside and proposing where to optimise it."
 }

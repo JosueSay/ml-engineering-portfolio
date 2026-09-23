@@ -53,5 +53,9 @@
   "case.cs1.stack.c": "La compuerta de calidad falla la corrida, no informa. Un modelo que no gana a la referencia simple no pasa.",
   "case.cs1.stack.d": "Publicar exige aprobación manual. Una versión subida no se puede reemplazar, solo retirar, y lo irreversible es lo que se detiene a mirar.",
   "case.cs1.open.title": "Lo que sigue abierto",
-  "case.cs1.open.body": "Las mediciones de extracción salen de 16 fotografías y no aguantan una conclusión. Con el histórico completo hay que volver a medir la proporción de lecturas válidas y decidir, según lo que muestre, si hace falta entrenar un detector en vez de seguir afinando reglas. El umbral está fijado de antemano en 70%, para no moverlo después de ver el resultado."
+  "case.cs1.open.body": "Las mediciones de extracción salen de 16 fotografías y no aguantan una conclusión. Con el histórico completo hay que volver a medir la proporción de lecturas válidas y decidir, según lo que muestre, si hace falta entrenar un detector en vez de seguir afinando reglas. El umbral está fijado de antemano en 70%, para no moverlo después de ver el resultado.",
+  "case.status.pending": "Pendiente",
+  "case.cs2.eyebrow": "Caso de estudio 02",
+  "case.cs2.title": "Sistema de puntos de Club BI",
+  "case.cs2.desc": "Diagnóstico del sistema de recompensas de un banco sin nadie que lo haya diseñado: reconstruir la arquitectura de datos desde afuera y proponer por dónde optimizarla."
 }
