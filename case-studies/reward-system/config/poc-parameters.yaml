@@ -1,0 +1,169 @@
+# Parametros que el POC necesita y el banco no publica
+#
+# Este archivo existe para que `config/assumptions.yaml` no se contamine.
+#
+# `assumptions.yaml` es un entregable de diagnostico: documenta lo que el
+# sistema hace y con que evidencia. Cuando algo no es publico, lo registra como
+# ausencia verificada o como pregunta abierta, y ahi se detiene. Rellenarlo con
+# numeros inventados para que el codigo corra destruiria justamente lo que lo
+# hace util.
+#
+# Pero el POC tiene que correr. Necesita un tipo de cambio, una tasa para los
+# saldos promedio, un orden de consumo de lotes y unas tasas de millas. Ninguno
+# de los cuatro es publico. Los cuatro viven aqui, y cada uno declara **que
+# pregunta abierta esta sustituyendo**.
+#
+# La regla: si un numero de este archivo aparece en un resultado del notebook,
+# ese resultado es una demostracion de mecanica, no una medicion del programa
+# real. El notebook lo dice en cada tabla donde ocurre.
+#
+# Que hacer con esto: cuando el cliente responda P-2 a P-5, se cambian los
+# valores de aqui y el POC vuelve a correr sin tocar una linea de codigo. Es la
+# razon por la que el motor no tiene constantes incrustadas.
+
+meta:
+  proposito: Parametros del equipo consultor para que la replica en miniatura pueda ejecutarse
+  advertencia: >-
+    Ningun valor de este archivo es un dato del sistema Puntos Bi. Todos son
+    supuestos, y cada uno apunta a la pregunta abierta que lo reemplazaria.
+
+# ---------------------------------------------------------------------------
+# Sustitutos de preguntas abiertas
+# ---------------------------------------------------------------------------
+
+tipo_de_cambio_gtq_usd:
+  valor: 7.70
+  confianza: supuesto
+  responde_a: P-3
+  fuente: >-
+    Tipo de cambio de referencia. El banco no publica con que tasa ni de que
+    fecha convierte el consumo en quetzales a los dolares en que esta enunciada
+    la regla de acumulacion. Es el parametro del que cuelga todo el saldo: a la
+    tasa base, la diferencia entre dos tipos de cambio razonables mueve los
+    puntos de todos los clientes.
+
+saldos_promedio_gtq_por_punto:
+  valor: 1000.0
+  confianza: supuesto
+  responde_a: P-2
+  fuente: >-
+    Dos ordenes de magnitud sobre la tasa de consumo, porque remunera un saldo
+    retenido un mes y no un gasto puntual. El banco reconoce por escrito que
+    hay tres reglas, una por tipo de cuenta, y no publica ninguna. El POC usa
+    una sola para no fingir un detalle que no se conoce.
+  nota: >-
+    La relacion entre esta tasa y la de consumo es la que decide si el programa
+    premia gastar o ahorrar. Con este valor, mantener Q1,000 de saldo promedio
+    un mes rinde lo mismo que consumir unos Q7.70. Es una eleccion del equipo,
+    no una medicion.
+
+consumo_de_lotes:
+  valor: fifo
+  confianza: supuesto
+  responde_a: P-4
+  fuente: >-
+    FIFO gasta primero lo que esta mas cerca de vencer, que es lo que conviene
+    al cliente. Ninguna fuente publica dice cual se usa. Con un corte anual
+    fijo, la diferencia entre FIFO y LIFO es dinero: bajo LIFO, un cliente que
+    canjea con regularidad puede aun asi perder el lote viejo entero.
+
+millas_por_punto_segun_origen:
+  valor:
+    credito_visa: 1.00
+    debito_visa: 0.60
+    debito_mastercard: 0.60
+    credito_mastercard: 1.00
+    dividelo_todo: 1.00
+    saldo_promedio: 0.40
+    campana: 1.00
+    sorteo: 1.00
+  confianza: supuesto
+  responde_a: P-5
+  fuente: >-
+    Que la tasa varie segun el producto de origen es publico; cuanto varia, no.
+    Estos valores existen para que el POC pueda demostrar la consecuencia de
+    H-1: que dos grupos con el mismo saldo nominal no tienen el mismo poder de
+    compra. La forma del hallazgo no depende de los numeros; la magnitud si, y
+    por eso no se reporta magnitud.
+
+grano_del_tope_anual:
+  valor: grupo_familiar
+  confianza: supuesto
+  responde_a: P-1
+  fuente: >-
+    El tope anual podria aplicarse por tarjeta, por cliente o por grupo
+    unificado. El POC toma el grupo por coherencia con el grano del ledger, y
+    el notebook muestra en una tabla cuanto cambia el resultado con las otras
+    dos lecturas. Esa tabla es el argumento para que el cliente responda P-1.
+
+exclusiones_programa:
+  valor:
+    - retiros de efectivo
+    - extrafinanciamientos
+  confianza: inferido
+  responde_a: P-6
+  fuente: >-
+    Las dos unicas exclusiones publicas aparecen dentro de las bases de una
+    promocion concreta, no como regla general del programa. El POC las aplica
+    como si fueran generales porque es la lectura conservadora, y registra que
+    el listado completo no es publico.
+
+# ---------------------------------------------------------------------------
+# Rubros del comercio
+# ---------------------------------------------------------------------------
+# Las cinco categorias de tasa reducida son publicas y estan en
+# assumptions.yaml. Lo que no es publico es el mapa de codigos de rubro de la
+# red de pagos a esas cinco categorias, que es lo que el motor necesita para
+# decidir. Este mapa es una reconstruccion estandar del sector.
+
+rubros_de_tasa_reducida:
+  valor:
+    "5411": supermercados
+    "5412": supermercados
+    "5541": gasolineras
+    "5542": gasolineras
+    "5499": tiendas de conveniencia
+    "8398": entidades de beneficencia
+    "8220": centros educativos
+    "8211": centros educativos
+  confianza: inferido
+  fuente: >-
+    Correspondencia estandar entre codigos de rubro de la industria y las cinco
+    categorias que el banco nombra en su nota al pie. El banco no publica su
+    mapa; este es el que cualquier implementacion razonable usaria.
+  nota: >-
+    Aqui vive el riesgo de M1. Un comercio clasificado en 5411 en vez de 5812
+    acumula la decima parte. El mapa importa tanto como la tasa.
+
+rubros_excluidos:
+  valor:
+    "6011": retiros de efectivo
+    "6010": retiros de efectivo
+  confianza: inferido
+  fuente: Codigos estandar de disposicion de efectivo.
+
+# ---------------------------------------------------------------------------
+# Simulador
+# ---------------------------------------------------------------------------
+# No describen el sistema real: gobiernan los datos sinteticos. Se declaran
+# aqui para que una corrida sea reproducible con solo los dos archivos de
+# configuracion.
+
+simulacion:
+  semilla: 20260922
+  n_clientes: 700
+  n_grupos_familiares: 240
+  meses: 30
+  inicio: "2024-01-01"
+  # Defectos que el sistema real tiene y que el POC reproduce a proposito.
+  tasa_duplicados: 0.03          # reintentos del autorizador
+  tasa_reversas: 0.02            # anulaciones que llegan como fila aparte
+  tasa_mcc_faltante: 0.12        # consumos sin codigo de rubro
+  tasa_moneda_usd: 0.08          # consumos liquidados en dolares
+  tasa_fuera_de_orden: 0.05      # el archivo no llega en orden de evento
+  tasa_mastercard_no_afiliada: 0.65
+  tasa_sin_membresia_club_bi: 0.55
+  tasa_sin_bi_movil: 0.30
+  # Latencia de acreditacion, publica: 48 a 72 horas habiles.
+  latencia_habil_horas_min: 48
+  latencia_habil_horas_max: 72

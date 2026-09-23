@@ -74,6 +74,23 @@ acumulacion_transaccional:
       sobre el saldo de un cliente promedio, porque supermercado y gasolinera
       son el gasto recurrente tipico de una tarjeta.
 
+  latencia_acreditacion:
+    valor: entre 48 y 72 horas habiles
+    horas_min: 48
+    horas_max: 72
+    dias_habiles: true
+    confianza: publico
+    fuente: >-
+      FAQ del portal: "No, el proceso de acreditacion de Bi Puntos puede variar
+      y en la mayoria de los casos tarda entre 48 y 72 horas (dias habiles)."
+    nota: >-
+      Ninguna via del sistema es sincrona. Esto descarta la lectura intuitiva de
+      un motor que reacciona a cada autorizacion y confirma que la acumulacion
+      se resuelve por lotes. Tambien cambia el argumento de H-7: el retardo de 48
+      horas del sorteo no lo distingue de nada, porque todo el sistema acredita
+      con retardo. Lo que lo distingue es que no se puede rederivar. Y para el
+      cliente, 48 a 72 horas habiles pueden ser una semana de calendario.
+
   denominacion:
     valor: dolar estadounidense
     confianza: inferido
@@ -169,11 +186,34 @@ acumulacion_transaccional:
         mastercard_platinum: 0.022
         mastercard_black: 0.020
       confianza: publico
+      fuente: >-
+        Blog corporativo, enero de 2022: "Tasa de interes mensual del producto
+        al momento de realizar la gestion para cambio de acumulacion de Bi
+        Puntos."
       nota: >-
-        Es el dato mas duro que existe sobre el costo de participar: afiliarse
-        cambia el precio del credito, y el cambio es irreversible sin reemitir
-        la tarjeta. Una decision de producto, tomada por telefono, que altera
-        permanentemente el estado de un contrato.
+        CORREGIDO en la segunda ronda. La version anterior de este catalogo
+        afirmaba que afiliarse encarece el credito. La fuente no lo dice: enuncia
+        la tasa vigente al momento de la gestion, sin decir contra que se
+        compara. Frente al tarifario actual, 2.5% mensual sobre una Mastercard
+        Standard es MENOS que el 36% anual que hoy publica ese producto. Las dos
+        cifras son de anios distintos y no son comparables limpiamente. Lo que si
+        esta sostenido es que cambia las condiciones de forma irreversible y que
+        la decision se toma por telefono. Ver P-7.
+
+    ausencia_en_paginas_de_producto:
+      valor: true
+      confianza: publico
+      fuente: >-
+        Ausencia verificada sobre las ocho paginas de producto de tarjetasbi.com.
+        Las cuatro Visa (Clasica, Premier, Platinum, Signature) listan "Acumulas
+        Bi Puntos por compras, canjeables en establecimientos afiliados". Las
+        cuatro Mastercard (Standard, Gold Internacional, Platinum, Black) listan
+        exactamente los mismos beneficios menos esa linea.
+      nota: >-
+        Las paginas Mastercard no dicen que no acumulan: el beneficio no aparece,
+        y tampoco aparece que se pueda solicitar. Un cliente que compara productos
+        en el sitio del banco no tiene forma de enterarse de la afiliacion por
+        1717. Ese dato vive unicamente en un blog de 2022. Ver P-10.
 
   exclusiones:
     valor:
@@ -203,13 +243,34 @@ acumulacion_por_saldos:
       consumo que realices con tus tarjetas de credito y debito VISA, Dividelo
       Todo y por saldos promedios en tus Super Cuenta Monetaria, Super Cuenta
       de Ahorro y Cuenta de Ahorro 5 Estrellas."
+  depositos_acumulan:
+    valor: false
+    confianza: publico
+    fuente: >-
+      FAQ del portal: "No, recuerda que los depositos a tus cuentas no acumulan
+      Bi Puntos, acumulas Bi Puntos por los saldos promedio que mantienes."
+    nota: >-
+      Descarta que esta via reaccione a movimientos. Reacciona unicamente a un
+      cierre de periodo.
+
+  regla_por_tipo_de_cuenta:
+    valor: true
+    confianza: publico
+    fuente: >-
+      Nota al pie del mismo FAQ: "*Cada Cuenta tiene su propia Regla de
+      Acumulacion."
+    nota: >-
+      El banco reconoce por escrito que no hay una regla sino tres, una por tipo
+      de cuenta, y no publica ninguna de las tres. Convierte P-2 de una pregunta
+      en tres.
+
   tasa:
     valor: no publicada
     confianza: publico
     fuente: >-
       Ausencia verificada. Ninguna fuente publica dice cuantos puntos genera un
-      saldo promedio. Es el unico mecanismo de acumulacion sin una sola cifra
-      publica asociada.
+      saldo promedio, para ninguna de las tres cuentas. Es el unico mecanismo de
+      acumulacion sin una sola cifra publica asociada.
   periodicidad:
     valor: mensual, sobre el saldo promedio del mes cerrado
     confianza: inferido
@@ -304,28 +365,116 @@ promociones:
 # ---------------------------------------------------------------------------
 
 costos:
+
+  # CORREGIDO en la segunda ronda. La version anterior de este catalogo
+  # afirmaba que el programa de lealtad es una suscripcion de pago de Q180 al
+  # anio. Es falso: el banco publica lo contrario. Son dos programas distintos
+  # que comparten nombre comercial, tarjeta fisica y usuario del portal.
+
+  participar_en_bi_puntos:
+    valor: gratuito
+    confianza: publico
+    fuente: >-
+      FAQ del portal: "Si, aun puedes realizar el canje de tus Bi Puntos, ya que
+      el Programa de Bi Puntos es ajeno al Programa de beneficios que otorga Club
+      Bi al pagar tu membresia."
+    nota: >-
+      Acumular y canjear no cuesta nada. Dos matices que si se sostienen: la
+      Tarjeta Club Bi fisica sigue siendo obligatoria para canjear ("en ella se
+      depositan todos tus Bi Puntos"), y varias promociones si exigen membresia
+      Club Bi vigente. La membresia no compra el acceso al programa base, pero
+      condiciona el acceso a la capa promocional.
+
   membresia_club_bi_mensual_gtq:
     valor: 15.00
+    aplica_a: Club Bi, programa de beneficios y descuentos
     confianza: publico
     fuente: >-
       Pagina de Club Bi: "La membresia Club Bi tiene un costo de Q15.00
       mensuales."
     nota: >-
-      Q180 al anio. A la tasa base de un punto por dolar, la membresia cuesta
-      lo que se acumula con unos US$23 de consumo, y eso antes de mirar cuanto
-      devuelve el catalogo por punto. El programa de lealtad es una
-      suscripcion, y ninguna comunicacion lo plantea asi.
-  membresia_anual_tarjeta_gtq:
-    valor:
-      visa_clasica: 420
-      visa_platinum: 610
-    confianza: publico
-  extorno_por_consumo_anual_gtq:
-    valor:
-      visa_clasica: 6750
+      Q180 al anio por el programa de beneficios. NO es el precio de participar
+      en Bi Puntos.
+
+  tarifario_tarjetas:
     confianza: publico
     fuente: >-
-      "Consumo minimo de Q6,750.00 anual para extorno de membresia."
+      Las ocho paginas de producto de tarjetasbi.com, bloque de condiciones.
+      Todas traen el mismo cuadro, de modo que la comparacion es limpia.
+    unidades:
+      interes_anual_q: tasa nominal anual en quetzales
+      interes_anual_usd: tasa nominal anual en dolares
+      membresia_gtq: membresia anual
+      extorno_gtq: consumo anual minimo para extorno de membresia
+      extrafinanciamiento_mensual: tasa mensual de extrafinanciamiento
+    valor:
+      visa_clasica:
+        interes_anual_q: 0.6000
+        interes_anual_usd: 0.33
+        membresia_gtq: 420
+        extorno_gtq: 6750
+        extrafinanciamiento_mensual: 0.0317
+        acumula: true
+      visa_premier:
+        interes_anual_q: 0.4860
+        interes_anual_usd: 0.30
+        membresia_gtq: 420
+        extorno_gtq: 20700
+        extrafinanciamiento_mensual: 0.0267
+        acumula: true
+      visa_platinum:
+        interes_anual_q: 0.4740
+        interes_anual_usd: 0.27
+        membresia_gtq: 610
+        extorno_gtq: 54000
+        extrafinanciamiento_mensual: 0.0217
+        acumula: true
+      visa_signature:
+        interes_anual_q: 0.4020
+        interes_anual_usd: 0.24
+        membresia_gtq: 1200
+        extorno_gtq: 78000
+        extrafinanciamiento_mensual: 0.0183
+        acumula: true
+      mastercard_standard:
+        interes_anual_q: 0.3600
+        interes_anual_usd: 0.36
+        membresia_gtq: 420
+        extorno_gtq: 6750
+        extrafinanciamiento_mensual: 0.0317
+        acumula: false
+      mastercard_gold_internacional:
+        interes_anual_q: 0.3200
+        interes_anual_usd: 0.32
+        membresia_gtq: 420
+        extorno_gtq: 3500
+        extrafinanciamiento_mensual: 0.0267
+        acumula: false
+      mastercard_platinum:
+        interes_anual_q: 0.2700
+        interes_anual_usd: 0.27
+        membresia_gtq: 610
+        extorno_gtq: 54000
+        extrafinanciamiento_mensual: 0.0217
+        acumula: false
+      mastercard_black:
+        interes_anual_q: 0.2400
+        interes_anual_usd: 0.24
+        membresia_gtq: 1200
+        extorno_gtq: 78000
+        extrafinanciamiento_mensual: 0.0183
+        acumula: false
+    nota: >-
+      Las dos marcas estan emparejadas por nivel: misma membresia, mismo extorno,
+      mismo extrafinanciamiento. Lo unico que cambia sistematicamente entre cada
+      par es la tasa en quetzales y la acumulacion de puntos. El par de entrada
+      lo muestra: Visa Clasica y Mastercard Standard comparten Q420, Q6,750 y
+      3.17% mensual, y se separan en 60% contra 36% anual, con la que acumula
+      siendo la cara. Para un cliente que financia saldo, un retorno de ~0.8% del
+      consumo no compensa 24 puntos porcentuales de tasa. Para quien paga de
+      contado el razonamiento no aplica: el hallazgo es condicional.
+      Son tasas nominales; no incluyen comisiones, seguros ni el efecto de los
+      dias de financiamiento sin intereses.
 
 # ---------------------------------------------------------------------------
 # 5. Vigencia y expiracion
@@ -400,15 +549,74 @@ canje:
       - Estado de cuenta Bi Puntos
     confianza: publico
   canales_de_ejecucion:
-    valor: [Centros de canje]
-    confianza: publico
-    fuente: >-
-      "Visita un centro de canje y presenta tu Tarjeta Club Bi fisica y tu
-      documento de identificacion."
+    # CORREGIDO en la segunda ronda. La version anterior listaba un unico canal
+    # presencial. Hay tres, y dos no estan documentados.
+    valor:
+      presencial:
+        canal: Centros de canje
+        alcance: todo el catalogo
+        confianza: publico
+        fuente: >-
+          "Visita un centro de canje y presenta tu Tarjeta Club Bi fisica y tu
+          documento de identificacion."
+      en_linea:
+        canal: Portal bipuntos.bi.com.gt, tras iniciar sesion
+        alcance: no publicado
+        confianza: publico
+        fuente: >-
+          El portal tiene la entrada de menu "Canje en linea" y el aviso "Para
+          poder canjear premios debes iniciar sesion". Ninguna fuente publica
+          dice que parte del catalogo admite.
+      telefonico:
+        canal: PBX 1717
+        alcance: conversion a millas LifeMiles
+        confianza: publico
+        fuente: 'Portal de millas: "Para canjear tus puntos llama al 1717."'
     nota: >-
-      Seis canales para consultar, uno para ejecutar, y es presencial. Toda la
-      friccion del programa esta concentrada en el ultimo paso, que es
-      justamente el que convierte la lealtad en valor percibido. Ver H-8.
+      El problema no es que haya una sola via: es que hay tres y el cliente solo
+      conoce una. Toda la documentacion publica describe el mostrador. Es otra
+      manifestacion de H-2, la regla que gobierna la funcionalidad existente no
+      esta escrita. Ver H-8 y P-8.
+
+  valor_del_punto:
+    valor:
+      puntos: 1615
+      equivale_a_gtq: 100
+      premio: Certificado de Regalo
+      gtq_por_punto: 0.0619
+    confianza: publico
+    fecha_de_lectura: "2026-09-22"
+    fuente: >-
+      Portada de bipuntos.bi.com.gt, bloque "Premios destacados": "1615 puntos -
+      Certificado de Regalo por Q100". Confirmado por la pagina del programa:
+      "Puedes obtener certificados de regalo desde Q100."
+    nota: >-
+      Primer valor monetario del punto en todo el caso. Hasta esta ronda el
+      diagnostico razonaba sobre cuantos puntos se ganan, nunca sobre cuanto vale
+      uno. Expresar el retorno como porcentaje del consumo exige el tipo de
+      cambio no publico (P-3), asi que cualquier porcentaje es ilustracion y no
+      dato. ADVERTENCIA DE VIGENCIA, el catalogo de premios cambia y hay que
+      releerlo antes de reutilizar esta cifra. El PDF de arquitectura registra
+      1595 puntos para el mismo certificado, probablemente una lectura anterior.
+
+  retorno_ilustrativo:
+    valor:
+      tasa_base: 0.0080
+      tasa_reducida: 0.0008
+    confianza: supuesto
+    depende_de:
+      tipo_de_cambio_gtq_usd: 7.70
+    fuente: >-
+      Calculo del equipo consultor: Q0.0619 por punto sobre Q7.70 de consumo por
+      punto en tasa base. El tipo de cambio es de referencia; NO es el tipo de
+      cambio de acumulacion del banco, que no es publico.
+    nota: >-
+      Se publica como orden de magnitud para poder dimensionar H-1 y H-6, que
+      hasta ahora se argumentaban sin ninguna cifra de valor. Mover el tipo de
+      cambio dentro de un rango razonable no cambia el orden: el programa
+      devuelve menos del uno por ciento en su tasa buena y menos de una decima de
+      punto porcentual en supermercado y gasolinera. Ningun entregable presenta
+      estas cifras como dato del sistema.
   requisitos:
     valor:
       titular: [Tarjeta Club Bi fisica, documento de identificacion]
