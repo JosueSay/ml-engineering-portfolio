@@ -170,8 +170,13 @@ acumulacion_transaccional:
         automatica, sin embargo puedes solicitar este beneficio llamando al
         1717."
     canal_de_solicitud:
-      valor: PBX 1717
+      # AMPLIADO en la tercera ronda: no es solo el telefono.
+      valor: agencia o Contact Center (PBX 1717)
       confianza: publico
+      fuente: >-
+        Preguntas frecuentes de Club Bi: "Tarjetas de credito MasterCard se
+        debera de solicitar por medio de agencia o Contact Center para
+        acumular". El blog de 2022 solo mencionaba el 1717.
     reversible:
       valor: false
       confianza: publico
@@ -214,6 +219,62 @@ acumulacion_transaccional:
         y tampoco aparece que se pueda solicitar. Un cliente que compara productos
         en el sitio del banco no tiene forma de enterarse de la afiliacion por
         1717. Ese dato vive unicamente en un blog de 2022. Ver P-10.
+
+  comercios_aliados:
+    # NUEVO en la tercera ronda. Es una via de acumulacion, no una variante del
+    # consumo con tarjeta: el premio lo origina el comercio, no el producto
+    # bancario, lo que implica un acuerdo comercial y una regla por comercio.
+    valor: puntos adicionales al consumir con Tarjetas Bi en comercios aliados
+    confianza: publico
+    fuente: >-
+      Infografia del boletin "Conoce los productos con lo que puedes acumular
+      Puntos Bi": "Obtienes Puntos Bi adicionales al consumir con Tarjetas Bi en
+      los comercios".
+    listas_que_no_coinciden:
+      infografia_del_boletin: [Cemaco, La Torre, Electronica Panamericana, La Curacao]
+      pagina_bi_puntos: [Max, Cemaco, La Torre]
+      faq_club_bi: [La Torre, Cemaco]
+    tasa:
+      valor: no publicada
+      confianza: publico
+    nota: >-
+      Tres listas distintas del mismo emisor, leidas el mismo dia. No es un
+      detalle de redaccion: si el motor aplica un factor por comercio, saber que
+      comercios son es parte de la regla. Ver P-13.
+
+  tarjeta_prepago_club_bi:
+    # NUEVO en la tercera ronda.
+    valor: acumula en mas de 1,000 establecimientos con POS Visa
+    confianza: publico
+    fuente: >-
+      Blog corporativo, "Tu Club Bi tambien es Prepago": se puede pagar con la
+      prepago Club Bi y "acumular Bi Puntos, en mas de 1,000 establecimientos
+      que cuenten con POS Visa".
+    tasa:
+      valor: no publicada
+      confianza: publico
+    nota: >-
+      Rompe el supuesto de que acumular exige una relacion de credito o una
+      cuenta de deposito. Un instrumento prepago, recargable en agencias y en
+      puntos "Tu Bi Aqui", tambien genera saldo de puntos.
+
+  enumeracion_completa:
+    # La unica fuente que enumera todas las vias en un solo lugar. Notese que no
+    # esta en la pagina del programa sino en el FAQ del programa de beneficios.
+    valor: >-
+      Utilizando las tarjetas de credito y debito Visa, tarjetas debito
+      MasterCard, Saldo promedio en Super Cuenta Monetaria y Ahorro, Cuenta
+      Ahorro 5 Estrellas, todos los consumos que realizados con Dividelo Todo,
+      consumiendo en comercios aliados (La Torre, Cemaco), Tarjetas de credito
+      MasterCard se debera de solicitar por medio de agencia o Contact Center
+      para acumular.
+    confianza: publico
+    fuente: Preguntas frecuentes de Club Bi, corporacionbi.com
+    nota: >-
+      De las ocho vias de acumulacion, una sola publica su tasa. Es H-2 en su
+      forma mas cruda: no es que el programa esconda sus reglas, es que solo
+      escribio una de ocho. Y la unica enumeracion completa vive en el FAQ de
+      Club Bi, que es un programa distinto de Bi Puntos.
 
   exclusiones:
     valor:
@@ -264,13 +325,59 @@ acumulacion_por_saldos:
       de cuenta, y no publica ninguna de las tres. Convierte P-2 de una pregunta
       en tres.
 
+  saldo_minimo_mensual_gtq:
+    # AMPLIADO en la tercera ronda. La version anterior afirmaba que esta via no
+    # tenia "ni una sola cifra publica". Si la tiene: el umbral desde el que
+    # cada cuenta empieza a acumular esta publicado en la pagina de su producto.
+    # Lo que sigue sin publicarse es la tasa.
+    valor:
+      super_cuenta_ahorro: 500.00
+      super_cuenta_monetaria: 1000.00
+      cuenta_ahorro_5_estrellas: 1000.00
+    confianza: publico
+    fuente: >-
+      Paginas de producto. Super Cuenta Ahorro: "Ganas Bi Puntos sobre tu saldo
+      promedio mensual mayor a Q500.00". Super Cuenta Monetaria: "Ganas Bi
+      Puntos sobre tu saldo promedio mensual mayor a Q1,000.00". Ahorro 5
+      Estrellas: "Puntos Bi por saldo promedio mensual a partir de Q.1,000.00".
+    nota: >-
+      Que los tres umbrales sean distintos confirma desde fuera lo que el
+      asterisco del FAQ admite: son tres reglas, no una. Notese ademas que el
+      umbral de la Super Cuenta Monetaria coincide con su deposito de apertura y
+      con el saldo desde el que capitaliza intereses, lo que sugiere que el
+      umbral de puntos reutiliza un parametro que ya existia en el producto.
+
   tasa:
     valor: no publicada
     confianza: publico
     fuente: >-
       Ausencia verificada. Ninguna fuente publica dice cuantos puntos genera un
-      saldo promedio, para ninguna de las tres cuentas. Es el unico mecanismo de
-      acumulacion sin una sola cifra publica asociada.
+      saldo promedio, para ninguna de las tres cuentas.
+    nota: >-
+      Se sabe desde donde se empieza a acumular y no se sabe cuanto se acumula,
+      que es justo la mitad que le sirve al cliente para decidir. Es la unica
+      via de acumulacion cuya tasa no aparece en ninguna fuente.
+
+  multiplicador_por_membresia:
+    # NUEVO en la tercera ronda.
+    valor: dobles Bi Puntos con membresia Club Bi vigente
+    factor: 2.0
+    confianza: publico
+    fuente: >-
+      Preguntas frecuentes de Club Bi: hay que mantener la membresia activa para
+      gozar de dobles Bi Puntos en la Supercuenta de Ahorros. La pagina de Bi
+      Puntos dice lo mismo pero sobre la cuenta monetaria: "Si tienes membresia
+      Club Bi activa, acumulas dobles Bi Puntos con tu cuenta monetaria".
+    contradiccion: >-
+      Las dos fuentes del emisor no coinciden en que cuenta recibe el doble. Ver
+      P-12.
+    nota: >-
+      Corrige el alcance de lo dicho en costos.participar_en_bi_puntos. La
+      membresia no solo condiciona la capa promocional: compra un multiplicador
+      permanente sobre una via de acumulacion. La pregunta economica deja de ser
+      "vale la pena pagar Q180 al anio por descuentos" y pasa a ser "vale la
+      pena por descuentos mas el doble de puntos sobre el saldo promedio", que
+      no se puede responder porque la tasa base de esa via no es publica.
   periodicidad:
     valor: mensual, sobre el saldo promedio del mes cerrado
     confianza: inferido
@@ -379,11 +486,14 @@ costos:
       el Programa de Bi Puntos es ajeno al Programa de beneficios que otorga Club
       Bi al pagar tu membresia."
     nota: >-
-      Acumular y canjear no cuesta nada. Dos matices que si se sostienen: la
+      Acumular y canjear no cuesta nada. Tres matices que si se sostienen: la
       Tarjeta Club Bi fisica sigue siendo obligatoria para canjear ("en ella se
-      depositan todos tus Bi Puntos"), y varias promociones si exigen membresia
-      Club Bi vigente. La membresia no compra el acceso al programa base, pero
-      condiciona el acceso a la capa promocional.
+      depositan todos tus Bi Puntos"); varias promociones si exigen membresia
+      Club Bi vigente; y la membresia da dobles puntos sobre la acumulacion por
+      saldo promedio (ver acumulacion_por_saldos.multiplicador_por_membresia).
+      AMPLIADO en la tercera ronda: la membresia no compra el acceso al programa
+      base, pero si compra un multiplicador permanente sobre una de las ocho
+      vias, no solo acceso a promociones temporales.
 
   membresia_club_bi_mensual_gtq:
     valor: 15.00
@@ -679,6 +789,11 @@ identidad:
 # ---------------------------------------------------------------------------
 # Lo que no se puede responder desde fuera y hay que preguntar. Van ordenadas
 # por cuanto cambia la respuesta el resto del diagnostico.
+#
+# La numeracion salta de P-6 a P-12 a proposito: P-7 a P-11 nacieron en la
+# segunda ronda de investigacion y viven en docs/investigacion-y-supuestos.md,
+# seccion 7. No se duplican aqui para que cada pregunta tenga un solo lugar
+# donde se mantiene. El cuestionario completo al cliente son las trece.
 
 preguntas_abiertas:
   - id: P-1
@@ -708,3 +823,17 @@ preguntas_abiertas:
     por_que_importa: >-
       Hoy solo hay exclusiones citadas dentro de promociones concretas, lo que
       sugiere que la regla general no esta escrita en ningun lado.
+  - id: P-12
+    pregunta: El doble por membresia Club Bi, sobre que cuenta aplica?
+    por_que_importa: >-
+      Las preguntas frecuentes de Club Bi dicen Super Cuenta de Ahorros y la
+      pagina de Bi Puntos dice cuenta monetaria. Son dos fuentes del mismo
+      emisor diciendo cosas distintas sobre un multiplicador de dos. Un cliente
+      que paga la membresia para duplicar sus puntos no puede saber en cual de
+      sus cuentas conviene dejar el saldo.
+  - id: P-13
+    pregunta: Cuales son los comercios aliados y cuanto acreditan de mas?
+    por_que_importa: >-
+      Hay tres listas publicas distintas y ninguna tasa. Si el motor aplica un
+      factor por comercio, la lista es parte de la regla de acumulacion y hoy no
+      se puede reconstruir desde fuera.
