@@ -1,0 +1,502 @@
+# Catalogo de reglas del programa Puntos Bi, con su procedencia
+#
+# Este archivo es el entregable central de la fase de diagnostico. El encargo
+# dice que los responsables de disenar e implementar el sistema ya no estan en
+# la empresa, de modo que la primera pregunta no es como optimizarlo sino que
+# hace, y con que evidencia se sostiene cada afirmacion.
+#
+# Cada entrada declara tres cosas:
+#
+#   valor      la regla
+#   confianza  publico | inferido | supuesto
+#   fuente     donde se verifica, o por que se eligio
+#
+# confianza:
+#   publico   Citable de una fuente publica de Corporacion BI. Se defiende
+#             ante el cliente sin matices.
+#   inferido  No publicado como tal, pero se deduce de algo que si lo esta.
+#             Se defiende explicando el razonamiento.
+#   supuesto  Elegido por el equipo consultor. No se defiende como dato del
+#             sistema, y ningun entregable lo presenta como tal.
+#
+# El reparto de niveles es en si mismo un hallazgo. La tasa de acumulacion
+# existe y es publica, pero no vive en la pagina del programa: vive en una nota
+# al pie con asterisco de cada pagina de producto. No hay ninguna fuente
+# publica que enuncie la regla completa de una sola vez. Ver
+# docs/report/03-hallazgos.md, H-2.
+#
+# Las fuentes completas, con fecha de consulta, estan en
+# docs/report/05-referencias.md.
+
+meta:
+  programa: Puntos Bi (Club Bi)
+  emisor: Corporacion BI / Banco Industrial, Guatemala
+  fecha_consulta: "2026-09-22"
+  alcance: >-
+    Guatemala, tarjetas y cuentas de persona individual. Quedan fuera las
+    tarjetas empresariales y las operaciones de Bi Bank Panama, que tienen sus
+    propias condiciones.
+
+# ---------------------------------------------------------------------------
+# 1. Acumulacion transaccional
+# ---------------------------------------------------------------------------
+
+acumulacion_transaccional:
+
+  tasa_base:
+    valor: 1 punto por cada US$1 de compra
+    puntos_por_dolar: 1.0
+    confianza: publico
+    fuente: >-
+      Paginas de producto de Tarjetas Bi: "acumulas Puntos Bi por cada dolar de
+      compra". Enunciada producto por producto, nunca en la pagina del
+      programa.
+
+  tasa_categorias_reducidas:
+    valor: 1 punto por cada US$10 de compra
+    puntos_por_dolar: 0.1
+    categorias:
+      - supermercados
+      - gasolineras
+      - tiendas de conveniencia
+      - entidades de beneficencia
+      - centros educativos
+    confianza: publico
+    fuente: >-
+      Nota al pie identica en Visa Premier, Visa Signature, Visa Infinite y
+      Mastercard Gold Internacional: "*Por cada 10 dolares de compra en
+      supermercados, gasolineras, tiendas de conveniencia, entidades de
+      beneficencia y centros educativos acumulas 1 punto."
+    nota: >-
+      Son las cinco categorias con tasa de intercambio regulada o reducida. El
+      programa traslada esa economia al cliente sin decirlo: la penalizacion es
+      de diez a uno y se comunica en un asterisco. Es la regla con mas impacto
+      sobre el saldo de un cliente promedio, porque supermercado y gasolinera
+      son el gasto recurrente tipico de una tarjeta.
+
+  denominacion:
+    valor: dolar estadounidense
+    confianza: inferido
+    fuente: >-
+      La tasa se enuncia por dolar de compra, pero el consumo en Guatemala se
+      liquida en quetzales. El motor tiene que convertir moneda antes de
+      aplicar la tasa.
+    nota: >-
+      Ninguna fuente publica dice con que tipo de cambio se convierte ni de que
+      fecha (el de la autorizacion, el del cierre del ciclo, uno institucional
+      fijo). A la tasa base, la diferencia entre dos tipos de cambio razonables
+      mueve el saldo del cliente. Ver H-4.
+
+  topes_anuales:
+    valor:
+      mastercard_gold_internacional: 180000
+      visa_premier: 180000
+      visa_signature: 360000
+      visa_infinite: 420000
+    confianza: publico
+    fuente: >-
+      Paginas de producto: "Tope acumulacion hasta N Puntos Bi anualmente."
+    nota: >-
+      La categoria de tarjeta no cambia la tasa: cambia el techo. Es una
+      decision de diseno distinta de la habitual en la region, donde la
+      categoria multiplica la tasa. Aqui todos ganan lo mismo por dolar y las
+      categorias altas solo pueden seguir ganando durante mas tiempo antes de
+      topar.
+
+  topes_no_publicados:
+    valor:
+      - Visa Clasica
+      - Visa Platinum
+      - Mastercard Standard
+      - Mastercard Platinum
+      - Mastercard Black
+      - tarjetas de debito
+    confianza: publico
+    fuente: >-
+      Ausencia verificada. Las paginas de estas categorias solo dicen "Acumulas
+      Bi Puntos por compras, canjeables en establecimientos afiliados", sin
+      tope ni tasa. Cuatro categorias publican tope; el resto no.
+
+  grano_del_tope:
+    valor: desconocido
+    confianza: supuesto
+    fuente: >-
+      Pregunta abierta. El tope anual, es por tarjeta, por cliente o por grupo
+      familiar unificado? Con unificacion familiar y varias tarjetas por
+      persona, las tres respuestas dan saldos distintos. Es la primera pregunta
+      del cuestionario al cliente.
+
+  productos_que_acumulan:
+    valor:
+      credito_visa: [Clasica, Premier, Platinum, Signature, Infinite]
+      debito_visa_bi_cheque: [Clasica, Oro, Platinum, Signature]
+      debito_mastercard: [Standard, Platinum, Black]
+      otros: [Dividelo Todo]
+    confianza: publico
+    fuente: >-
+      Bases de promocion: "Aplica unicamente para Tarjetas de Credito Bi Visa
+      de categorias Clasica, Premier, Platinum, Signature, Infinite y Tarjetas
+      de Debito Individual Bi Cheque Visa Clasica, Bi Cheque Visa Oro, Bi
+      Cheque Visa Platinum, Bi Cheque Visa Signature y las tarjetas de debito
+      Bi Mastercard Standard, Platinum y Black que acumulen puntos."
+    nota: >-
+      La coletilla final, "que acumulen puntos", confirma que dentro de una
+      misma categoria conviven tarjetas que acumulan y tarjetas que no. La
+      elegibilidad no se deduce del producto: es un atributo por tarjeta.
+
+  afiliacion_mastercard_credito:
+    automatica:
+      valor: false
+      confianza: publico
+      fuente: >-
+        "Las tarjetas de credito Mastercard no acumulan Bi Puntos de forma
+        automatica, sin embargo puedes solicitar este beneficio llamando al
+        1717."
+    canal_de_solicitud:
+      valor: PBX 1717
+      confianza: publico
+    reversible:
+      valor: false
+      confianza: publico
+      fuente: La conversion no se deshace sin emitir una tarjeta nueva.
+    excluye:
+      valor: [Mastercard UEFA Champions League]
+      confianza: publico
+    tasa_mensual_al_afiliar:
+      valor:
+        mastercard_standard: 0.025
+        mastercard_gold_internacional: 0.025
+        mastercard_platinum: 0.022
+        mastercard_black: 0.020
+      confianza: publico
+      nota: >-
+        Es el dato mas duro que existe sobre el costo de participar: afiliarse
+        cambia el precio del credito, y el cambio es irreversible sin reemitir
+        la tarjeta. Una decision de producto, tomada por telefono, que altera
+        permanentemente el estado de un contrato.
+
+  exclusiones:
+    valor:
+      - retiros de efectivo
+      - extrafinanciamientos
+    confianza: publico
+    fuente: >-
+      Bases de promocion: "No aplica para retiros o extra financiamientos."
+    nota: >-
+      Enunciado dentro de las bases de una promocion concreta, no como regla
+      general del programa. El listado completo de exclusiones del programa no
+      es publico.
+
+# ---------------------------------------------------------------------------
+# 2. Acumulacion por saldos promedio
+# ---------------------------------------------------------------------------
+
+acumulacion_por_saldos:
+  aplica_a:
+    valor:
+      - Super Cuenta Monetaria
+      - Super Cuenta de Ahorro
+      - Cuenta de Ahorro 5 Estrellas
+    confianza: publico
+    fuente: >-
+      "La acumulacion de tus Bi Puntos es automatica, por cada transaccion de
+      consumo que realices con tus tarjetas de credito y debito VISA, Dividelo
+      Todo y por saldos promedios en tus Super Cuenta Monetaria, Super Cuenta
+      de Ahorro y Cuenta de Ahorro 5 Estrellas."
+  tasa:
+    valor: no publicada
+    confianza: publico
+    fuente: >-
+      Ausencia verificada. Ninguna fuente publica dice cuantos puntos genera un
+      saldo promedio. Es el unico mecanismo de acumulacion sin una sola cifra
+      publica asociada.
+  periodicidad:
+    valor: mensual, sobre el saldo promedio del mes cerrado
+    confianza: inferido
+    fuente: >-
+      "Saldo promedio" solo tiene sentido sobre un periodo cerrado, y el ciclo
+      natural de una cuenta de deposito es el mes.
+    nota: >-
+      Este mecanismo no reacciona a un evento: reacciona a un cierre. Es la
+      razon por la que el saldo de puntos es la suma de un flujo y un lote, y
+      por la que las dos mitades no se pueden reconciliar con el mismo reloj.
+
+# ---------------------------------------------------------------------------
+# 3. Promociones
+# ---------------------------------------------------------------------------
+# Una capa entera de reglas temporales encima de la tasa base. Es la parte del
+# sistema que mas maquinaria exige y la que menos documentada esta.
+
+promociones:
+  mecanicas_observadas:
+    valor:
+      - multiplicador general sobre todo consumo
+      - multiplicador por categoria de comercio y fecha
+      - bonificacion equivalente al monto del ticket
+      - sorteo con ganadores aleatorios
+    confianza: publico
+
+  ejemplo_multiplicador:
+    valor:
+      nombre: Dobles y triples Puntos Bi
+      vigencia: 1 al 31 de julio de 2025
+      mecanica: >-
+        Dobles puntos en todo consumo con Tarjetas Bi Visa de credito y debito.
+        Triples puntos los fines de semana por rubro y fecha: electrodomesticos
+        5 y 6 de julio, restaurantes 12 y 13, ropa 19 y 20, entretenimiento 26
+        y 27.
+      tope_por_cliente: 1500
+      requiere_inscripcion: true
+    confianza: publico
+
+  ejemplo_bonificacion:
+    valor:
+      nombre: Tus compras se transforman en Puntos Bi
+      vigencia: 27 de junio al 5 de agosto de 2022
+      mecanica: 1 punto por cada quetzal consumido, si la compra resulta premiada
+      consumo_minimo_por_transaccion_gtq: 300
+      tope_diario: 800
+      tope_mensual: 30000
+      requiere_membresia_club_bi_vigente: true
+      requiere_bi_movil_activo: true
+    confianza: publico
+    nota: >-
+      Un punto por quetzal es cerca de ocho veces la tasa base, que es un punto
+      por dolar. La promocion no multiplica la tasa: la sustituye y le cambia
+      la moneda. El motor tiene que soportar que la unidad de la regla cambie,
+      no solo su coeficiente.
+
+  ejemplo_sorteo:
+    valor:
+      nombre: Gana hasta 50,000 Bi Puntos
+      vigencia: 15 de junio al 31 de julio de 2021
+      consumo_minimo_gtq: 100
+      premios:
+        - 100 ganadores diarios de 500 puntos
+        - 50 ganadores diarios de 1,000 puntos
+        - 10 premios semanales de 10,000 puntos
+        - 5 premios mensuales de 50,000 puntos
+      acreditacion: 48 horas despues de la notificacion por SMS
+      requiere_bi_movil_activo: true
+      excluye: empleados de la corporacion
+    confianza: publico
+    nota: >-
+      La mecanica mas exigente para el sistema y la menos visible. Acredita
+      puntos que no se derivan del consumo, con un retardo de 48 horas y
+      disparados desde un canal externo. Es una via de acreditacion asincrona y
+      no reproducible: si el registro del sorteo se pierde, el saldo no se
+      puede reconstruir desde las transacciones. Ver H-7.
+
+  requisitos_recurrentes:
+    valor:
+      - membresia Club Bi vigente
+      - servicio Bi Movil activo
+      - inscripcion previa a la promocion
+    confianza: publico
+    nota: >-
+      Los tres son predicados de elegibilidad que viven fuera del dato de la
+      transaccion: estado de una membresia, estado de un servicio digital y
+      pertenencia a un padron. El motor tiene que consultarlos en el momento de
+      acreditar, contra sistemas que no son el autorizador.
+
+# ---------------------------------------------------------------------------
+# 4. Costo de participar
+# ---------------------------------------------------------------------------
+
+costos:
+  membresia_club_bi_mensual_gtq:
+    valor: 15.00
+    confianza: publico
+    fuente: >-
+      Pagina de Club Bi: "La membresia Club Bi tiene un costo de Q15.00
+      mensuales."
+    nota: >-
+      Q180 al anio. A la tasa base de un punto por dolar, la membresia cuesta
+      lo que se acumula con unos US$23 de consumo, y eso antes de mirar cuanto
+      devuelve el catalogo por punto. El programa de lealtad es una
+      suscripcion, y ninguna comunicacion lo plantea asi.
+  membresia_anual_tarjeta_gtq:
+    valor:
+      visa_clasica: 420
+      visa_platinum: 610
+    confianza: publico
+  extorno_por_consumo_anual_gtq:
+    valor:
+      visa_clasica: 6750
+    confianza: publico
+    fuente: >-
+      "Consumo minimo de Q6,750.00 anual para extorno de membresia."
+
+# ---------------------------------------------------------------------------
+# 5. Vigencia y expiracion
+# ---------------------------------------------------------------------------
+
+vigencia:
+  anios:
+    valor: 2
+    confianza: publico
+  corte:
+    valor: 5 de febrero de cada anio, para lo acumulado dos anios antes
+    mes: 2
+    dia: 5
+    confianza: publico
+    fuente: >-
+      "Los Bi Puntos tienen una vigencia de dos anios y vencen el 5 de febrero
+      de cada anio los acumulados dos anios antes."
+    nota: >-
+      No es un vencimiento rodante por punto: es un corte anual en fecha fija
+      por anio de acumulacion. La vigencia efectiva va de 13 a 25 meses segun
+      el mes en que se gano el punto, y el programa la comunica como "dos
+      anios" a todos por igual. Ver H-3.
+  consumo_de_lotes:
+    valor: desconocido
+    confianza: supuesto
+    fuente: >-
+      Ninguna fuente publica dice que puntos se gastan primero al canjear. Con
+      un corte anual fijo, la diferencia entre gastar primero los mas viejos y
+      gastar primero los mas nuevos es dinero del cliente. Pregunta abierta.
+
+# ---------------------------------------------------------------------------
+# 6. Titularidad del saldo
+# ---------------------------------------------------------------------------
+
+unificacion_familiar:
+  parentescos_admitidos:
+    valor: [padre, madre, hermanos, conyuge]
+    confianza: publico
+    fuente: >-
+      "Puedes realizar el traslado total de tus Bi Puntos por medio de una
+      unificacion de Bi Puntos familiar con miembros de tu circulo familiar
+      como Padre, Madre, Hermanos y Esposo (comprobado con Acta Matrimonial)."
+    nota: >-
+      El conyuge se acredita con acta matrimonial, lo que deja fuera la union
+      de hecho, figura reconocida por la legislacion guatemalteca.
+  permanencia_minima_meses:
+    valor: 12
+    confianza: publico
+    fuente: >-
+      "El canje de Bi Puntos lo podra realizar unicamente el titular de la
+      unificacion familiar y dicha unificacion debera permanecer como minimo un
+      anio."
+  canjea:
+    valor: solo el titular de la unificacion
+    confianza: publico
+    nota: >-
+      El saldo pertenece a un grupo y lo ejerce una persona. Cualquier analisis
+      por cliente cuenta puntos que ese cliente no puede canjear.
+
+# ---------------------------------------------------------------------------
+# 7. Canje
+# ---------------------------------------------------------------------------
+
+canje:
+  canales_de_consulta:
+    valor:
+      - App Club Bi
+      - Bi en Linea web
+      - Portal bipuntos.bi.com.gt
+      - Centros de canje
+      - PBX 1717
+      - Estado de cuenta Bi Puntos
+    confianza: publico
+  canales_de_ejecucion:
+    valor: [Centros de canje]
+    confianza: publico
+    fuente: >-
+      "Visita un centro de canje y presenta tu Tarjeta Club Bi fisica y tu
+      documento de identificacion."
+    nota: >-
+      Seis canales para consultar, uno para ejecutar, y es presencial. Toda la
+      friccion del programa esta concentrada en el ultimo paso, que es
+      justamente el que convierte la lealtad en valor percibido. Ver H-8.
+  requisitos:
+    valor:
+      titular: [Tarjeta Club Bi fisica, documento de identificacion]
+      tercero:
+        - carta de autorizacion firmada por el titular
+        - copia del DPI del titular
+        - Tarjeta Club Bi fisica
+      empresa:
+        - copia del DPI del representante legal
+        - nombramiento
+        - Tarjeta Club Bi fisica
+    confianza: publico
+  comercios_afiliados:
+    valor: mas de 50
+    confianza: publico
+  conversion_a_millas:
+    socio:
+      valor: LifeMiles
+      confianza: publico
+    tasa_varia_por_producto:
+      valor: true
+      confianza: publico
+      fuente: >-
+        Portal de millas: la conversion "puede variar segun el producto con el
+        que acumules Bi Puntos".
+      nota: >-
+        El hallazgo central del caso. Si el valor de canje depende del producto
+        que genero el punto, entonces los puntos no son intercambiables entre
+        si, y el numero unico que muestran los seis canales de consulta no
+        alcanza para decidir un canje. Ver H-1.
+    tasa:
+      valor: no publicada
+      confianza: publico
+
+# ---------------------------------------------------------------------------
+# 8. Identidad y acceso
+# ---------------------------------------------------------------------------
+
+identidad:
+  portal_con_registro_propio:
+    valor: true
+    confianza: publico
+    fuente: >-
+      bipuntos.bi.com.gt tiene alta de usuario y recuperacion de contrasena
+      propias, distintas de las de Bi en Linea.
+  portal_longitud_minima_password:
+    valor: 4
+    confianza: publico
+    fuente: >-
+      El portal exige mayusculas, minusculas, numeros y caracteres especiales,
+      y a la vez admite un minimo de 4 caracteres.
+    nota: >-
+      La composicion obligatoria no compensa la longitud. Con cuatro caracteres
+      el espacio de busqueda sigue siendo pequeno, y ademas obligar a que
+      aparezcan cuatro clases distintas en cuatro posiciones reduce el conjunto
+      de contrasenas validas en vez de ampliarlo. Ver H-5.
+
+# ---------------------------------------------------------------------------
+# 9. Preguntas abiertas para el cliente
+# ---------------------------------------------------------------------------
+# Lo que no se puede responder desde fuera y hay que preguntar. Van ordenadas
+# por cuanto cambia la respuesta el resto del diagnostico.
+
+preguntas_abiertas:
+  - id: P-1
+    pregunta: El tope anual, se aplica por tarjeta, por cliente o por grupo familiar?
+    por_que_importa: >-
+      Las tres respuestas dan saldos distintos para el mismo consumo, y cambian
+      por completo el modelo de datos del acumulador.
+  - id: P-2
+    pregunta: Cual es la tasa de acumulacion por saldo promedio?
+    por_que_importa: >-
+      Es el unico mecanismo sin cifra publica. Sin el no se puede saber si el
+      programa premia gastar o ahorrar.
+  - id: P-3
+    pregunta: Con que tipo de cambio y de que fecha se convierte el consumo en quetzales a dolares?
+    por_que_importa: Mueve el saldo de todos los clientes en todas las transacciones.
+  - id: P-4
+    pregunta: Al canjear, que lote de puntos se consume primero?
+    por_que_importa: >-
+      Con un corte anual fijo, el orden decide cuantos puntos pierde un cliente
+      que canja con regularidad.
+  - id: P-5
+    pregunta: Cuales son las tasas de conversion a millas por producto de origen?
+    por_que_importa: >-
+      Es lo que convierte el saldo unico en una cifra que no basta para decidir.
+  - id: P-6
+    pregunta: Existe el listado completo de exclusiones del programa, fuera de las bases de cada promocion?
+    por_que_importa: >-
+      Hoy solo hay exclusiones citadas dentro de promociones concretas, lo que
+      sugiere que la regla general no esta escrita en ningun lado.
