@@ -14,6 +14,7 @@ Diagnóstico del sistema de recompensas Puntos Bi. La visión general está en e
 | [report/05-referencias.md](report/05-referencias.md) | Fuentes consultadas, con fecha y qué aportó cada una |
 | [architecture/README.md](architecture/README.md) | Los cuatro diagramas y cómo leerlos |
 | [proposal/ml-ai-llm.md](proposal/ml-ai-llm.md) | Dónde entra un modelo y cómo se sabe si vale la pena |
+| [../notebooks/puntos-bi-poc.ipynb](../notebooks/puntos-bi-poc.ipynb) | La prueba funcional: réplica en miniatura del pipeline y los hallazgos medidos sobre ella |
 | [investigacion-y-supuestos.md](investigacion-y-supuestos.md) | Bitácora de campo: qué se buscó, qué se encontró, qué se corrigió y en qué se contradicen las fuentes |
 
 El catálogo de reglas con su procedencia está en
