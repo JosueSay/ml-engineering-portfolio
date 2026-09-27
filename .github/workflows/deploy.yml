@@ -40,6 +40,20 @@ jobs:
           mkdir -p _site
           cp -r index.html pages assets .nojekyll _site/
 
+      # The notebook is committed already executed; this only renders it, so the
+      # published page cannot drift from the file in the repository.
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Render CS2 notebook to HTML
+        run: |
+          python -m pip install --quiet nbconvert
+          jupyter nbconvert --to html \
+            case-studies/reward-system/notebooks/puntos-bi-poc.ipynb \
+            --output-dir _site/pages/cs2
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 
