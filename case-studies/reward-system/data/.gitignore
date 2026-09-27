@@ -1,0 +1,5 @@
+# Los datos son sinteticos y se regeneran al correr el notebook.
+*
+!.gitignore
+!*/
+!**/.gitkeep

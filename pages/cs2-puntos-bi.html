@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="case.cs2.title">Sistema de puntos de Club BI</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+    <link rel="stylesheet" href="../assets/css/branding.css" />
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+
+    <link rel="modulepreload" href="../assets/js/app.js" />
+    <link rel="modulepreload" href="../assets/js/layout.js" />
+    <link rel="modulepreload" href="../assets/js/i18n.js" />
+    <link rel="modulepreload" href="../assets/js/sidebar.js" />
+    <link rel="modulepreload" href="../assets/js/theme.js" />
+    <link rel="preload" as="fetch" type="application/json" crossorigin="anonymous" href="../assets/i18n/es.json" />
+    <link rel="preload" as="fetch" type="application/json" crossorigin="anonymous" href="../assets/i18n/en.json" />
+    <script>
+      (function () {
+        var t = localStorage.getItem("portfolio.theme");
+        if (t === "light" || t === "dark") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      })();
+    </script>
+  </head>
+  <body data-page="case-studies">
+    <main id="content">
+      <div class="content-inner">
+        <header class="page-header">
+          <p class="page-header__eyebrow" data-i18n="case.cs2.eyebrow">Caso de estudio 02</p>
+          <h1 data-i18n="case.cs2.title">Sistema de puntos de Club BI</h1>
+          <p class="page-header__subtitle" data-i18n="case.cs2.subtitle">Diagnóstico, arquitectura de datos y réplica en miniatura de un programa de lealtad bancario.</p>
+        </header>
+
+        <section class="case-section">
+          <h2 data-i18n="case.cs2.problem.title">El encargo</h2>
+          <p data-i18n="case.cs2.problem.body">Optimizar el sistema de puntos de Club Bi, de Banco Industrial, con una condición: quienes lo diseñaron ya no trabajan en la empresa. Antes de optimizar había que saber qué hace el sistema, y la única evidencia disponible era lo que el banco publica. Cada regla documentada lleva su nivel de confianza: pública, inferida o supuesta.</p>
+        </section>
+
+        <section class="case-section">
+          <h2 data-i18n="case.cs2.turn.title">Lo que cambió el enfoque</h2>
+          <p data-i18n="case.cs2.turn.body">La tasa de acumulación resultó ser pública, pero no está escrita en ningún lugar único. Vive en una nota al pie repetida en cada página de producto: 1 punto por cada US$1, y 1 por cada US$10 en supermercados, gasolineras y otras tres categorías. De ocho vías de acumulación, solo una publica su tasa. La falta de un documento con la regla completa dejó de ser un obstáculo de la investigación y pasó a ser el primer hallazgo.</p>
+        </section>
+
+        <section class="case-section">
+          <h2 data-i18n="case.cs2.arch.title">Tres decisiones de arquitectura</h2>
+          <ul class="case-list">
+            <li data-i18n="case.cs2.arch.a">El saldo es un conjunto de lotes y no un contador. El vencimiento es un corte anual el 5 de febrero y la conversión a millas depende del producto de origen, así que cada punto necesita su mes y su origen.</li>
+            <li data-i18n="case.cs2.arch.b">El grano es el grupo familiar. La unificación familiar hace que el saldo sea del grupo y que solo el titular lo canjee.</li>
+            <li data-i18n="case.cs2.arch.c">La elegibilidad no viaja en la transacción. Membresía, Bi Móvil, afiliación e inscripción a campañas se consultan al acreditar, y sin historial de esos estados no se puede recalcular el pasado.</li>
+          </ul>
+        </section>
+
+        <section class="case-section">
+          <h2 data-i18n="case.cs2.replica.title">La réplica en miniatura</h2>
+          <p data-i18n="case.cs2.replica.body">Un notebook reconstruye el pipeline con datos sintéticos: cuatro orígenes, capas Bronze, Silver y Gold, un motor que lee las reglas del catálogo y un ledger de lotes con canje y expiración. Sobre esa réplica se miden los hallazgos: la vigencia de «dos años» va de 13 a 25 meses, el mismo consumo da tres saldos según dónde se aplique el tope anual, y los puntos de sorteo son los únicos que no se pueden reconstruir desde otra fuente.</p>
+          <div class="case-links">
+            <a class="link-pill" href="cs2/puntos-bi-poc.html"
+               data-i18n="case.cs2.link.notebook">Notebook</a>
+            <a class="link-pill" href="https://github.com/JosueSay/ml-engineering-portfolio/tree/main/case-studies/reward-system/docs/report"
+               data-i18n="case.cs2.link.report">Reporte</a>
+            <a class="link-pill" href="https://github.com/JosueSay/ml-engineering-portfolio/tree/main/case-studies/reward-system/docs/architecture"
+               data-i18n="case.cs2.link.architecture">Arquitectura</a>
+            <a class="link-pill" href="https://github.com/JosueSay/ml-engineering-portfolio/tree/main/case-studies/reward-system"
+               data-i18n="case.cs2.link.code">Código</a>
+          </div>
+        </section>
+
+        <section class="case-section">
+          <h2 data-i18n="case.cs2.findings.title">Hallazgos principales</h2>
+          <ul class="case-list">
+            <li data-i18n="case.cs2.findings.a">Los puntos no son intercambiables. La conversión a millas varía según el producto que los generó, y los seis canales de consulta muestran un solo número.</li>
+            <li data-i18n="case.cs2.findings.b">La tasa reducida cae sobre el gasto recurrente. Supermercado y gasolinera acumulan la décima parte, y la regla se comunica en un asterisco.</li>
+            <li data-i18n="case.cs2.findings.c">La tasa se define en dólares y el consumo se liquida en quetzales, con un tipo de cambio que el banco no publica.</li>
+            <li data-i18n="case.cs2.findings.d">El portal de puntos acepta contraseñas de cuatro caracteres y permite consultar el saldo con solo un número de documento.</li>
+          </ul>
+        </section>
+
+        <section class="case-section">
+          <h2 data-i18n="case.cs2.ml.title">Dónde entra un modelo</h2>
+          <p data-i18n="case.cs2.ml.body">El primer injerto es un LLM que clasifica el rubro del comercio cuando falta su código, con la salida restringida a un catálogo cerrado. Es el único que corrige un cálculo: equivocarse de rubro cuesta un factor de diez en puntos. La réplica ya mide su métrica de referencia, los puntos acreditados con el factor equivocado. La detección de anomalías y la propensión al canje van después, porque observan un sistema que primero tiene que estar bien.</p>
+        </section>
+
+        <section class="case-section">
+          <h2 data-i18n="case.cs2.open.title">Lo que sigue abierto</h2>
+          <p data-i18n="case.cs2.open.body">Trece preguntas que solo el banco puede responder, entre ellas el tipo de cambio de acumulación, la tasa por saldo promedio y si el tope anual se aplica por tarjeta, por cliente o por grupo. Los supuestos que las sustituyen viven en un archivo aparte, así que cada respuesta se incorpora cambiando un valor y volviendo a correr el notebook.</p>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="../assets/js/app.js"></script>
+  </body>
+</html>
