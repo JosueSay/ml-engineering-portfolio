@@ -1,25 +1,8 @@
-# Parametros que el POC necesita y el banco no publica
+# Parametros que el POC necesita y el banco no publica.
 #
-# Este archivo existe para que `config/assumptions.yaml` no se contamine.
-#
-# `assumptions.yaml` es un entregable de diagnostico: documenta lo que el
-# sistema hace y con que evidencia. Cuando algo no es publico, lo registra como
-# ausencia verificada o como pregunta abierta, y ahi se detiene. Rellenarlo con
-# numeros inventados para que el codigo corra destruiria justamente lo que lo
-# hace util.
-#
-# Pero el POC tiene que correr. Necesita un tipo de cambio, una tasa para los
-# saldos promedio, un orden de consumo de lotes y unas tasas de millas. Ninguno
-# de los cuatro es publico. Los cuatro viven aqui, y cada uno declara **que
-# pregunta abierta esta sustituyendo**.
-#
-# La regla: si un numero de este archivo aparece en un resultado del notebook,
-# ese resultado es una demostracion de mecanica, no una medicion del programa
-# real. El notebook lo dice en cada tabla donde ocurre.
-#
-# Que hacer con esto: cuando el cliente responda P-2 a P-5, se cambian los
-# valores de aqui y el POC vuelve a correr sin tocar una linea de codigo. Es la
-# razon por la que el motor no tiene constantes incrustadas.
+# Son supuestos del equipo. Viven aparte para que assumptions.yaml solo tenga
+# lo verificable. Cada valor indica la pregunta abierta que lo reemplazaria:
+# cuando haya respuesta se cambia aqui y el notebook corre igual.
 
 meta:
   proposito: Parametros del equipo consultor para que la replica en miniatura pueda ejecutarse
@@ -120,10 +103,8 @@ exclusiones_programa:
 # ---------------------------------------------------------------------------
 # Rubros del comercio
 # ---------------------------------------------------------------------------
-# Las cinco categorias de tasa reducida son publicas y estan en
-# assumptions.yaml. Lo que no es publico es el mapa de codigos de rubro de la
-# red de pagos a esas cinco categorias, que es lo que el motor necesita para
-# decidir. Este mapa es una reconstruccion estandar del sector.
+# Las cinco categorias reducidas son publicas; su mapa de codigos de rubro no.
+# Este es el mapa estandar del sector.
 
 rubros_de_tasa_reducida:
   valor:
@@ -154,9 +135,7 @@ rubros_excluidos:
 # ---------------------------------------------------------------------------
 # Simulador
 # ---------------------------------------------------------------------------
-# No describen el sistema real: gobiernan los datos sinteticos. Se declaran
-# aqui para que una corrida sea reproducible con solo los dos archivos de
-# configuracion.
+# Controlan los datos sinteticos, no describen el sistema real.
 
 simulacion:
   semilla: 20260922
@@ -164,7 +143,7 @@ simulacion:
   n_grupos_familiares: 240
   meses: 30
   inicio: "2024-01-01"
-  # Defectos que el sistema real tiene y que el POC reproduce a proposito.
+  # Defectos que se inyectan en los datos.
   tasa_duplicados: 0.03          # reintentos del autorizador
   tasa_reversas: 0.02            # anulaciones que llegan como fila aparte
   tasa_mcc_faltante: 0.12        # consumos sin codigo de rubro
@@ -173,6 +152,6 @@ simulacion:
   tasa_mastercard_no_afiliada: 0.65
   tasa_sin_membresia_club_bi: 0.55
   tasa_sin_bi_movil: 0.30
-  # Latencia de acreditacion, publica: 48 a 72 horas habiles.
+  # Latencia de acreditacion publicada: 48 a 72 horas habiles.
   latencia_habil_horas_min: 48
   latencia_habil_horas_max: 72

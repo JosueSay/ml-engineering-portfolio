@@ -1,32 +1,14 @@
-# Catalogo de reglas del programa Puntos Bi, con su procedencia
-#
-# Este archivo es el entregable central de la fase de diagnostico. El encargo
-# dice que los responsables de disenar e implementar el sistema ya no estan en
-# la empresa, de modo que la primera pregunta no es como optimizarlo sino que
-# hace, y con que evidencia se sostiene cada afirmacion.
-#
-# Cada entrada declara tres cosas:
+# Catalogo de reglas del programa Puntos Bi, con su procedencia.
 #
 #   valor      la regla
 #   confianza  publico | inferido | supuesto
 #   fuente     donde se verifica, o por que se eligio
 #
-# confianza:
-#   publico   Citable de una fuente publica de Corporacion BI. Se defiende
-#             ante el cliente sin matices.
-#   inferido  No publicado como tal, pero se deduce de algo que si lo esta.
-#             Se defiende explicando el razonamiento.
-#   supuesto  Elegido por el equipo consultor. No se defiende como dato del
-#             sistema, y ningun entregable lo presenta como tal.
+#   publico    citable de una fuente publica de Corporacion BI
+#   inferido   no publicado, pero se deduce de algo que si lo esta
+#   supuesto   elegido por el equipo consultor, no es dato del sistema
 #
-# El reparto de niveles es en si mismo un hallazgo. La tasa de acumulacion
-# existe y es publica, pero no vive en la pagina del programa: vive en una nota
-# al pie con asterisco de cada pagina de producto. No hay ninguna fuente
-# publica que enuncie la regla completa de una sola vez. Ver
-# docs/report/03-hallazgos.md, H-2.
-#
-# Las fuentes completas, con fecha de consulta, estan en
-# docs/report/05-referencias.md.
+# Las fuentes con fecha de consulta estan en docs/report/05-referencias.md.
 
 meta:
   programa: Puntos Bi (Club Bi)
@@ -170,7 +152,6 @@ acumulacion_transaccional:
         automatica, sin embargo puedes solicitar este beneficio llamando al
         1717."
     canal_de_solicitud:
-      # AMPLIADO en la tercera ronda: no es solo el telefono.
       valor: agencia o Contact Center (PBX 1717)
       confianza: publico
       fuente: >-
@@ -196,14 +177,12 @@ acumulacion_transaccional:
         al momento de realizar la gestion para cambio de acumulacion de Bi
         Puntos."
       nota: >-
-        CORREGIDO en la segunda ronda. La version anterior de este catalogo
-        afirmaba que afiliarse encarece el credito. La fuente no lo dice: enuncia
-        la tasa vigente al momento de la gestion, sin decir contra que se
-        compara. Frente al tarifario actual, 2.5% mensual sobre una Mastercard
-        Standard es MENOS que el 36% anual que hoy publica ese producto. Las dos
-        cifras son de anios distintos y no son comparables limpiamente. Lo que si
-        esta sostenido es que cambia las condiciones de forma irreversible y que
-        la decision se toma por telefono. Ver P-7.
+        La fuente no dice si afiliarse encarece o abarata el credito: enuncia la
+        tasa vigente al momento de la gestion, sin compararla con nada. Frente al
+        tarifario actual, 2.5% mensual sobre una Mastercard Standard es menos que
+        el 36% anual que hoy publica ese producto, pero las dos cifras son de anios
+        distintos. Lo sostenido es que las condiciones cambian de forma
+        irreversible y que la decision se toma por telefono. Ver P-7.
 
     ausencia_en_paginas_de_producto:
       valor: true
@@ -221,9 +200,7 @@ acumulacion_transaccional:
         1717. Ese dato vive unicamente en un blog de 2022. Ver P-10.
 
   comercios_aliados:
-    # NUEVO en la tercera ronda. Es una via de acumulacion, no una variante del
-    # consumo con tarjeta: el premio lo origina el comercio, no el producto
-    # bancario, lo que implica un acuerdo comercial y una regla por comercio.
+    # Via propia: el premio lo origina el comercio, no el producto bancario.
     valor: puntos adicionales al consumir con Tarjetas Bi en comercios aliados
     confianza: publico
     fuente: >-
@@ -243,7 +220,6 @@ acumulacion_transaccional:
       comercios son es parte de la regla. Ver P-13.
 
   tarjeta_prepago_club_bi:
-    # NUEVO en la tercera ronda.
     valor: acumula en mas de 1,000 establecimientos con POS Visa
     confianza: publico
     fuente: >-
@@ -259,8 +235,7 @@ acumulacion_transaccional:
       puntos "Tu Bi Aqui", tambien genera saldo de puntos.
 
   enumeracion_completa:
-    # La unica fuente que enumera todas las vias en un solo lugar. No
-    # esta en la pagina del programa sino en el FAQ del programa de beneficios.
+    # Unica fuente que enumera todas las vias, y esta en el FAQ de Club Bi.
     valor: >-
       Utilizando las tarjetas de credito y debito Visa, tarjetas debito
       MasterCard, Saldo promedio en Super Cuenta Monetaria y Ahorro, Cuenta
@@ -326,10 +301,6 @@ acumulacion_por_saldos:
       en tres.
 
   saldo_minimo_mensual_gtq:
-    # AMPLIADO en la tercera ronda. La version anterior afirmaba que esta via no
-    # tenia "ni una sola cifra publica". Si la tiene: el umbral desde el que
-    # cada cuenta empieza a acumular esta publicado en la pagina de su producto.
-    # Lo que sigue sin publicarse es la tasa.
     valor:
       super_cuenta_ahorro: 500.00
       super_cuenta_monetaria: 1000.00
@@ -359,7 +330,6 @@ acumulacion_por_saldos:
       via de acumulacion cuya tasa no aparece en ninguna fuente.
 
   multiplicador_por_membresia:
-    # NUEVO en la tercera ronda.
     valor: dobles Bi Puntos con membresia Club Bi vigente
     factor: 2.0
     confianza: publico
@@ -392,8 +362,7 @@ acumulacion_por_saldos:
 # ---------------------------------------------------------------------------
 # 3. Promociones
 # ---------------------------------------------------------------------------
-# Una capa entera de reglas temporales encima de la tasa base. Es la parte del
-# sistema que mas maquinaria exige y la que menos documentada esta.
+# Reglas temporales que se aplican encima de la tasa base.
 
 promociones:
   mecanicas_observadas:
@@ -473,10 +442,7 @@ promociones:
 
 costos:
 
-  # CORREGIDO en la segunda ronda. La version anterior de este catalogo
-  # afirmaba que el programa de lealtad es una suscripcion de pago de Q180 al
-  # anio. Es falso: el banco publica lo contrario. Son dos programas distintos
-  # que comparten nombre comercial, tarjeta fisica y usuario del portal.
+  # Bi Puntos es gratuito; Club Bi cuesta Q15 al mes. Son programas distintos.
 
   participar_en_bi_puntos:
     valor: gratuito
@@ -486,14 +452,11 @@ costos:
       el Programa de Bi Puntos es ajeno al Programa de beneficios que otorga Club
       Bi al pagar tu membresia."
     nota: >-
-      Acumular y canjear no cuesta nada. Tres matices que si se sostienen: la
-      Tarjeta Club Bi fisica sigue siendo obligatoria para canjear ("en ella se
-      depositan todos tus Bi Puntos"); varias promociones si exigen membresia
-      Club Bi vigente; y la membresia da dobles puntos sobre la acumulacion por
-      saldo promedio (ver acumulacion_por_saldos.multiplicador_por_membresia).
-      AMPLIADO en la tercera ronda: la membresia no compra el acceso al programa
-      base, pero si compra un multiplicador permanente sobre una de las ocho
-      vias, no solo acceso a promociones temporales.
+      Acumular y canjear no cuesta nada, con tres matices: la Tarjeta Club Bi
+      fisica es obligatoria para canjear ("en ella se depositan todos tus Bi
+      Puntos"); varias promociones exigen membresia Club Bi vigente; y la
+      membresia da dobles puntos sobre la acumulacion por saldo promedio (ver
+      acumulacion_por_saldos.multiplicador_por_membresia).
 
   membresia_club_bi_mensual_gtq:
     valor: 15.00
@@ -659,8 +622,6 @@ canje:
       - Estado de cuenta Bi Puntos
     confianza: publico
   canales_de_ejecucion:
-    # CORREGIDO en la segunda ronda. La version anterior listaba un unico canal
-    # presencial. Hay tres, y dos no estan documentados.
     valor:
       presencial:
         canal: Centros de canje
@@ -701,13 +662,12 @@ canje:
       Certificado de Regalo por Q100". Confirmado por la pagina del programa:
       "Puedes obtener certificados de regalo desde Q100."
     nota: >-
-      Primer valor monetario del punto en todo el caso. Hasta esta ronda el
-      diagnostico razonaba sobre cuantos puntos se ganan, nunca sobre cuanto vale
-      uno. Expresar el retorno como porcentaje del consumo exige el tipo de
-      cambio no publico (P-3), asi que cualquier porcentaje es ilustracion y no
-      dato. ADVERTENCIA DE VIGENCIA, el catalogo de premios cambia y hay que
-      releerlo antes de reutilizar esta cifra. El PDF de arquitectura registra
-      1595 puntos para el mismo certificado, probablemente una lectura anterior.
+      Es el unico valor monetario publico del punto. Expresar el retorno como
+      porcentaje del consumo exige el tipo de cambio, que no es publico (P-3),
+      asi que cualquier porcentaje es ilustrativo. El catalogo de premios cambia:
+      hay que releer esta cifra antes de reutilizarla. El PDF de arquitectura
+      registra 1595 puntos para el mismo certificado, probablemente una lectura
+      anterior.
 
   retorno_ilustrativo:
     valor:
@@ -787,13 +747,8 @@ identidad:
 # ---------------------------------------------------------------------------
 # 9. Preguntas abiertas para el cliente
 # ---------------------------------------------------------------------------
-# Lo que no se puede responder desde fuera y hay que preguntar. Van ordenadas
-# por cuanto cambia la respuesta el resto del diagnostico.
-#
-# La numeracion salta de P-6 a P-12 a proposito: P-7 a P-11 nacieron en la
-# segunda ronda de investigacion y viven en docs/investigacion-y-supuestos.md,
-# seccion 7. No se duplican aqui para que cada pregunta tenga un solo lugar
-# donde se mantiene. El cuestionario completo al cliente son las trece.
+# Lo que no se puede responder desde fuera. Las preguntas P-7 a P-11 estan en
+# docs/investigacion-y-supuestos.md, seccion 7.
 
 preguntas_abiertas:
   - id: P-1
