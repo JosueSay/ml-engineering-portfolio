@@ -86,6 +86,15 @@ millas_por_punto_segun_origen:
     compra. La forma del hallazgo no depende de los numeros; la magnitud si, y
     por eso no se reporta magnitud.
 
+cuenta_con_doble_por_membresia:
+  valor: super_cuenta_ahorro
+  confianza: supuesto
+  responde_a: P-12
+  fuente: >-
+    Las preguntas frecuentes de Club Bi dicen Super Cuenta de Ahorros y la
+    pagina de Bi Puntos dice cuenta monetaria. El POC toma la primera y aplica
+    el doble a un solo tipo de cuenta, como dicen las dos fuentes por separado.
+
 grano_del_tope_anual:
   valor: grupo_familiar
   confianza: supuesto

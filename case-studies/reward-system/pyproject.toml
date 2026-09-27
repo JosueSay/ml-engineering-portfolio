@@ -1,0 +1,13 @@
+[project]
+name = "puntos-bi-poc"
+version = "0.1.0"
+description = "Replica en miniatura del sistema de recompensas Puntos Bi"
+requires-python = ">=3.11"
+dependencies = [
+  "pandas>=2.1",
+  "numpy>=1.26",
+  "PyYAML>=6",
+  "matplotlib>=3.8",
+  "ipykernel>=6.29",
+  "nbconvert>=7.16",
+]
