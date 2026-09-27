@@ -255,17 +255,30 @@ datos— están en [`docs/architecture/`](docs/architecture/).
 ```
 reward-system/
 ├── config/
-│   └── assumptions.yaml          # catálogo de reglas, con fuente y confianza
+│   ├── assumptions.yaml          # catálogo de reglas, con fuente y confianza
+│   └── poc-parameters.yaml       # supuestos del equipo para que el POC corra
 ├── docs/
 │   ├── report/                   # el reporte escrito
 │   ├── architecture/             # diagramas y su lectura
 │   └── proposal/                 # propuesta de ML / AI / LLM en el pipeline
-├── notebooks/                    # réplica en miniatura de la arquitectura
-├── src/                          # el código del POC
-├── tests/
-└── data/                         # bronze / silver / gold (vacío en el repositorio)
+├── notebooks/
+│   └── puntos-bi-poc.ipynb       # réplica en miniatura de la arquitectura (POC)
+└── data/                         # raw y bronze / silver / gold, se generan al correr
 ```
 
 La documentación se lee desde [`docs/README.md`](docs/README.md), que trae el
 índice y una ruta sugerida según lo que se busque.
 
+## Cómo correr el POC
+
+```bash
+cd case-studies/reward-system
+uv sync
+uv run jupyter nbconvert --to notebook --execute --inplace notebooks/puntos-bi-poc.ipynb
+```
+
+El notebook genera datos sintéticos, los pasa por raw, bronze, silver y gold, y
+mide sobre la réplica los hallazgos del reporte. Tarda menos de un minuto. Las
+reglas salen de `config/assumptions.yaml` y los supuestos de
+`config/poc-parameters.yaml`; cambiar un supuesto y volver a correr no requiere
+tocar código.
