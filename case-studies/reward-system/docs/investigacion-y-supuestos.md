@@ -60,7 +60,7 @@ dicen en su fila.
 > Sí, aún puedes realizar el canje de tus Bi Puntos, ya que el Programa de Bi Puntos
 > es **ajeno** al Programa de beneficios que otorga Club Bi al pagar tu membresía.
 
-Y el complemento, en la misma página:
+El complemento, en la misma página:
 
 > **¿Al optar por un beneficio de Club Bi acumulo Bi Puntos?**
 > No, la acumulación se da únicamente al momento de que realices una transacción con
@@ -76,16 +76,16 @@ comparten nombre comercial, tarjeta física y login:
 | Costo | **Gratuito** | Q15.00 mensuales |
 | Cómo se entra | Automático, por usar productos afiliados | Pagando la membresía |
 
-Lo que **sí** se sostiene y conviene no perder en la corrección:
+Lo que **sí** se sostiene después de la corrección:
 
 - **La tarjeta Club Bi física sigue siendo obligatoria para canjear.** «*…es necesario
   que presentes tu Tarjeta Club Bi, ya que en ella se depositan todos tus Bi Puntos*».
-  Es decir: el plástico es requisito, la membresía de pago no.
+  El plástico es requisito; la membresía de pago, no.
 - **Varias promociones sí exigen membresía Club Bi vigente.** La promoción de 2022 lo
   pedía explícitamente. Entonces la membresía no compra el acceso al programa base,
   pero sí condiciona el acceso a la capa promocional.
 
-La distinción importa para el diagnóstico: el costo de participar en el programa base
+Para el diagnóstico, el costo de participar en el programa base
 es cero, y eso cambia por completo el argumento sobre percepción de valor.
 
 ---
@@ -110,7 +110,7 @@ arquitectura que el caso no había recogido:
    que hace único al sorteo **no es la latencia sino que no se puede rederivar**. El
    argumento de H-7 había que afilarlo, no retirarlo.
 
-Y una consecuencia para el cliente que el programa no comunica: entre 48 y 72 horas
+Hay una consecuencia para el cliente que el programa no comunica: entre 48 y 72 horas
 *hábiles* puede ser una semana de calendario si hay fin de semana y feriado de por
 medio. Un cliente que consulta su saldo el lunes después de comprar el viernes ve un
 número que todavía no incluye su compra, sin ninguna indicación de que falta algo.
@@ -190,8 +190,8 @@ Se leyó el bloque «BENEFICIOS» de las ocho. El resultado es limpio y sin exce
 | Mastercard Black | **No** |
 
 Las cuatro páginas Mastercard listan exactamente los mismos cinco beneficios que las
-Visa **menos** la línea de los puntos. No es que digan que no acumulan: es que el
-beneficio no existe en la página.
+Visa **menos** la línea de los puntos. No dicen que no acumulan; el
+beneficio simplemente no aparece en la página.
 
 Esto corrobora, desde una fuente independiente del blog, que las Mastercard de crédito
 no acumulan por defecto. Pero deja algo peor a la vista: **la página de producto ni
@@ -200,7 +200,7 @@ Visa Clásica con una Mastercard Standard en el sitio del banco no tiene forma d
 enterarse de que la segunda puede acumular llamando al 1717. Ese dato vive solo en una
 entrada de blog de enero de 2022.
 
-Es exactamente el patrón de H-2: la regla existe, es pública, y está en el lugar donde
+Es el patrón de H-2: la regla existe, es pública, y está en el lugar donde
 nadie la va a buscar.
 
 ---
@@ -249,7 +249,7 @@ El alta pide: correo, contraseña, nombre, teléfono (opcional), tipo de cliente
 de **Tarjeta Club Bi**, tipo y número de documento de identificación, y fecha de
 nacimiento.
 
-Y la política de contraseña, literal del validador publicado, que confirma H-5 palabra
+La política de contraseña, literal del validador publicado, que confirma H-5 palabra
 por palabra:
 
 > El campo de contraseña es obligatorio, debe contener mayúscula, minúscula, número,
@@ -270,7 +270,7 @@ por palabra:
 
 Dos cosas nuevas:
 
-1. **Los depósitos no acumulan.** Solo el saldo promedio. La distinción importa porque
+1. **Los depósitos no acumulan.** Solo el saldo promedio. Eso
    descarta la interpretación de que la vía de depósitos reaccione a transacciones:
    reacciona únicamente a un cierre de periodo.
 2. **La regla es por tipo de cuenta, no una sola.** El banco reconoce por escrito que
@@ -278,7 +278,7 @@ Dos cosas nuevas:
 
 Esto convierte la pregunta abierta **P-2** de una en tres: hace falta la regla de la
 Súper Cuenta Monetaria, la de la Súper Cuenta de Ahorro y la de la Cuenta de Ahorro 5
-Estrellas. Y refuerza lo que ya decía el caso: es el único mecanismo de acumulación del
+Estrellas. También refuerza lo que ya decía el caso: es el único mecanismo de acumulación del
 programa **sin una sola cifra pública** *(corregido en la tercera ronda, T-2: los
 umbrales sí son públicos; lo que falta es la tasa)*, ahora agravado porque sabemos que son tres
 cifras las que faltan, no una.
@@ -336,12 +336,12 @@ una suposición del consultor: está publicado.
 **La segunda es el stack.** Bower está descontinuado desde 2017 y Foundation for Sites
 ya no tiene desarrollo activo. Sirve para fechar el portal, no para juzgarlo — que una
 herramienta de construcción esté descontinuada no dice nada sobre si el sistema
-funciona. Lo que sí sugiere es que **el portal no ha tenido una revisión de plataforma
+funciona. Sí sugiere que **el portal no ha tenido una revisión de plataforma
 en varios años**, lo que encaja con la política de contraseña de cuatro caracteres:
 no es una decisión reciente, es una decisión antigua que nadie revisitó.
 
 Publicar los nombres del equipo de desarrollo y el inventario de tecnología de un
-sistema financiero es, además, información que normalmente no se ofrece. Retirar el
+sistema financiero es información que normalmente no se ofrece. Retirar el
 archivo cuesta un `rm`.
 
 ---
@@ -390,7 +390,7 @@ que cierre esa brecha.
 así que la tasa es irrelevante y los puntos son ganancia neta. El hallazgo es
 **condicional**, y presentarlo sin esa condición sería deshonesto.
 
-Lo que sí es incondicional es esto: **el sitio del banco no da ningún elemento para
+Lo incondicional es esto: **el sitio del banco no da ningún elemento para
 hacer esta comparación.** Las tasas están en un micrositio de activación; el valor del
 punto, en el portal de puntos; la posibilidad de afiliar una Mastercard, en un blog de
 2022. Tres dominios distintos para una sola decisión de compra.
@@ -429,11 +429,11 @@ PDF**; esto queda anotado para que lo reconcilie quien lo elaboró.
 
 | El PDF dice | Lo que verificó esta ronda | Qué hacer |
 |---|---|---|
-| «tasa por tier (14-15 pts/US$10)» | 1 punto por US$**1**; 1 punto por US$10 solo en las cinco categorías reducidas | Discrepancia real. 14-15 pts/US$10 equivale a ~1.45 pts/US$, que ninguna fuente sostiene. Conviene revisar de dónde salió |
+| «tasa por tier (14-15 pts/US$10)» | 1 punto por US$**1**; 1 punto por US$10 solo en las cinco categorías reducidas | Discrepancia real. 14-15 pts/US$10 equivale a ~1.45 pts/US$, que ninguna fuente sostiene. Hay que revisar de dónde salió |
 | «1595 pts = Q100» | 1,615 pts = Q100 (portal, 22-09-2026) | Probablemente una lectura anterior del mismo catálogo. Fechar ambas |
 | «+40 centros de canje afiliados (POS)» | «más de 40» (portal) / «más de 50» (blog) | Coincide con el portal. Ver sección 4 |
 | «NeoNet: autorización y liquidación Visa/Mastercard» | No verificado en esta ronda | Plausible como red de autorización regional; hace falta su fuente |
-| «Motor de campañas ML … (Enciende tu Racha)» | No verificado en esta ronda | Si existe la campaña, hace falta su fuente; si el motor de ML es propuesta, conviene marcarlo como tal en el dibujo |
+| «Motor de campañas ML … (Enciende tu Racha)» | No verificado en esta ronda | Si existe la campaña, hace falta su fuente; si el motor de ML es propuesta, hay que marcarlo como tal en el dibujo |
 | «App Mi Club Bi» | Las fuentes leídas dicen «App Club Bi» | Probablemente el mismo producto; unificar el nombre |
 
 La primera fila es la única que importa de verdad: **cambia la tasa base del sistema**,
@@ -482,7 +482,7 @@ Sin ellas no se puede responder si el programa premia gastar o ahorrar.
 
 **P-10 · ¿Por qué las páginas de producto Mastercard no mencionan Bi Puntos?**
 Ni para decir que no acumulan, ni para decir que se puede solicitar. Si es una decisión
-comercial deliberada, conviene saberlo; si es una omisión, es un beneficio que el banco
+comercial deliberada, hay que saberlo; si es una omisión, es un beneficio que el banco
 ofrece y no vende.
 
 **P-11 · ¿Qué controles protegen la consulta de saldo sin autenticación?**
@@ -591,8 +591,8 @@ infraestructura sino el motor de reglas.
 ni una cifra.*» Sí la hay. Lo que no es público es la **tasa**, no el umbral.
 
 La corrección no debilita el hallazgo, lo afila: se sabe desde dónde se empieza
-a acumular y no se sabe cuánto se acumula, que es justo la mitad que le sirve al
-cliente. Y que los tres umbrales sean distintos **confirma desde fuera** lo que
+a acumular y no se sabe cuánto se acumula, que es la mitad que le sirve al
+cliente. Que los tres umbrales sean distintos **confirma desde fuera** lo que
 el asterisco del FAQ admite: son tres reglas, no una.
 
 Detalle lateral: el umbral de la Súper Cuenta Monetaria (Q1,000) coincide con su
@@ -616,7 +616,7 @@ programa base, pero condiciona el acceso a la capa promocional». Es incompleto:
 la membresía compra un **multiplicador permanente** sobre una vía de
 acumulación, no solo acceso a promociones temporales.
 
-Y deja la pregunta económica sin respuesta posible. Ya no es «¿vale la pena
+La pregunta económica queda sin respuesta posible. Ya no es «¿vale la pena
 pagar Q180 al año por descuentos?», es «¿vale la pena por descuentos **más el
 doble de puntos sobre mi saldo promedio**?». No se puede contestar: duplicar una
 tasa desconocida (T-2) sigue siendo desconocido. Es la pregunta **P-12**.
@@ -678,7 +678,7 @@ hallazgos que no son los que dicen:
 | §2.2, vigencia de 13 a 25 meses | «hallazgo H-2» | **H-3** |
 | §2.4, los puntos no son intercambiables | «hallazgo H-4» | **H-1** |
 
-Las dos están corregidas. Vale la pena el aviso: en un reporte que se apoya en
+Las dos están corregidas. Se deja anotado porque, en un reporte que se apoya en
 remitir al hallazgo correcto, una referencia cruzada mal puesta manda al lector
 a un argumento distinto del que sostiene la frase.
 

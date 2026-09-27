@@ -259,7 +259,7 @@ acumulacion_transaccional:
       puntos "Tu Bi Aqui", tambien genera saldo de puntos.
 
   enumeracion_completa:
-    # La unica fuente que enumera todas las vias en un solo lugar. Notese que no
+    # La unica fuente que enumera todas las vias en un solo lugar. No
     # esta en la pagina del programa sino en el FAQ del programa de beneficios.
     valor: >-
       Utilizando las tarjetas de credito y debito Visa, tarjetas debito
@@ -342,7 +342,7 @@ acumulacion_por_saldos:
       Estrellas: "Puntos Bi por saldo promedio mensual a partir de Q.1,000.00".
     nota: >-
       Que los tres umbrales sean distintos confirma desde fuera lo que el
-      asterisco del FAQ admite: son tres reglas, no una. Notese ademas que el
+      asterisco del FAQ admite: son tres reglas, no una. El
       umbral de la Super Cuenta Monetaria coincide con su deposito de apertura y
       con el saldo desde el que capitaliza intereses, lo que sugiere que el
       umbral de puntos reutiliza un parametro que ya existia en el producto.

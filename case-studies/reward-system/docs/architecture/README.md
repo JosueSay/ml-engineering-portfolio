@@ -9,7 +9,7 @@ exista**, no la que se verificó en producción. No se observó ningún sistema 
 Corporación BI: se observó su comportamiento publicado, y de ahí se dedujo qué
 componentes tienen que estar detrás para que ese comportamiento sea posible.
 
-La distinción importa al usar estos diagramas. Sirven para razonar sobre el
+Por eso estos diagramas sirven para razonar sobre el
 sistema, para localizar dónde duele y para dirigir las preguntas al cliente.
 No sirven como inventario de servicios.
 

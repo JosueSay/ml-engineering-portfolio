@@ -71,7 +71,7 @@ de cadenas de comercio distintas, y esas cadenas se repiten. Con una caché
 sobre la descripción normalizada, el volumen real de llamadas es el de comercios
 nuevos por mes, que es un número pequeño y decreciente.
 
-Y el resultado no se descarta: se escribe al catálogo, de modo que el sistema
+El resultado no se descarta: se escribe al catálogo, de modo que el sistema
 aprende y la regla de texto va cubriendo cada vez más.
 
 ### Qué datos necesita
@@ -159,7 +159,7 @@ Los puntos vigentes son un pasivo. Cuánto de ese pasivo se va a realizar y
 cuánto va a expirar el 5 de febrero es una pregunta de finanzas, y hoy se
 responde con una tasa global aplicada al saldo total.
 
-Además hay una acción concreta que depende de la respuesta: **a quién avisar
+Hay también una acción concreta que depende de la respuesta: **a quién avisar
 antes del corte.** Avisar a todos es ruido; avisar a quien iba a canjear de
 todas formas no cambia nada. Lo que sirve es identificar a quien tiene saldo,
 puede canjear y no lo va a hacer.
@@ -215,7 +215,7 @@ finanzas por bueno que sea su AUC.
 
 ## Lo que se evaluó y no se propone ahora
 
-Dos ideas que aparecen solas al mirar este sistema y que conviene descartar
+Dos ideas que aparecen solas al mirar este sistema y que se descartan
 explícitamente, para que no vuelvan sin haberlas pensado.
 
 **Un asistente conversacional que explique el saldo.** Es tentador: «¿por qué
@@ -240,11 +240,11 @@ paso que no está fallando.
 
 | Orden | Injerto | Por qué primero |
 |---|---|---|
-| 1 | M1 · Rubro | Es el único que corrige un cálculo que hoy puede estar mal. Los otros dos observan un sistema que conviene que ya esté bien |
+| 1 | M1 · Rubro | Es el único que corrige un cálculo que hoy puede estar mal. Los otros dos observan un sistema que primero tiene que estar bien |
 | 2 | M3 · Propensión | No depende de nada nuevo y tiene un destinatario claro en finanzas |
 | 3 | M2 · Anomalías | Necesita capacidad de revisión disponible; sin ella, produce una cola que nadie atiende |
 
-Y una precondición para los tres: ninguno vale nada mientras no se responda la
+Hay una precondición para los tres: ninguno vale nada mientras no se responda la
 pregunta P-3, el tipo de cambio de acumulación. Si el saldo base está calculado
 sobre una conversión que nadie puede verificar, mejorar la clasificación de
 rubro es afinar un instrumento desafinado.

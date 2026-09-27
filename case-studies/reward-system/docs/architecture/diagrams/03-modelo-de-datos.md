@@ -164,7 +164,7 @@ según el producto que generó el punto, el origen **es parte del valor**, no un
 etiqueta descriptiva. Un lote sin origen es un lote que no se puede canjear a
 millas.
 
-Y no se puede reconstruir después: un lote de 2024 que perdió su origen no
+Tampoco se puede reconstruir después: un lote de 2024 que perdió su origen no
 tiene cómo recuperarlo si la transacción que lo generó ya se archivó.
 
 ### 3. `vence_el` se escribe al crear el lote
@@ -178,8 +178,8 @@ dónde mire. Escribirla una vez, en el origen, cuesta un campo.
 
 Las bases de promociones dejan ver cuatro ventanas conviviendo: tope diario,
 tope mensual, tope por campaña y tope anual por categoría de tarjeta. Resolverlas
-con agregaciones sobre el histórico es correcto y lento, y además no permite
-responder «¿cuánto me queda de mi tope?», que es justo lo que un cliente
+con agregaciones sobre el histórico es correcto pero lento, y no permite
+responder «¿cuánto me queda de mi tope?», que es lo que un cliente
 querría saber antes de comprar.
 
 Su grano está declarado como `grupo_id`, pero **es la pregunta abierta P-1**: el
@@ -190,7 +190,7 @@ respuesta.
 ### 5. `MOVIMIENTO` es la única fuente del saldo
 
 No hay campo `saldo` en ninguna entidad. El saldo de un grupo es la suma de sus
-movimientos, y punto. Guardarlo además en una columna crea dos verdades que se
+movimientos, y punto. Guardarlo también en una columna crea dos verdades que se
 desincronizan, y el día que difieren nadie sabe cuál es la buena.
 
 Esto es lo que hace que `expiracion` tenga que ser un tipo de movimiento y no

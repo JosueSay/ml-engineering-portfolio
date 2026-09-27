@@ -26,7 +26,7 @@ un problema de respaldo se convierte en puntos perdidos de clientes reales.
 
 ## Qué hacer, en orden
 
-El orden no es por severidad: es por dependencia y por costo. Lo primero que
+El orden es por dependencia y por costo, no por severidad. Lo primero que
 hay que hacer es lo que desbloquea a lo demás.
 
 ### Ahora · Responder seis preguntas
@@ -51,7 +51,7 @@ ninguno exige tocar el cálculo.
 | Subir la longitud mínima de contraseña del portal de puntos | H-5 | Bajo. Es configuración |
 | Sacar la tasa reducida del asterisco y enunciar las dos tasas con el mismo peso | H-6 | Bajo. Es contenido |
 
-El segundo conviene no dejarlo esperando a un proyecto. Cuatro caracteres
+El segundo no debería esperar a un proyecto. Cuatro caracteres
 protegiendo un activo canjeable es lo más barato de arreglar de toda la lista.
 
 ### Luego · Un catálogo de reglas, versionado
@@ -80,9 +80,9 @@ H-1 pide desglosar el saldo por origen en los canales de consulta. Es un cambio
 de producto, no de infraestructura, pero solo tiene sentido una vez que se
 confirme que el ledger guarda el origen por lote.
 
-Y los tres injertos de ML de la [propuesta](../proposal/ml-ai-llm.md) van al
-final por una razón: dos de ellos observan el sistema, y conviene que el sistema
-ya esté bien antes de observarlo. El tercero, M1, corrige un cálculo que hoy
+Los tres injertos de ML de la [propuesta](../proposal/ml-ai-llm.md) van al
+final por una razón: dos de ellos observan el sistema, y el sistema tiene que
+estar bien antes de observarlo. El tercero, M1, corrige un cálculo que hoy
 puede estar mal, y ese sí adelanta posiciones en cuanto se responda P-3.
 
 ## Lo que este equipo haría distinto con una semana más

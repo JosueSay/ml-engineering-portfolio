@@ -106,14 +106,14 @@ promedio que queda al cerrar el mes, y cada cuenta tiene su propio umbral:
 
 Los tres umbrales son públicos, cada uno en la página de su producto. **Lo que
 no es público es la tasa**: ninguna fuente dice cuántos puntos genera un saldo
-promedio de cuánto, para ninguna de las tres cuentas. Y el asterisco de arriba
+promedio de cuánto, para ninguna de las tres cuentas. El asterisco de arriba
 agrava el hueco, porque el banco reconoce por escrito que no hay una regla sino
 **tres**, y no publica ninguna.
 
 Sin esa tasa no se puede responder algo básico: **¿el programa premia gastar o
 premia ahorrar?** Es la pregunta [P-2](config/assumptions.yaml).
 
-**Hay además un multiplicador por membresía.** Pagar la membresía Club Bi
+**Hay un multiplicador por membresía.** Pagar la membresía Club Bi
 duplica los puntos que genera el saldo — y aquí las dos fuentes del banco no
 coinciden en cuál cuenta:
 
@@ -122,7 +122,7 @@ coinciden en cuál cuenta:
 | Preguntas frecuentes de Club Bi | dobles Bi Puntos en la **Súper Cuenta de Ahorros** |
 | Página de Bi Puntos | dobles Bi Puntos con tu **cuenta monetaria** |
 
-Importa más de lo que parece. El caso ya había establecido que participar en Bi
+El caso ya había establecido que participar en Bi
 Puntos es gratuito y que la membresía de Q15 mensuales solo condiciona la capa
 promocional. Esto lo corrige: la membresía compra un **multiplicador permanente**
 sobre una de las vías de acumulación, no solo acceso a promociones.
@@ -160,7 +160,7 @@ derivan de ningún consumo.
 | Motor de campañas | Multiplicadores y bonificaciones |
 | Sorteos | Premios notificados por SMS |
 
-La distinción importa porque el diagnóstico es sobre el sistema, no sobre el
+El diagnóstico es sobre el sistema y no sobre el
 folleto: seis formas distintas de ganar puntos comparten la misma tubería, y
 cambiarle la tasa a una de ellas no requiere tocar las otras tres.
 

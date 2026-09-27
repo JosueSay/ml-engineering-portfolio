@@ -3,7 +3,7 @@
 Qué le pasa a un punto desde que nace hasta que sale del sistema. Parte de la
 [arquitectura](../README.md).
 
-El sujeto de este diagrama no es el punto suelto: es el **lote**. Un lote son
+El sujeto de este diagrama es el **lote**, no el punto suelto. Un lote son
 los puntos que un grupo familiar acumuló en un mes desde un origen, y es el
 grano mínimo que permite responder las dos preguntas que el programa hace todos
 los días —cuándo vence esto y cuánto vale— sin adivinar.
@@ -66,12 +66,12 @@ Ninguna fuente pública sugiere que los canales distingan este estado. Si no lo
 hacen, el cliente se entera en el mostrador, que es el peor lugar posible para
 enterarse.
 
-**Y hay un caso peor**: un lote puede entrar en `Retenido` y expirar sin haber
+**Hay un caso peor**: un lote puede entrar en `Retenido` y expirar sin haber
 pasado nunca por `Disponible`. Un grupo que se unifica en marzo y acumula ese
 mismo año tiene puntos que llegan al corte sin haber sido canjeables un solo
 día. No se pudo verificar si el sistema real permite esto —haría falta saber si
 la retención aplica al saldo trasladado o a todo el saldo del grupo— pero es
-una pregunta que vale la pena hacerle al cliente.
+una pregunta para el cliente.
 
 ### De Disponible a Expirado: el corte, no el aniversario
 
@@ -96,8 +96,8 @@ trabajo anual, un cumplimiento de plazo. Esta la ejecuta alguien que va a un
 centro de canje con su tarjeta física y su documento de identificación.
 
 Es el único punto del ciclo de vida que depende de una gestión presencial, y es
-justo el que convierte el programa en valor percibido. Ver
-[H-8](../../report/03-hallazgos.md#h-8--seis-canales-consultan-el-saldo-uno-solo-lo-ejecuta-y-es-presencial).
+el que convierte el programa en valor percibido. Ver
+[H-8](../../report/03-hallazgos.md#h-8--el-canje-tiene-tres-vías-y-el-cliente-solo-conoce-una).
 
 ## Por qué expirar tiene que dejar asiento
 

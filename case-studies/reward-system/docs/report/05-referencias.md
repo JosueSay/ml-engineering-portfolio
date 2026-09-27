@@ -69,13 +69,13 @@ citan de ellos. Es la razón por la que varias reglas del programa figuran como
 *no publicadas* en este diagnóstico: puede que estén en el reglamento y que este
 equipo no haya podido leerlas.
 
-Conviene que el cliente lo verifique internamente antes de aceptar cualquier
+El cliente debería verificarlo internamente antes de aceptar cualquier
 afirmación de ausencia sobre el reglamento.
 
 ## Sobre las «ausencias verificadas»
 
 Varias filas de las tablas anteriores registran que una fuente **no** dice algo.
-No es un recurso retórico: es lo que permite afirmar que cuatro categorías de
+Es lo que permite afirmar que cuatro categorías de
 tarjeta publican su tope anual y el resto no, en lugar de insinuarlo.
 
 Una ausencia verificada declara dos cosas: dónde se buscó, y qué se esperaba

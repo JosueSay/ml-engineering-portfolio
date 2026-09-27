@@ -11,7 +11,7 @@ estructurado, con la fuente exacta de cada regla, está en
 
 ## 2.1 Cómo se acumula
 
-Conviene separar dos preguntas que se confunden todo el tiempo: **con qué
+Hay dos preguntas que se confunden todo el tiempo: **con qué
 productos** se ganan puntos, y **por qué tubería** entran esos puntos al
 sistema. La primera es comercial y tiene ocho respuestas; la segunda es técnica
 y tiene cuatro.
@@ -90,18 +90,18 @@ La regla base, público:
 
 > **1 punto por cada US$1 de compra.**
 
-Y su excepción, publicada como nota al pie con asterisco en las páginas de
+Su excepción, publicada como nota al pie con asterisco en las páginas de
 producto:
 
 > ***Por cada 10 dólares de compra en supermercados, gasolineras, tiendas de
 > conveniencia, entidades de beneficencia y centros educativos acumulas 1
 > punto.**
 
-Es decir: **1 punto por cada US$10** en esas cinco categorías. Una penalización
+En esas cinco categorías se gana **1 punto por cada US$10**: una penalización
 de diez a uno.
 
 Las cinco categorías no son arbitrarias. Son las que tienen tasa de intercambio
-regulada o reducida, es decir, aquellas donde el emisor gana menos por
+regulada o reducida, donde el emisor gana menos por
 transacción. El programa traslada esa economía al cliente. La decisión es
 defendible desde el negocio; lo que no lo es tanto es que se comunique en un
 asterisco, cuando supermercado y gasolinera son precisamente el gasto
@@ -123,7 +123,7 @@ el saldo de todos los clientes en todas sus transacciones.
 | Visa Signature | 360,000 puntos |
 | Visa Infinite | 420,000 puntos |
 
-Esto es lo más interesante del diseño y conviene no pasarlo por alto: **la
+Esto es lo más interesante del diseño: **la
 categoría de tarjeta no multiplica la tasa.** Un cliente Infinite y un cliente
 Premier ganan exactamente lo mismo por dólar. Lo que cambia es cuánto pueden
 ganar antes de topar.
@@ -140,7 +140,7 @@ dicen «Acumulas Bi Puntos por compras, canjeables en establecimientos
 afiliados». Sin tasa y sin tope. Esto es una *ausencia verificada*: se buscó en
 sus páginas y no está.
 
-Y queda una pregunta que desde fuera no se puede responder: **¿el tope se
+Queda una pregunta que desde fuera no se puede responder: **¿el tope se
 aplica por tarjeta, por cliente o por grupo familiar unificado?** Con
 unificación familiar y varias tarjetas por persona, las tres respuestas dan
 saldos distintos para el mismo consumo. Es la pregunta P-1 del cuestionario al
@@ -157,17 +157,17 @@ tiene tres propiedades poco habituales:
 - **Es irreversible** sin emitir una tarjeta nueva.
 - **Excluye** la Mastercard UEFA Champions League.
 
-Sobre la primera conviene ser preciso, porque es fácil leer de más. La fuente
+Con la primera hay que ser preciso, porque es fácil leer de más. La fuente
 —una entrada de blog de enero de 2022— enuncia esas tasas como las vigentes «al
 momento de realizar la gestión», **sin decir contra qué se comparan**. Frente al
 tarifario actual, 2.5% mensual sobre una Mastercard Standard es *menos* que el
-36% anual que hoy publica ese producto. Es decir: no hay evidencia de que
+36% anual que hoy publica ese producto. No hay evidencia de que
 afiliarse encarezca el crédito, ni de que lo abarate; las dos cifras son de años
-distintos y no son comparables limpiamente. Lo que sí está sostenido es que
+distintos y no son comparables limpiamente. Lo que está sostenido es que
 **cambia las condiciones de forma irreversible**, y que esa decisión se toma por
 teléfono. Es la pregunta **P-7**.
 
-**Y hay una ausencia verificada que agrava el asunto.** Las cuatro páginas de
+**Hay una ausencia verificada que agrava el asunto.** Las cuatro páginas de
 producto Visa listan «Acumulas Bi Puntos por compras» entre sus beneficios. Las
 cuatro Mastercard listan exactamente los mismos beneficios **menos esa línea**.
 No dicen que no acumulan: el beneficio simplemente no aparece, y tampoco aparece
@@ -184,7 +184,7 @@ Dos vías que el caso no había recogido y que no son variantes del consumo con
 tarjeta.
 
 **Comercios aliados.** Consumir con Tarjetas Bi en ciertos comercios otorga
-puntos **adicionales** a los que da la tarjeta. La diferencia importa: el premio
+puntos **adicionales** a los que da la tarjeta. Aquí el premio
 lo origina el comercio, no el producto bancario, lo que implica un acuerdo
 comercial y una regla por comercio que el motor tiene que resolver. Ninguna
 fuente publica cuánto, y las tres que existen no coinciden en la lista:
@@ -195,7 +195,7 @@ fuente publica cuánto, y las tres que existen no coinciden en la lista:
 | Página de Bi Puntos | Max, Cemaco, La Torre |
 | Preguntas frecuentes de Club Bi | La Torre, Cemaco |
 
-Tres listas distintas del mismo emisor, en el mismo momento. No es un detalle de
+Tres listas distintas del mismo emisor, en el mismo momento. Va más allá de la
 redacción: si el motor aplica un factor por comercio, saber qué comercios son es
 parte de la regla.
 
@@ -243,7 +243,7 @@ son tres reglas, no una.
 
 **Lo que no es público es la tasa.** Ninguna fuente dice cuántos puntos genera
 un saldo promedio de cuánto, para ninguna de las tres cuentas. Se sabe desde
-dónde se empieza a acumular y no se sabe cuánto se acumula, que es justo la
+dónde se empieza a acumular y no se sabe cuánto se acumula, que es la
 mitad que le sirve al cliente para decidir.
 
 Sin esa cifra no se puede responder algo básico: **¿el programa premia gastar o
@@ -252,7 +252,7 @@ que decide cuál de los dos comportamientos remunera más, y hoy es invisible
 tanto para el cliente como para este diagnóstico. Es la pregunta P-2, y son tres
 las cifras que faltan, no una.
 
-**Y encima hay un multiplicador por membresía.** Tener la membresía Club Bi
+**Hay también un multiplicador por membresía.** Tener la membresía Club Bi
 activa duplica los puntos que genera el saldo. Las dos fuentes del banco no
 coinciden en sobre qué cuenta aplica:
 
@@ -303,7 +303,7 @@ De esas tres bases se deduce qué tiene que existir en el motor:
 - **Predicados de elegibilidad externos**: membresía vigente, Bi Móvil activo.
 - Una vía de **acreditación asíncrona** con retardo de 48 horas.
 
-Un detalle que conviene no perder: la promoción de 2022 daba **1 punto por cada
+Un detalle más: la promoción de 2022 daba **1 punto por cada
 quetzal**, cuando la tasa base es 1 punto por dólar. No es un multiplicador: es
 una regla que **cambia la unidad de la tasa**, no su coeficiente. El motor tiene
 que soportar eso, lo que es bastante más que aplicar un factor.
@@ -333,7 +333,7 @@ Dos clientes a los que se les dijo lo mismo —«dos años»— tienen doce mese
 diferencia en su derecho de uso, según el mes en que compraron. Está
 desarrollado como hallazgo H-3.
 
-Hay además una regla que no es pública y que es puro dinero del cliente: **¿qué
+Hay otra regla que no es pública y que es puro dinero del cliente: **¿qué
 lote se consume primero al canjear?** Si se gastan primero los puntos más
 antiguos, el cliente pierde menos en cada corte. Si se gastan primero los más
 nuevos, un cliente que canjea todos los meses puede aun así perder el lote
@@ -360,7 +360,7 @@ Esto tiene tres consecuencias que atraviesan todo el caso:
   doce meses. Es un estado que los canales de consulta no distinguen.
 - Exigir acta matrimonial deja fuera la unión de hecho, que es una figura
   reconocida por la legislación guatemalteca. No es un problema técnico, pero
-  sí una decisión de producto que conviene que el cliente tome a conciencia.
+  sí una decisión de producto que el cliente debería tomar a conciencia.
 
 ---
 
@@ -380,7 +380,7 @@ cuenta Bi Puntos.
 | Portal, tras iniciar sesión | No público | Solo existe el menú «Canje en línea» |
 | PBX 1717 | Conversión a millas LifeMiles | «Para canjear tus puntos llama al 1717» |
 
-El problema no es que haya una sola vía: es que **hay tres y el cliente solo
+Hay tres vías y **el cliente solo
 conoce una**. Toda la documentación pública del canje describe el mostrador. El
 canje en línea existe —el portal tiene su entrada de menú— y no hay una sola
 fuente que diga qué parte del catálogo admite. Es la pregunta **P-8**, y es otra
@@ -395,7 +395,7 @@ Los requisitos de la vía presencial, públicos:
 | Cliente empresarial | Tarjeta Club Bi **Empresarial** física + DPI del representante legal + copia de nombramiento vigente |
 | Un tercero | Tarjeta Club Bi del titular + copia del DPI del titular + copia del DPI de quien canjea + carta de autorización |
 
-Nótese la segunda fila: **el titular de un saldo no es siempre una persona ni un
+En la segunda fila, **el titular de un saldo no es siempre una persona ni un
 grupo familiar.** Puede ser una empresa, con representante legal y nombramiento
 con su propia vigencia. Es una entidad que el modelo de datos tiene que
 contemplar.
@@ -424,7 +424,7 @@ categorías reducidas. Mueva el tipo de cambio dentro de un rango razonable y el
 orden de magnitud no cambia.
 
 Es el número que permite dimensionar la penalización de 10 a 1 (H-6) y valorar
-la conversión a millas (H-1) contra una referencia concreta. Conviene releerlo
+la conversión a millas (H-1) contra una referencia concreta. Hay que releerlo
 antes de reutilizarlo: el catálogo de premios cambia, y esta cifra es del 22 de
 septiembre de 2026.
 
@@ -460,8 +460,8 @@ física y usuario del portal. Pero el propio banco los separa por escrito:
 | Costo | **Gratuito** | Q15.00 mensuales |
 | Cómo se entra | Automático, por usar productos afiliados | Pagando la membresía |
 
-**Participar en el programa de puntos no cuesta nada.** Dos matices que sí se
-sostienen y conviene no perder:
+**Participar en el programa de puntos no cuesta nada.** Tres matices que sí se
+sostienen:
 
 - **La tarjeta Club Bi física sigue siendo obligatoria para canjear**, porque
   «*en ella se depositan todos tus Bi Puntos*». El plástico es requisito; la
@@ -477,7 +477,7 @@ sostienen y conviene no perder:
 Con esto, «gratuito» sigue siendo cierto para acumular y canjear, pero la
 pregunta económica cambia. Ya no es «¿vale la pena pagar Q180 al año por
 descuentos?», es «¿vale la pena pagar Q180 al año por descuentos **más el doble
-de puntos sobre mi saldo promedio**?». Y esa segunda no se puede responder,
+de puntos sobre mi saldo promedio**?». La segunda no se puede responder,
 porque la tasa base de esa vía no es pública: duplicar una cifra desconocida
 sigue siendo una cifra desconocida.
 
@@ -515,7 +515,7 @@ razonable que cierre esa brecha.
 intereses, la tasa le da igual y los puntos son ganancia neta. El hallazgo es
 condicional y hay que presentarlo así.
 
-Lo que sí es incondicional: **el sitio del banco no ofrece ningún elemento para
+Lo que es incondicional: **el sitio del banco no ofrece ningún elemento para
 hacer esta comparación**. Las tasas están en un micrositio de activación; el
 valor del punto, en el portal de puntos; la posibilidad de afiliar una
 Mastercard, en un blog de 2022. Tres dominios distintos para una sola decisión de

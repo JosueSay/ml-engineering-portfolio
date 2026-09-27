@@ -56,7 +56,7 @@ reconstruir la regla. No existe ninguna fuente pública que la enuncie completa.
 
 Ese hecho —que la regla central del programa es pública pero no está en ningún
 lugar único— dejó de ser un obstáculo de la investigación y pasó a ser el
-primer hallazgo del reporte. Es exactamente el síntoma que deja un sistema cuyo
+primer hallazgo del reporte. Es el síntoma que deja un sistema cuyo
 equipo se fue: las reglas siguen operando, pero el documento que las explicaba
 nunca existió o ya no se mantiene.
 
@@ -90,8 +90,6 @@ resultado es una pregunta abierta y no una estimación.
 El programa funciona. Acumula, expira, canjea y lleva años operando con
 promociones encima. Los problemas que encontró este diagnóstico no son fallos
 de funcionamiento: son problemas de **explicabilidad y de gobierno de reglas**.
-
-En concreto:
 
 - La regla que decide cuántos puntos gana un cliente existe, opera y es
   pública, pero está dispersa y comunicada en asteriscos.

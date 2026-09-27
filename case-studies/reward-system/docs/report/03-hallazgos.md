@@ -8,7 +8,7 @@ sostiene, la consecuencia concreta y qué haría falta para cerrarlo.
 Ninguno es un fallo de funcionamiento. El programa acumula, expira y canja, y
 lleva años haciéndolo con promociones encima. Lo que estos hallazgos describen
 son problemas de **explicabilidad, gobierno de reglas y exactitud**, que es
-justo lo que se degrada cuando el equipo que diseñó un sistema ya no está.
+lo que se degrada cuando el equipo que diseñó un sistema ya no está.
 
 | # | Hallazgo | Severidad | Tipo |
 |---|---|---|---|
@@ -39,11 +39,11 @@ un punto ganado con una Visa Signature y un punto ganado por saldo promedio
 **no son la misma cosa**, aunque los dos se llamen «punto» y se sumen en el
 mismo número.
 
-Y ese número único es exactamente lo que muestran los seis canales de consulta.
+Ese número único es lo que muestran los seis canales de consulta.
 
 La consecuencia práctica: dos clientes con 10,000 puntos pueden no poder
 comprar el mismo premio, y ninguno de los dos tiene forma de saberlo antes de
-llegar al mostrador. Peor aún, un mismo cliente no puede saber qué le conviene
+llegar al mostrador. Un mismo cliente tampoco puede saber qué le conviene
 canjear primero, porque el sistema no le dice de qué está compuesto su saldo.
 
 Ahora se puede poner una referencia concreta a esa decisión. El portal destaca
@@ -112,7 +112,7 @@ preguntas frecuentes.
 | Tarjeta Prepago Club Bi | No |
 | Campañas y sorteos | Sí, por campaña |
 
-Y la **única fuente que enumera las ocho en un solo lugar** no está en la página
+La **única fuente que enumera las ocho en un solo lugar** no está en la página
 del programa ni en el reglamento: está en las preguntas frecuentes de Club Bi,
 que es un programa distinto, con otro nombre y otro costo.
 
@@ -227,7 +227,7 @@ A la tasa base de 1 punto por dólar, la diferencia entre dos de esas respuestas
 mueve el saldo de **todos** los clientes en **todas** sus transacciones. No es
 un caso borde: es el camino principal del sistema.
 
-Y hay un efecto de segundo orden que importa más de lo que parece: el
+Hay un efecto de segundo orden: el
 redondeo. Si los puntos se truncan por transacción, la fracción perdida en cada
 compra depende del tipo de cambio aplicado. Sobre una cartera entera y un año,
 eso deja de ser un decimal.
@@ -279,7 +279,7 @@ del portal pide tipo de cliente (individual o empresarial), tipo de documento
 
 Cuatro caracteres con composición obligatoria no es una contraseña fuerte: es
 una contraseña corta con restricciones. La composición obligatoria no compensa
-la longitud, y de hecho **reduce** el conjunto de contraseñas válidas en vez de
+la longitud y **reduce** el conjunto de contraseñas válidas en vez de
 ampliarlo, porque obliga a que las cuatro posiciones alojen cuatro clases
 distintas. Es lo contrario del efecto buscado.
 
@@ -291,12 +291,12 @@ superficie: hay un segundo flujo de recuperación y un segundo almacén de
 credenciales. Segundo, hace que las protecciones de la banca en línea —que
 presumiblemente son mucho más estrictas— no apliquen aquí.
 
-Y la consulta sin autenticación abre una pregunta aparte: un saldo canjeable
+La consulta sin autenticación abre una pregunta aparte: un saldo canjeable
 consultable contra un **identificador nacional** descansa en que ese
 identificador sea secreto, y el DPI guatemalteco no lo es. Aparece en facturas,
 contratos y formularios de todo tipo.
 
-Hay además una asimetría de protección que conviene mirar. El sitio corporativo
+Hay también una asimetría de protección. El sitio corporativo
 `www.corporacionbi.com` está detrás de un WAF que bloquea cualquier acceso
 programático. El portal donde vive el saldo canjeable, no. La superficie mejor
 protegida es la de marketing.
@@ -324,8 +324,8 @@ intentó ningún acceso y no se evaluó la robustez real de nada. Puede
 perfectamente existir un control que la página no muestra —un CAPTCHA, un límite
 de intentos, una verificación posterior al envío—. Lo que aquí se afirma es
 únicamente lo que las páginas publicadas declaran. Es una observación de
-política publicada, no una prueba de penetración, y conviene que el cliente la
-confirme internamente antes de dimensionarla.
+política publicada, no una prueba de penetración; el cliente debería
+confirmarla internamente antes de dimensionarla.
 
 ---
 
@@ -343,7 +343,7 @@ La nota al pie, idéntica en cuatro páginas de producto:
 
 Frente a la tasa base de 1 punto por US$1, eso es **una décima parte**.
 
-Y ahora se puede decir cuánto es en dinero. Con el punto valuado en Q0.0619
+Ahora se puede decir cuánto es en dinero. Con el punto valuado en Q0.0619
 —1,615 puntos por un certificado de Q100, del propio portal— y usando un tipo de
 cambio de referencia de ~Q7.70/US$ como **ilustración**, no como dato del
 sistema:
@@ -371,8 +371,8 @@ clientes, la mayor parte de su consumo cae en la tasa reducida, y lo que
 acumulan es un orden de magnitud menos de lo que la comunicación principal
 sugiere.
 
-Hay además un efecto que este equipo no puede medir desde fuera pero que
-conviene levantar: si la clasificación de comercio se resuelve mal —un
+Hay un efecto que este equipo no puede medir desde fuera, pero que
+hay que levantar: si la clasificación de comercio se resuelve mal —un
 supermercado que no se reconoce como tal, o un comercio general clasificado
 como gasolinera— la diferencia para el cliente es de diez veces. En cualquier
 otro programa, un error de categoría cuesta un porcentaje; aquí cuesta un
@@ -414,7 +414,7 @@ un sorteo que ocurrió, se notificó por un canal externo y se acreditó con
 retardo. **Si se pierde ese registro, el saldo del cliente no se puede
 reconstruir desde ninguna otra fuente.**
 
-Conviene ser preciso sobre qué hace único a este caso, porque es fácil señalar
+Hay que precisar qué hace único a este caso, porque es fácil señalar
 lo equivocado. **No es el retardo.** El programa publica que *toda* acreditación
 tarda entre 48 y 72 horas hábiles, así que esperar dos días no distingue al
 sorteo de nada. Lo que lo distingue es que **es la única vía del sistema que no
@@ -454,7 +454,7 @@ Canjear se puede de tres maneras, documentadas de forma muy desigual:
 | PBX 1717 | Conversión a millas LifeMiles | «Para canjear tus puntos llama al 1717» |
 
 La vía presencial exige la Tarjeta Club Bi **física** y documento de
-identificación. Para terceros hace falta además carta de autorización y copia
+identificación. Para terceros hace falta también carta de autorización y copia
 del DPI del titular; para empresas, nombramiento del representante legal.
 
 ### Por qué importa
@@ -467,7 +467,7 @@ alternativa digital ni qué puede hacer con ella.
 
 Eso convierte a H-8 en una variante de H-2. El problema no es que falte
 funcionalidad: es que **la regla que gobierna la funcionalidad existente no está
-escrita**. Y la consecuencia práctica es la misma que si no existiera, porque una
+escrita**. La consecuencia práctica es la misma que si no existiera, porque una
 capacidad que el cliente no conoce no se usa.
 
 Sobre la vía presencial, el requisito de tarjeta física sigue siendo el detalle
@@ -475,7 +475,7 @@ que peor envejece: un programa cuya consulta es digital de punta a punta y cuyo
 canje principal exige un plástico está sosteniendo dos modelos de servicio a la
 vez.
 
-Esto tiene además un efecto medible sobre el pasivo: cuanto más cuesta canjear,
+Hay un efecto medible sobre el pasivo: cuanto más cuesta canjear,
 más puntos llegan al corte del 5 de febrero sin usarse. Eso reduce el gasto
 contable a corto plazo y erosiona la percepción de valor a largo plazo, que es
 justamente lo que el programa existe para construir.
@@ -499,7 +499,7 @@ justamente lo que el programa existe para construir.
 
 ## Lo que este diagnóstico no puede afirmar
 
-Conviene cerrar diciendo qué queda fuera, porque un informe que no marca sus
+Se cierra con lo que queda fuera, porque un informe que no marca sus
 límites invita a que lo usen para más de lo que aguanta.
 
 - **No se observó ningún sistema.** Todo sale de material público. Lo que aquí

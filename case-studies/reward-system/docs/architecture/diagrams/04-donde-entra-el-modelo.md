@@ -57,7 +57,7 @@ flowchart LR
 
 ### M1 va *dentro* del pipeline, y los otros dos no
 
-Es la diferencia que más conviene tener clara al presentar la propuesta.
+Es la diferencia más importante al presentar la propuesta.
 
 **M1 resuelve el rubro del comercio**, y el rubro decide si se aplica 1 punto
 por US$1 o 1 punto por US$10. Si M1 se equivoca, el cliente recibe un número
@@ -104,4 +104,4 @@ Ninguno entra sin superar a la referencia simple que ya existe hoy:
 
 Un modelo que no gana a su referencia es código que hay que mantener, servir y
 monitorear a cambio de nada. La conclusión correcta en ese caso es no tener
-modelo, y conviene decidirlo antes de construirlo.
+modelo, y eso se decide antes de construirlo.
