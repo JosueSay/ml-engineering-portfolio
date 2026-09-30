@@ -1,0 +1,175 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Arquitectura de datos - Puntos Bi" id="puntos-bi-arquitectura">
+    <mxGraphModel dx="2400" dy="1300" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2400" pageHeight="1250" math="0" shadow="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t1" value="Arquitectura de datos del sistema de Puntos Bi" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=26;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="Reconstruida desde fuentes publicas de Corporacion BI. Cada elemento declara su nivel de confianza: &lt;b&gt;publico&lt;/b&gt; si se cita de una fuente del emisor, &lt;b&gt;inferido&lt;/b&gt; si se deduce de algo que si lo esta, &lt;b&gt;no publico&lt;/b&gt; si el dato no existe en ninguna fuente.&lt;br&gt;Ningun nombre de producto de infraestructura aparece en este diagrama: el banco no publica su stack, y suponerlo seria presentar una invencion como hallazgo." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="62" width="1500" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="gA" value="Sistemas de origen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9a9a9a;dashed=1;strokeWidth=1;fontSize=14;verticalAlign=top;spacingTop=6;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="320" height="610" as="geometry" />
+        </mxCell>
+        <mxCell id="A1" value="Autorizador de tarjetas&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;&lt;br&gt;Un evento por consumo. Por aqui entran seis de las ocho vias comerciales: Visa, debito Mastercard, credito Mastercard afiliada, Dividelo Todo, prepago Club Bi y comercios aliados." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="195" width="280" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="A2" value="Core de depositos&lt;br&gt;&lt;b&gt;publico el umbral, no publica la tasa&lt;/b&gt;&lt;br&gt;No reacciona a un evento sino al cierre de mes. Ahorro desde Q500, Monetaria desde Q1,000, 5 Estrellas desde Q1,000. Tres reglas distintas, ninguna publicada." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="355" width="280" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="A3" value="Motor de campanas&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;&lt;br&gt;Multiplicadores y bonificaciones con vigencia, padron de inscritos y topes propios." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="515" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="A4" value="Sorteos&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;&lt;br&gt;Acredita puntos que no derivan de ningun consumo. Disparo por SMS." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="630" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="B1" value="Ingesta&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;&lt;br&gt;Ninguna via es sincrona. La acreditacion tarda entre 48 y 72 horas habiles en todos los casos, lo que descarta un motor que reaccione a cada autorizacion." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;dashed=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="300" width="250" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="C0" value="Elegibilidad, se consulta al acreditar&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;&lt;br&gt;Membresia Club Bi vigente · servicio Bi Movil activo · la tarjeta acumula · afiliacion Mastercard solicitada.&lt;br&gt;No viaja en la transaccion: son estados que viven en otros sistemas." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="700" y="140" width="560" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="gM" value="Motor de acumulacion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9a9a9a;dashed=1;strokeWidth=1;fontSize=14;verticalAlign=top;spacingTop=6;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="700" y="300" width="560" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="M1" value="Conversion de quetzales a dolares&lt;br&gt;&lt;b&gt;no publico&lt;/b&gt;: ni la tasa ni su fecha" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="725" y="350" width="510" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="M2" value="Rubro del comercio&lt;br&gt;&lt;b&gt;inferido&lt;/b&gt;: el mapa de codigos no es publico" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="855" y="430" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="M3" value="Tasa base&lt;br&gt;1 punto por US$1&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="725" y="535" width="155" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="M4" value="Tasa reducida&lt;br&gt;1 punto por US$10&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="895" y="535" width="170" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="M5" value="Excluido&lt;br&gt;retiros, extrafinanciamiento&lt;br&gt;&lt;b&gt;inferido&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;dashed=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="535" width="155" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="M6" value="Acumuladores y topes&lt;br&gt;&lt;b&gt;publico para cuatro categorias&lt;/b&gt;&lt;br&gt;Tope anual: Gold y Premier 180,000 · Signature 360,000 · Infinite 420,000. Las demas categorias no publican tope. El grano del tope es pregunta abierta." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="725" y="625" width="510" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="D1" value="Ledger de lotes&lt;br&gt;&lt;b&gt;inferido&lt;/b&gt;&lt;br&gt;Grano: grupo familiar por periodo por origen.&lt;br&gt;Cada lote nace con su fecha de vencimiento y con la procedencia del punto, porque el valor de canje depende del producto que lo genero." style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=3;fontSize=13;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="380" width="280" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="gE" value="Salidas del punto" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9a9a9a;dashed=1;strokeWidth=1;fontSize=14;verticalAlign=top;spacingTop=6;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1650" y="140" width="320" height="610" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" value="Corte anual, 5 de febrero&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;&lt;br&gt;No es vencimiento rodante: es fecha fija por anio de acumulacion. Vigencia efectiva de 13 a 25 meses." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1670" y="195" width="280" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="E2" value="Canje presencial&lt;br&gt;&lt;b&gt;publico&lt;/b&gt;&lt;br&gt;Todo el catalogo. Exige tarjeta fisica y documento de identificacion." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1670" y="345" width="280" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="E3" value="Canje en linea&lt;br&gt;&lt;b&gt;existe, alcance no publicado&lt;/b&gt;&lt;br&gt;El portal tiene la funcionalidad; ninguna fuente dice que parte del catalogo admite." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1670" y="475" width="280" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="E4" value="Conversion a millas por telefono&lt;br&gt;&lt;b&gt;la tasa no es publica&lt;/b&gt;&lt;br&gt;Varia segun el producto que genero el punto. Es lo que hace que el saldo no sea homogeneo." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1670" y="610" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="gF" value="Consulta del saldo, seis canales" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9a9a9a;dashed=1;strokeWidth=1;fontSize=14;verticalAlign=top;spacingTop=6;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="2010" y="140" width="300" height="610" as="geometry" />
+        </mxCell>
+        <mxCell id="F1" value="App Club Bi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="195" width="260" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="F2" value="Bi en Linea, web" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="273" width="260" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="F3" value="Portal bipuntos, con identidad propia" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="351" width="260" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="F4" value="PBX 1717" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="429" width="260" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="F5" value="Estado de cuenta Bi Puntos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="507" width="260" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="F6" value="Centros de canje" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="585" width="260" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="F0" value="Los seis muestran un numero unico sobre un saldo que no es homogeneo." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;strokeWidth=1;fontSize=12;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="665" width="260" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="evento" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="A1" target="B1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="lote mensual" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="A2" target="B1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="B1" target="M1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="M1" target="M2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="resto de rubros" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="M2" target="M3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="cinco rubros" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="M2" target="M4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="excluido" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="M2" target="M5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="M3" target="M6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="M4" target="M6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="reglas con vigencia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="A3" target="M6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="se consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="C0" target="M6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="M6" target="D1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="no derivable del consumo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="A4" target="D1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="D1" target="E1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="vencer es un asiento, no un borrado" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="E1" target="D1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="D1" target="E2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="D1" target="E3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="D1" target="E4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="lectura" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;labelBackgroundColor=#ffffff;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="D1" target="gF">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gG" value="Correspondencia con la replica en miniatura del POC. Es lectura del equipo consultor, no una afirmacion sobre la implementacion del banco." style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9a9a9a;dashed=1;strokeWidth=1;fontSize=14;verticalAlign=top;spacingTop=6;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800" width="2270" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="G1" value="&lt;b&gt;Bronze&lt;/b&gt;&lt;br&gt;Lo que entra tal como entra: reintentos del autorizador como filas repetidas, reversas como fila aparte, consumos sin codigo de rubro, montos en dos monedas y archivos fuera de orden." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="70" y="860" width="580" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="G2" value="&lt;b&gt;Silver&lt;/b&gt;&lt;br&gt;Deduplicado, reversas aplicadas, rubro resuelto y moneda convertida. Es la capa donde vive el riesgo: el mapa de rubros decide si un consumo acumula uno o un decimo." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="680" y="860" width="580" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="G3" value="&lt;b&gt;Gold&lt;/b&gt;&lt;br&gt;El ledger de lotes y sus agregados. Cada lote conserva origen, fecha de vencimiento y los parametros con los que se acredito, que es lo que el sistema real no guarda y sin lo cual un saldo pasado no se puede reconstruir." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=12;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="860" width="1000" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="L1" value="&lt;b&gt;Como leer este diagrama&lt;/b&gt;&lt;br&gt;&lt;br&gt;Borde continuo azul, naranja o verde: &lt;b&gt;publico&lt;/b&gt;, citable de una fuente de Corporacion BI.&lt;br&gt;Borde discontinuo: &lt;b&gt;inferido&lt;/b&gt;, se deduce de algo publicado pero no esta enunciado asi.&lt;br&gt;Relleno rojo: el dato &lt;b&gt;no es publico&lt;/b&gt; o el punto &lt;b&gt;no se puede reconstruir&lt;/b&gt;.&lt;br&gt;Flecha discontinua roja: camino que no se puede rederivar desde las transacciones." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;strokeWidth=1;fontSize=12;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1005" width="1100" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="L2" value="&lt;b&gt;Las tres cosas que este diagrama dice y el folleto no&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Ocho vias comerciales de acumulacion colapsan en cuatro origenes tecnicos, y cambiarle la tasa a uno no exige tocar los otros tres.&lt;br&gt;2. Una acreditacion no es funcion del consumo: es funcion del consumo y de cuatro estados externos consultados en ese instante.&lt;br&gt;3. Seis canales leen el saldo y tres lo ejecutan, pero toda la documentacion publica describe uno solo." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;strokeWidth=1;fontSize=12;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1005" width="1110" height="190" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
