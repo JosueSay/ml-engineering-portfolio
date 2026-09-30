@@ -6,7 +6,8 @@ Diagnóstico del sistema de recompensas Puntos Bi. La visión general está en e
 ## Índice
 
 | Documento | Para qué |
-|---|---|
+| --- | --- |
+| [resumen.md](resumen.md) | El caso completo en una lectura seguida: qué es, qué se encontró, cómo entra DVC y cómo vamos |
 | [report/01-situacion.md](report/01-situacion.md) | Qué se pidió, qué se sabía al empezar y cómo se levantó el diagnóstico |
 | [report/02-reglas-del-programa.md](report/02-reglas-del-programa.md) | Cómo se ganan, se conservan y se pierden los puntos |
 | [report/03-hallazgos.md](report/03-hallazgos.md) | Los ocho hallazgos, con severidad y evidencia |
@@ -15,6 +16,10 @@ Diagnóstico del sistema de recompensas Puntos Bi. La visión general está en e
 | [architecture/README.md](architecture/README.md) | Los cuatro diagramas y cómo leerlos |
 | [proposal/ml-ai-llm.md](proposal/ml-ai-llm.md) | Dónde entra un modelo y cómo se sabe si vale la pena |
 | [investigacion-y-supuestos.md](investigacion-y-supuestos.md) | Bitácora de campo: qué se buscó, qué se encontró, qué se corrigió y en qué se contradicen las fuentes |
+| [herramientas.md](herramientas.md) | Los cinco porqués del caso, la causa raíz de cada problema y qué herramienta se sigue de ella |
+| [origen-de-los-datos.md](origen-de-los-datos.md) | De dónde salen los datos del POC: las cinco opciones evaluadas y por qué gana el simulador |
+| [versionado-de-datos.md](versionado-de-datos.md) | Si DVC entra y con qué alcance, las siete alternativas comparadas y qué de esto va en la propuesta al cliente |
+| [work-plan.md](work-plan.md) | Inventario de lo que existe, lo que falta y en qué orden se hace |
 
 El catálogo de reglas con su procedencia está en
 [`config/assumptions.yaml`](../config/assumptions.yaml). No es documentación de
@@ -23,8 +28,9 @@ para no tener constantes incrustadas en el código.
 
 ## Por dónde empezar
 
-- **Primera vez en el caso**: [01-situacion.md](report/01-situacion.md), y
-  luego el diagrama de arquitectura del [README](../README.md).
+- **Primera vez en el caso**: [resumen.md](resumen.md), que condensa todo en
+  una lectura seguida. Luego [01-situacion.md](report/01-situacion.md) y el
+  diagrama de arquitectura del [README](../README.md).
 - **Buscando una regla concreta**:
   [02-reglas-del-programa.md](report/02-reglas-del-programa.md), o directamente
   `config/assumptions.yaml` si se quiere ver la fuente.
