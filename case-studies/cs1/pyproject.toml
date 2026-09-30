@@ -93,6 +93,7 @@ include = [
   "/README.md",
   "/Makefile",
   "/.env.example",
+  "/requirements.txt",
 ]
 
 [tool.pytest.ini_options]
