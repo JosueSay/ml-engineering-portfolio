@@ -253,7 +253,7 @@ datos— están en [`docs/architecture/`](docs/architecture/).
 ## Qué hay en este caso
 
 ```
-reward-system/
+cs2/
 ├── config/
 │   └── assumptions.yaml          # catálogo de reglas, con fuente y confianza
 ├── docs/
