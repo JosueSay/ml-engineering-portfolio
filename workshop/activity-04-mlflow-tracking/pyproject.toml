@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "activity04-mlflow-tracking"
+version = "0.1.0"
+description = "Taller de MLflow: seguimiento de experimentos, autologging e integracion con pipelines de scikit-learn"
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["machine-learning", "mlflow", "sklearn", "pipeline", "crisp-dm"]
+dependencies = [
+    "mlflow>=3.0",
+    "scikit-learn>=1.5",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+    "ipykernel>=6.29",
+    "nbconvert>=7.16",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.urls]
+Documentation = "https://github.com/JosueSay/ml-engineering-portfolio"
+Repository = "https://github.com/JosueSay/ml-engineering-portfolio"
