@@ -106,7 +106,7 @@ GitHub Actions**.
 |---|---|
 | Inicio | Publicada |
 | Casos de Estudio | Publicada. Un caso: precios de combustible en Guatemala |
-| Talleres | Publicada. Dos actividades, con enlace a su codigo |
+| Talleres | Publicada. Tres actividades, con enlace a su codigo |
 | Sonic | Publicada |
 | Laboratorios | Sin material. Lo entregado en el curso vive fuera del repositorio |
 | Proyectos | Sin material |
