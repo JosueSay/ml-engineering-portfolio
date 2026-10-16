@@ -86,6 +86,11 @@ uv run --extra notebook jupyter lab pipeline_mlflow.ipynb
 También puedes abrirlo en VS Code y seleccionar el intérprete `.venv/bin/python`
 de esta actividad como kernel. Ejecuta las celdas en orden.
 
+El notebook incluye las salidas guardadas de una ejecución local: tablas, diagrama
+del pipeline, métricas, gráficos y predicciones. Se pueden ver al abrirlo sin
+ejecutarlo de nuevo; los identificadores de MLflow corresponden al almacén local
+de esa ejecución.
+
 El notebook separa configuración, generación de datos, partición temporal,
 entrenamiento, evaluación, registro en MLflow, consulta de runs y carga del modelo
 para inferencia. Reutiliza las funciones de `src/` y muestra explícitamente el
