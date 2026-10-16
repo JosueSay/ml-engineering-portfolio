@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "activity05-databricks-mlflow"
+version = "0.1.0"
+description = "Adaptacion de pipeline scikit-learn con MLflow en Databricks: Experiments, Models y Model Registry"
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["machine-learning", "mlflow", "databricks", "sklearn", "pipeline", "crisp-dm"]
+dependencies = [
+    "mlflow>=2.14",
+    "scikit-learn>=1.5",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.urls]
+Documentation = "https://github.com/JosueSay/ml-engineering-portfolio"
+Repository = "https://github.com/JosueSay/ml-engineering-portfolio"
