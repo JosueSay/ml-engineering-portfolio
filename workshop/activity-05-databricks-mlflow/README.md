@@ -38,6 +38,7 @@ Esta actividad consiste en la adaptación de un **Pipeline de scikit-learn** par
 
 ```text
 activity-05-databricks-mlflow/
+├── pipeline_mlflow.ipynb     # Notebook por etapas: datos, entrenamiento, evaluación y MLflow
 ├── src/
 │   ├── __init__.py           # Exporta funciones publicas
 │   ├── data.py               # Generador sintetico de demanda y factores economicos
@@ -72,6 +73,30 @@ pip install -e .
 ---
 
 ## 5. Ejecución
+
+### Jupyter Notebook por etapas
+
+Abre [`pipeline_mlflow.ipynb`](pipeline_mlflow.ipynb), ubicado en esta misma carpeta:
+
+```bash
+uv sync --extra notebook
+uv run --extra notebook jupyter lab pipeline_mlflow.ipynb
+```
+
+También puedes abrirlo en VS Code y seleccionar el intérprete `.venv/bin/python`
+de esta actividad como kernel. Ejecuta las celdas en orden.
+
+El notebook separa configuración, generación de datos, partición temporal,
+entrenamiento, evaluación, registro en MLflow, consulta de runs y carga del modelo
+para inferencia. Reutiliza las funciones de `src/` y muestra explícitamente el
+registro de parámetros, métricas, artefactos y el pipeline completo con firma.
+Incluye una comprobación de que las predicciones coinciden tras recuperar el modelo.
+
+El modo predeterminado utiliza SQLite local y el experimento
+`activity-05-demand-notebook`. Para Databricks, configura las credenciales fuera
+del notebook, define `MLFLOW_EXPERIMENT_NAME` con la ruta del experimento y cambia
+`USE_DATABRICKS = True` en la sección 2. El Model Registry es opcional y se activa
+en la última celda; para Unity Catalog configura un nombre `catalog.schema.model`.
 
 ### Modo A: Ejecución Local (Prueba rápida offline)
 
